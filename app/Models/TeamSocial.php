@@ -5,10 +5,10 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class TeamSocial extends Model
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -18,7 +18,7 @@ class User extends Authenticatable
      *
      * @var string
      */
-    protected $table = 'm_user';
+    protected $table = 'm_team_member';
 
     /**
      * The attributes that are mass assignable.
@@ -26,17 +26,15 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'team_id',
+        'social_id',
         'username',
-        'email',
-        'full_name',
-        'phone_number',
+        'url',
         'is_active',
         'created_date',
         'created_by',
         'modified_date',
         'modified_by',
-        'user_type_id',
-        'password',
     ];
 
     /**
@@ -44,9 +42,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $hidden = [
-        'password',
-    ];
+    protected $hidden = [];
 
     /**
      * Get the attributes that should be cast.
@@ -58,12 +54,16 @@ class User extends Authenticatable
         return [
             'created_date' => 'datetime',
             'modified_date' => 'datetime',
-            'password' => 'hashed',
         ];
     }
-
-    public function userType(): BelongsTo
+    
+    protected function team(): BelongsTo
     {
-        return $this->belongsTo(UserType::class, 'id', 'user_type_id');
+        return $this->belongsTo(Team::class, 'id', 'team_id');
+    }
+
+    protected function social(): BelongsTo
+    {
+        return $this->belongsTo(Social::class, 'id', 'social_id');
     }
 }

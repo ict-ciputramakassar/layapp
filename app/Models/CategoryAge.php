@@ -4,11 +4,11 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class CategoryAge extends Model
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -18,7 +18,7 @@ class User extends Authenticatable
      *
      * @var string
      */
-    protected $table = 'm_user';
+    protected $table = 'm_category_age';
 
     /**
      * The attributes that are mass assignable.
@@ -26,17 +26,13 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'username',
-        'email',
-        'full_name',
-        'phone_number',
+        'code',
+        'name',
         'is_active',
         'created_date',
         'created_by',
         'modified_date',
         'modified_by',
-        'user_type_id',
-        'password',
     ];
 
     /**
@@ -45,7 +41,6 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $hidden = [
-        'password',
     ];
 
     /**
@@ -58,12 +53,11 @@ class User extends Authenticatable
         return [
             'created_date' => 'datetime',
             'modified_date' => 'datetime',
-            'password' => 'hashed',
         ];
     }
 
-    public function userType(): BelongsTo
+    protected function teamMembers(): HasMany
     {
-        return $this->belongsTo(UserType::class, 'id', 'user_type_id');
+        return $this->hasMany(TeamMember::class, 'category_age_id', 'id');
     }
 }

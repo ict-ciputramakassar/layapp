@@ -4,21 +4,15 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class UserType extends Model
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
-    protected $table = 'm_user';
 
     /**
      * The attributes that are mass assignable.
@@ -26,17 +20,13 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'username',
-        'email',
-        'full_name',
-        'phone_number',
+        'code',
+        'name',
         'is_active',
         'created_date',
         'created_by',
         'modified_date',
         'modified_by',
-        'user_type_id',
-        'password',
     ];
 
     /**
@@ -44,9 +34,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $hidden = [
-        'password',
-    ];
+    protected $hidden = [];
 
     /**
      * Get the attributes that should be cast.
@@ -58,12 +46,12 @@ class User extends Authenticatable
         return [
             'created_date' => 'datetime',
             'modified_date' => 'datetime',
-            'password' => 'hashed',
         ];
     }
 
-    public function userType(): BelongsTo
+    public function users(): HasMany
     {
-        return $this->belongsTo(UserType::class, 'id', 'user_type_id');
+        return $this->hasMany(User::class, 'user_type_id', 'id');
     }
+
 }
