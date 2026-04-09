@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('views_frontend.layouts.app')
 
 @section('title', 'Game Info')
 

@@ -1,0 +1,58 @@
+@extends('views_backend.layouts.auth')
+
+@section('title', 'Sign Up - InApp Inventory Dashboard')
+
+@section('content')
+<div class="container d-flex align-items-center justify-content-center min-vh-100">
+  <div class="card " style="max-width:420px; width:100%;">
+    <div class="card-body p-5">
+      <div class="text-center mb-3">
+        <a href="{{ route('admin.dashboard') }}" class="mb-4 d-inline-block">
+          <img src="{{ asset('images/backend/logo-icon.svg') }}" alt="" width="36">
+          <span class="ms-2"><img src="{{ asset('images/backend/logo.svg') }}" alt=""></span>
+        </a>
+        <h1 class="card-title mb-5 h5">Create your account</h1>
+      </div>
+
+      <form class="needs-validation mt-3" novalidate>
+        <div class="mb-3">
+          <label for="fullName" class="form-label">Full name</label>
+          <input id="fullName" type="text" class="form-control" placeholder="Jane Doe" required>
+          <div class="invalid-feedback">Please enter your name.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label">Email address</label>
+          <input id="email" type="email" class="form-control" placeholder="name@example.com" required>
+          <div class="invalid-feedback">Please enter a valid email.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input id="password" type="password" class="form-control" placeholder="Create a password" required minlength="6">
+          <div class="invalid-feedback">Please provide a password (min 6 characters).</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="confirmPassword" class="form-label">Confirm password</label>
+          <input id="confirmPassword" type="password" class="form-control" placeholder="Repeat password" required
+            oninput="this.setCustomValidity(document.getElementById('password').value !== this.value ? 'Passwords do not match.' : '')">
+          <div class="invalid-feedback">Passwords must match.</div>
+        </div>
+
+        <div class="mb-3 form-check">
+          <input id="terms" class="form-check-input" type="checkbox" required>
+          <label class="form-check-label small" for="terms">I agree to the <a href="#" class="text-decoration-none">terms and privacy</a></label>
+          <div class="invalid-feedback">You must agree before continuing.</div>
+        </div>
+
+        <button class="btn btn-primary w-100" type="submit">Sign up</button>
+      </form>
+
+      <div class="text-center mt-3 small text-muted">
+        Already have an account? <a href="{{ route('admin.signin') }}" class="link-primary">Sign in</a>
+      </div>
+    </div>
+  </div>
+</div>
+@endsection
