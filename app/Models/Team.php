@@ -5,11 +5,11 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class Team extends Model
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -22,7 +22,7 @@ class User extends Authenticatable
     public $timestamps = false;
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $table = 'm_user';
+    protected $table = 'm_team';
 
     /**
      * The attributes that are mass assignable.
@@ -30,17 +30,24 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'username',
-        'email',
-        'full_name',
+        'team_type_id',
+        'user_id',
+        'name',
+        'address',
+        'city_id',
+        'province_id',
+        'state',
+        'found_year',
+        'join_date',
+        'image',
         'phone_number',
+        'email',
+        'is_verified',
         'is_active',
         'created_date',
         'created_by',
         'modified_date',
         'modified_by',
-        'user_type_id',
-        'password',
     ];
 
     /**
@@ -48,9 +55,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $hidden = [
-        'password',
-    ];
+    protected $hidden = [];
 
     /**
      * Get the attributes that should be cast.
@@ -62,17 +67,31 @@ class User extends Authenticatable
         return [
             'created_date' => 'datetime',
             'modified_date' => 'datetime',
-            'password' => 'hashed',
         ];
     }
 
-    public function userType(): BelongsTo
+    protected function user(): BelongsTo
     {
-        return $this->belongsTo(UserType::class, 'user_type_id', 'id');
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function team(): HasOne
+    protected function province(): BelongsTo
     {
-        return $this->hasOne(Team::class, 'user_id', 'id');
+        return $this->belongsTo(Province::class, 'province_id', 'id');
+    }
+
+    protected function city(): BelongsTo
+    {
+        return $this->belongsTo(City::class, 'city_id', 'id');
+    }
+
+    protected function teamMembers(): HasMany
+    {
+        return $this->hasMany(TeamMember::class, 'team_id', 'id');
+    }
+
+    protected function teamSocials(): HasMany
+    {
+        return $this->hasMany(TeamSocial::class, 'team_id', 'id');
     }
 }

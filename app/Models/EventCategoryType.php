@@ -5,11 +5,11 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class EventCategoryType extends Model
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -22,7 +22,7 @@ class User extends Authenticatable
     public $timestamps = false;
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $table = 'm_user';
+    protected $table = 'm_event_category_type';
 
     /**
      * The attributes that are mass assignable.
@@ -30,17 +30,12 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'username',
-        'email',
-        'full_name',
-        'phone_number',
-        'is_active',
+        'event_id',
+        'category_type_id',
         'created_date',
         'created_by',
         'modified_date',
         'modified_by',
-        'user_type_id',
-        'password',
     ];
 
     /**
@@ -48,9 +43,7 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    protected $hidden = [
-        'password',
-    ];
+    protected $hidden = [];
 
     /**
      * Get the attributes that should be cast.
@@ -62,17 +55,11 @@ class User extends Authenticatable
         return [
             'created_date' => 'datetime',
             'modified_date' => 'datetime',
-            'password' => 'hashed',
         ];
     }
 
-    public function userType(): BelongsTo
+    protected function categoryType(): BelongsTo
     {
-        return $this->belongsTo(UserType::class, 'user_type_id', 'id');
-    }
-
-    public function team(): HasOne
-    {
-        return $this->hasOne(Team::class, 'user_id', 'id');
+        return $this->belongsTo(CategoryType::class, 'category_type_id', 'id');
     }
 }
