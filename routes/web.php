@@ -67,3 +67,38 @@ Route::prefix('admin')->name('admin.')->group(function () {
         return view('views_backend.signup');
     })->name('signup');
 });
+
+// Backend Routes - Team Leader
+Route::prefix('team_leader')->name('team_leader.')->group(function () {
+    Route::get('/add_team_member', function () {
+        return view('views_backend.team_leader.add_team_member');
+    })->name('add_team_member');
+
+    Route::get('/inventory', function () {
+        return view('views_backend.inventory');
+    })->name('inventory');
+
+    Route::get('/create-product', function () {
+        return view('views_backend.create-product');
+    })->name('create-product');
+
+    Route::get('/reports', function () {
+        return view('views_backend.reports');
+    })->name('reports');
+
+    Route::get('/docs', function () {
+        return view('views_backend.docs');
+    })->name('docs');
+
+    Route::get('/404', function () {
+        return view('views_backend.error-404');
+    })->name('error-404');
+
+    Route::get('/signin', function () {
+        return view('views_backend.signin');
+    })->name('signin');
+
+    Route::get('/signup', function () {
+        return view('views_backend.signup');
+    })->name('signup');
+});
