@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
@@ -56,4 +56,8 @@ class CategoryType extends Model
         ];
     }
 
+    protected function eventCategoryType(): HasMany
+    {
+        return $this->hasMany(EventCategoryType::class, 'category_type_id', 'id');
+    }
 }

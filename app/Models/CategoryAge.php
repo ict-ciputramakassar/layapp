@@ -60,4 +60,9 @@ class CategoryAge extends Model
     {
         return $this->hasMany(TeamMember::class, 'category_age_id', 'id');
     }
+
+    protected function eventCategoryAge(): HasMany
+    {
+        return $this->hasMany(EventCategoryAge::class, 'category_age_id', 'id');
+    }
 }

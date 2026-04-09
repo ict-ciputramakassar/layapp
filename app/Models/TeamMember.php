@@ -63,6 +63,9 @@ class TeamMember extends Model
     protected function casts(): array
     {
         return [
+            'valid_date' => 'datetime',
+            'start_date' => 'datetime',
+            'end_date' => 'datetime',
             'created_date' => 'datetime',
             'modified_date' => 'datetime',
         ];

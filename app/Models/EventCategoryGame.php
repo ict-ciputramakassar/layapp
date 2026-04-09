@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class CategoryLevel extends Model
+class EventCategoryGame extends Model
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -18,7 +19,7 @@ class CategoryLevel extends Model
      *
      * @var string
      */
-    protected $table = 'm_category_level';
+    protected $table = 'm_event_category_game';
 
     /**
      * The attributes that are mass assignable.
@@ -26,9 +27,8 @@ class CategoryLevel extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'code',
-        'name',
-        'is_active',
+        'event_id',
+        'category_game_id',
         'created_date',
         'created_by',
         'modified_date',
@@ -40,8 +40,7 @@ class CategoryLevel extends Model
      *
      * @var list<string>
      */
-    protected $hidden = [
-    ];
+    protected $hidden = [];
 
     /**
      * Get the attributes that should be cast.
@@ -56,9 +55,8 @@ class CategoryLevel extends Model
         ];
     }
 
-    protected function events(): HasMany
+    protected function categoryAge(): BelongsTo
     {
-        return $this->hasMany(Event::class, 'category_level_id', 'id');
+        return $this->belongsTo(CategoryGame::class, 'id', 'category_game_id');
     }
-
 }

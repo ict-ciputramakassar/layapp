@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class CategoryLevel extends Model
+class Event extends Model
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -18,7 +19,7 @@ class CategoryLevel extends Model
      *
      * @var string
      */
-    protected $table = 'm_category_level';
+    protected $table = 'm_event';
 
     /**
      * The attributes that are mass assignable.
@@ -26,9 +27,13 @@ class CategoryLevel extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'code',
         'name',
-        'is_active',
+        'start_date',
+        'end_date',
+        'description',
+        'category_level_id',
+        'eo_name',
+        'eo_logo',
         'created_date',
         'created_by',
         'modified_date',
@@ -40,8 +45,7 @@ class CategoryLevel extends Model
      *
      * @var list<string>
      */
-    protected $hidden = [
-    ];
+    protected $hidden = [];
 
     /**
      * Get the attributes that should be cast.
@@ -51,14 +55,15 @@ class CategoryLevel extends Model
     protected function casts(): array
     {
         return [
+            'start_date' => 'datetime',
+            'end_date' => 'datetime',
             'created_date' => 'datetime',
             'modified_date' => 'datetime',
         ];
     }
 
-    protected function events(): HasMany
+    protected function categoryLevel(): BelongsTo
     {
-        return $this->hasMany(Event::class, 'category_level_id', 'id');
+        return $this->belongsTo(CategoryLevel::class, 'id', 'category_level_id');
     }
-
 }
