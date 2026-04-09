@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\UploadController;
+use App\Http\Controllers\TeamLeaderController;
+use App\Http\Controllers\AuthController;
 
 // Frontend Routes
 Route::get('/', function () {
