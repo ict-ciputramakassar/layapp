@@ -19,6 +19,9 @@ class EventCategoryGame extends Model
      *
      * @var string
      */
+    public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $table = 'm_event_category_game';
 
     /**
@@ -57,6 +60,6 @@ class EventCategoryGame extends Model
 
     protected function categoryAge(): BelongsTo
     {
-        return $this->belongsTo(CategoryGame::class, 'id', 'category_game_id');
+        return $this->belongsTo(CategoryGame::class, 'category_game_id', 'id');
     }
 }

@@ -19,6 +19,9 @@ class Event extends Model
      *
      * @var string
      */
+    public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $table = 'm_event';
 
     /**
@@ -64,6 +67,6 @@ class Event extends Model
 
     protected function categoryLevel(): BelongsTo
     {
-        return $this->belongsTo(CategoryLevel::class, 'id', 'category_level_id');
+        return $this->belongsTo(CategoryLevel::class, 'category_level_id', 'id');
     }
 }

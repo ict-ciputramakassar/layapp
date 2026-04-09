@@ -18,6 +18,9 @@ class TeamSocial extends Model
      *
      * @var string
      */
+    public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $table = 'm_team_member';
 
     /**
@@ -59,11 +62,11 @@ class TeamSocial extends Model
     
     protected function team(): BelongsTo
     {
-        return $this->belongsTo(Team::class, 'id', 'team_id');
+        return $this->belongsTo(Team::class, 'team_id', 'id');
     }
 
     protected function social(): BelongsTo
     {
-        return $this->belongsTo(Social::class, 'id', 'social_id');
+        return $this->belongsTo(Social::class, 'social_id', 'id');
     }
 }

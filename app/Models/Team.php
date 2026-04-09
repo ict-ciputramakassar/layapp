@@ -19,6 +19,9 @@ class Team extends Model
      *
      * @var string
      */
+    public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $table = 'm_team';
 
     /**
@@ -28,6 +31,7 @@ class Team extends Model
      */
     protected $fillable = [
         'team_type_id',
+        'user_id',
         'name',
         'address',
         'city_id',
@@ -65,15 +69,20 @@ class Team extends Model
             'modified_date' => 'datetime',
         ];
     }
-    
+
+    protected function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
     protected function province(): BelongsTo
     {
-        return $this->belongsTo(Province::class, 'id', 'province_id');
+        return $this->belongsTo(Province::class, 'province_id', 'id');
     }
 
     protected function city(): BelongsTo
     {
-        return $this->belongsTo(City::class, 'id', 'city_id');
+        return $this->belongsTo(City::class, 'city_id', 'id');
     }
 
     protected function teamMembers(): HasMany

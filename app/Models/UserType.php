@@ -15,6 +15,16 @@ class UserType extends Model
     use HasFactory, Notifiable;
 
     /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
+    protected $table = 'm_user_type';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>
@@ -53,5 +63,4 @@ class UserType extends Model
     {
         return $this->hasMany(User::class, 'user_type_id', 'id');
     }
-
 }

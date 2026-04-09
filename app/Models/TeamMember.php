@@ -18,6 +18,9 @@ class TeamMember extends Model
      *
      * @var string
      */
+    public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $table = 'm_team_member';
 
     /**
@@ -73,21 +76,21 @@ class TeamMember extends Model
     
     protected function team(): BelongsTo
     {
-        return $this->belongsTo(Team::class, 'id', 'team_id');
+        return $this->belongsTo(Team::class, 'team_id', 'id');
     }
 
     protected function memberType(): BelongsTo
     {
-        return $this->belongsTo(MemberType::class, 'id', 'member_type_id');
+        return $this->belongsTo(MemberType::class, 'member_type_id', 'id');
     }
 
     protected function categoryAge(): BelongsTo
     {
-        return $this->belongsTo(CategoryAge::class, 'id', 'category_age_id');
+        return $this->belongsTo(CategoryAge::class, 'category_age_id', 'id');
     }
 
     protected function position(): BelongsTo
     {
-        return $this->belongsTo(Position::class, 'id', 'position_id');
+        return $this->belongsTo(Position::class, 'position_id', 'id');
     }
 }

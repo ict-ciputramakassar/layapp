@@ -19,6 +19,9 @@ class EventCategoryType extends Model
      *
      * @var string
      */
+    public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $table = 'm_event_category_type';
 
     /**
@@ -57,6 +60,6 @@ class EventCategoryType extends Model
 
     protected function categoryType(): BelongsTo
     {
-        return $this->belongsTo(CategoryType::class, 'id', 'category_type_id');
+        return $this->belongsTo(CategoryType::class, 'category_type_id', 'id');
     }
 }

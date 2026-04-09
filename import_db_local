@@ -1,0 +1,18 @@
+#!/bin/bash
+#importing db from server
+mysqldump -h 103.165.245.149 -udb_layapp -pdb_layapp db_layapp > ./db_layapp.sql
+
+#getting env vars
+export $(grep -v '^#' .env | xargs)
+echo "username: " $DB_USERNAME
+echo "password: " $DB_PASSWORD
+
+#dropping old database
+mysql --user="$DB_USERNAME" --password="$DB_PASSWORD" -e "DROP DATABASE IF EXISTS db_layapp"
+
+#importing db to local
+mysql --user="$DB_USERNAME" --password="$DB_PASSWORD" -e "CREATE DATABASE db_layapp"
+mysql --user="$DB_USERNAME" --password="$DB_PASSWORD" --init-command="SET SESSION FOREIGN_KEY_CHECKS=0;" db_layapp < db_layapp.sql
+
+#clearing sql file
+rm db_layapp.sql

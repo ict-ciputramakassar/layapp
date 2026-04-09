@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -18,6 +19,9 @@ class User extends Authenticatable
      *
      * @var string
      */
+    public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $table = 'm_user';
 
     /**
@@ -64,6 +68,11 @@ class User extends Authenticatable
 
     public function userType(): BelongsTo
     {
-        return $this->belongsTo(UserType::class, 'id', 'user_type_id');
+        return $this->belongsTo(UserType::class, 'user_type_id', 'id');
+    }
+
+    public function team(): HasOne
+    {
+        return $this->hasOne(Team::class, 'user_id', 'id');
     }
 }

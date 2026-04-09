@@ -19,6 +19,9 @@ class City extends Model
      *
      * @var string
      */
+    public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $table = 'm_city';
 
     /**
@@ -58,7 +61,7 @@ class City extends Model
 
     protected function province(): BelongsTo
     {
-        return $this->belongsTo(Province::class, 'id', 'province_id');
+        return $this->belongsTo(Province::class, 'province_id', 'id');
     }
 
     public function teams(): HasMany

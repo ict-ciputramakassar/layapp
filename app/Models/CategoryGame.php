@@ -18,6 +18,9 @@ class CategoryGame extends Model
      *
      * @var string
      */
+    public $timestamps = false;
+    public $incrementing = false;
+    protected $keyType = 'string';
     protected $table = 'm_category_game';
 
     /**
