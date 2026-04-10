@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Sesuaikan Base URL Image dengan konfigurasi folder public Laravel Anda
     // Biasanya gambar tersimpan di '/storage/'
-    const IMAGE_BASE_URL = 'http://localhost:8000/storage/'; 
+    const IMAGE_BASE_URL = 'http://localhost:8000/storage/app/public/members/'; 
     const DEFAULT_IMAGE = '{{ asset("images/client.png") }}'; // Fallback Image
 
     // 2. Variabel State
