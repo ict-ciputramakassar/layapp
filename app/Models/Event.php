@@ -30,6 +30,7 @@ class Event extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'id',
         'name',
         'start_date',
         'end_date',
@@ -65,8 +66,23 @@ class Event extends Model
         ];
     }
 
-    protected function categoryLevel(): BelongsTo
+    public function categoryLevel(): BelongsTo
     {
         return $this->belongsTo(CategoryLevel::class, 'category_level_id', 'id');
+    }
+
+    public function eventCategoryAges(): HasMany
+    {
+        return $this->hasMany(EventCategoryAge::class, 'event_id', 'id');
+    }
+
+    public function eventCategoryGames(): HasMany
+    {
+        return $this->hasMany(EventCategoryGame::class, 'event_id', 'id');
+    }
+
+    public function eventCategoryTypes(): HasMany
+    {
+        return $this->hasMany(EventCategoryType::class, 'event_id', 'id');
     }
 }

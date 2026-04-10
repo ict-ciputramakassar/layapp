@@ -5,7 +5,7 @@
 @section('content')
 <div class="row">
   <div class="col-12">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
       <div class="">
         <h1 class="fs-3 mb-1">Documentation</h1>
         <p>
@@ -22,7 +22,7 @@
       <div class="">
 
         <!-- Prerequisites -->
-        <div class="mb-4">
+        <div class="mb-5">
           <div class="mb-2">
             <h2 class="h5 mb-1">Prerequisites</h2>
             <p>Before you begin, ensure you have the following installed:</p>
@@ -35,7 +35,7 @@
         </div>
 
         <!-- Installation -->
-        <div class="mb-4">
+        <div class="mb-5">
           <h2 class="h5 mb-2">Installation</h2>
           <ol class="list-group list-group-numbered list-group-flush">
             <li class="list-group-item ps-0" >Clone the repository or download the template</li>
@@ -54,7 +54,7 @@
           <pre class="bg-light border rounded p-3"><code>npm run dev</code></pre>
         </div>
         <!-- Next Steps -->
-        <div class="mb-4">
+        <div class="mb-5">
           <h2 class="h5 mb-2">Next Steps</h2>
           <ol class="list-group list-group-numbered list-group-flush">
             <li class="list-group-item ps-0">Review the main entry point in <code>src/js/main.js</code></li>
@@ -67,7 +67,7 @@
         </div>
 
         <!-- Project Structure -->
-        <div class="mb-4">
+        <div class="mb-5">
           <h2 class="h5 mb-0">Project Structure</h2>
           <pre>
      <code>

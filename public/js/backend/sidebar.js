@@ -22,7 +22,7 @@ const sidebar = document.getElementById('sidebar');
       });
     }
 
-    // 🔥 Click outside to close
+    // Click outside to close
     if (overlay) {
       overlay.addEventListener('click', () => {
         if (sidebar) sidebar.classList.remove('mobile-show');
