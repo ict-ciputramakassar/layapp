@@ -37,7 +37,7 @@ class Team extends Model
         'city_id',
         'province_id',
         'state',
-        'found_year',
+        'founded_year',
         'join_date',
         'image',
         'phone_number',

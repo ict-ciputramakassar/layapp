@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CategoryAge;
 use App\Models\MemberType;
 use App\Models\Position;
+use App\Models\Team;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\TeamMember; // Sesuaikan dengan nama Model Anda
@@ -191,6 +192,61 @@ class TeamLeaderController extends Controller
                 'message' => 'An error occurred while saving to the database. ' . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function getTeams()
+    {
+        $teams = Team::all();
+        $mappedTeams = $teams->map(function ($team) {
+            if ($team->is_active) {
+                $mappedMembers = $team->teamMembers->map(function ($member) {
+                    // if($member->is_active == 1)
+                    return [
+                        'id' => $member->id,
+                        'full_name' => $member->full_name,
+                        'start_date' => $member->start_date,
+                        'end_date' => $member->end_date,
+                        'is_active' => $member->is_active,
+                        'image' => $member->image,
+                        'member_type' => [
+                            'name' => $member->memberType->name,
+                            'code' => $member->memberType->code,
+                            'id' => $member->memberType->id,
+                        ],
+                        'age_category' => [
+                            'name' => $member->categoryAge->name,
+                            'code' => $member->categoryAge->code,
+                            'id' => $member->categoryAge->id,
+                        ],
+                        'dob' => $member->dob,
+                        'phone_number' => $member->phone_number,
+                        'email' => $member->email,
+                        'height' => $member->height,
+                        'weight' => $member->weight,
+                        'position' => [
+                            "name" => $member->position->name,
+                            "code" => $member->position->code,
+                            "id" => $member->position->id,
+                        ],
+                        'license' => [
+                            "name" => $member->license,
+                            "valid_date" => $member->valid_date,
+                        ],
+                    ];
+                });
+
+                return [
+                    "id" => $team->id,
+                    "name" => $team->name,
+                    'members' => $mappedMembers
+                ];
+            }
+        });
+
+        return response()->json([
+            'success' => true,
+            'teams' => $mappedTeams,
+        ]);
     }
 
     public function addMemberView()

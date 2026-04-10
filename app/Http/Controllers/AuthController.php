@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -21,9 +22,9 @@ class AuthController extends Controller
     {
         $data = [
             "types" => TeamType::all(['id', 'name', 'code']),
-            "cities" => City::where('is_active', 1)->get(['id', 'name']),
+            "cities" => City::where('is_active', 1)->get(['id', 'name', 'province_id']),
             "provinces" => Province::where('is_active', 1)->get(['id', 'name']),
-            "roles" => UserType::whereNot('code', 'SA')->whereNot('code', 'A')->get(['id', 'name']),
+            "roles" => UserType::whereNot('code', 'SA')->whereNot('code', 'A')->get(['id', 'name', 'code']),
         ];
         return view("views_backend.auth.signup", $data);
     }
@@ -38,19 +39,22 @@ class AuthController extends Controller
             'phone_number'    => 'required|string|max:20',
             'password'        => 'required|string|min:6',
             'confirmPassword' => 'required|same:password', // Memastikan sama dengan password
-            'role'            => 'required|in:member,team_leader', // Mencegah user inspect element & ubah value
+
+            'role'            => 'required', // Cukup required saja, karena kita tahu itu ID dari DB
+            'role_code'       => 'required', // Input tersembunyi dari Javascript
 
             // Validasi Team Profile (HANYA wajib jika role == 'team_leader')
-            'team_name'         => 'required_if:role,725c2c76-31c1-11f1-8cba-a036bc3bed8f|nullable|string|max:255',
-            'team_phone_number' => 'required_if:role,725c2c76-31c1-11f1-8cba-a036bc3bed8f|nullable|string|max:20',
-            'team_email'        => 'required_if:role,725c2c76-31c1-11f1-8cba-a036bc3bed8f|nullable|email|max:255',
-            'team_join_date'    => 'required_if:role,725c2c76-31c1-11f1-8cba-a036bc3bed8f|nullable|date',
-            'team_founded_year' => 'required_if:role,725c2c76-31c1-11f1-8cba-a036bc3bed8f|nullable|numeric|min:1900|max:2099',
-            'team_state'        => 'required_if:role,725c2c76-31c1-11f1-8cba-a036bc3bed8f|nullable|string|max:255',
-            'team_type_id'      => 'required_if:role,725c2c76-31c1-11f1-8cba-a036bc3bed8f|nullable|string',
-            'team_province_id'  => 'required_if:role,725c2c76-31c1-11f1-8cba-a036bc3bed8f|nullable|string',
-            'team_city_id'      => 'required_if:role,725c2c76-31c1-11f1-8cba-a036bc3bed8f|nullable|string',
-            'team_image'        => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Opsional, maks 2MB
+            'team_name'         => 'required_if:role_code,TL|nullable|string|max:255',
+            'team_phone_number' => 'required_if:role_code,TL|nullable|string|max:20',
+            'team_email'        => 'required_if:role_code,TL|nullable|email|max:255',
+            'team_join_date'    => 'required_if:role_code,TL|nullable|date',
+            'team_founded_year' => 'required_if:role_code,TL|nullable|numeric|min:1900|max:2099',
+            'team_state'        => 'required_if:role_code,TL|nullable|string|max:255',
+            'team_type_id'      => 'required_if:role_code,TL|nullable|string',
+            'team_province_id'  => 'required_if:role_code,TL|nullable|string',
+            'team_city_id'      => 'required_if:role_code,TL|nullable|string',
+            'team_address'      => 'required_if:role_code,TL|nullable|string',
+            'team_image'        => 'required_if:role_code,TL|nullable|image|mimes:jpeg,png,jpg|max:2048', // maks 2MB
         ], [
             // Custom Error Message
             'confirmPassword.same' => 'The password confirmation does not match.',
@@ -63,8 +67,10 @@ class AuthController extends Controller
 
         try {
             // 3. Buat Data User
+            $userId = Str::uuid()->toString();
             $user = User::create([
-                'full_name' => $request->fullName, // Sesuaikan dengan nama kolom DB Anda (misal: 'name' atau 'full_name')
+                'id' => $userId,
+                'full_name' => $request->fullName,
                 'email' => $request->email,
                 'phone_number' => $request->phone_number,
                 'password' => Hash::make($request->password),
@@ -74,29 +80,31 @@ class AuthController extends Controller
             ]);
 
             // 4. Cek Jika Dia Mendaftar Sebagai Team Leader
-            if ($request->role === '725c2c76-31c1-11f1-8cba-a036bc3bed8f') {
+            if ($request->role_code === 'TL') {
                 $imagePath = null;
 
-                // Proses Upload Logo Tim
                 if ($request->hasFile('team_image')) {
                     $imagePath = $request->file('team_image')->store('teams', 'public');
                 }
 
-                // Buat Data Tim & Relasikan dengan User tersebut
                 Team::create([
-                    'user_id' => $user->id, // Mengaitkan tim ini dengan user yang baru dibuat
-                    'name' => $request->team_name,
+                    'user_id'      => $userId,
+                    'name'         => $request->team_name,
+                    'address'      => $request->team_address,
+                    'is_verified'  => 1,
+                    'is_active'    => 1,
                     'phone_number' => $request->team_phone_number,
-                    'email' => $request->team_email,
-                    'join_date' => $request->team_join_date,
+                    'email'        => $request->team_email,
+                    'join_date'    => $request->team_join_date,
                     'founded_year' => $request->team_founded_year,
-                    'state' => $request->team_state,
-                    'type_id' => $request->team_type_id,
-                    'province_id' => $request->team_province_id,
-                    'city_id' => $request->team_city_id,
-                    'image' => $imagePath,
-                    'created_by' => $user->id,
-                    'modified_by' => $user->id,
+                    'state'        => $request->team_state,
+                    'type_id'      => $request->team_type_id,
+                    'province_id'  => $request->team_province_id,
+                    'city_id'      => $request->team_city_id,
+                    'team_type_id' => $request->team_type_id,
+                    'image'        => $imagePath,
+                    'created_by'   => $userId,
+                    'modified_by'  => $userId,
                 ]);
             }
 

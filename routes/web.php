@@ -17,6 +17,8 @@ Route::get('/team', function () {
     return view('views_frontend.team');
 })->name('team');
 
+Route::get('/team_datas', [TeamLeaderController::class, 'getTeams'])->name('team_datas');
+
 Route::get('/news', function () {
     return view('views_frontend.news');
 })->name('news');
