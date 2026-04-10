@@ -75,4 +75,12 @@ class User extends Authenticatable
     {
         return $this->hasOne(Team::class, 'user_id', 'id');
     }
+
+    /**
+     * Disable remember token (column doesn't exist in table)
+     */
+    public function getRememberTokenName()
+    {
+        return null;
+    }
 }

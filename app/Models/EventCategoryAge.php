@@ -30,6 +30,7 @@ class EventCategoryAge extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'id',
         'event_id',
         'category_age_id',
         'created_date',
@@ -58,7 +59,7 @@ class EventCategoryAge extends Model
         ];
     }
 
-    protected function categoryAge(): BelongsTo
+    public function categoryAge(): BelongsTo
     {
         return $this->belongsTo(CategoryAge::class, 'category_age_id', 'id');
     }

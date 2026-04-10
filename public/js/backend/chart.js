@@ -357,4 +357,155 @@ document.addEventListener("DOMContentLoaded", () => {
             chart.updateSeries(series);
         }
     }
+
+    // Stock Movement Chart
+    if (document.getElementById("stockMovementChart")) {
+        const stockMovementOptions = {
+            chart: {
+                type: "bar",
+                height: 350,
+                toolbar: {
+                    show: false,
+                },
+            },
+            colors: ["#E66239", "#00C951"],
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: "55%",
+                    borderRadius: 4,
+                    dataLabels: {
+                        position: "top",
+                    },
+                },
+            },
+            dataLabels: {
+                enabled: false,
+            },
+            stroke: {
+                show: true,
+                width: 0,
+                colors: ["transparent"],
+            },
+            series: [
+                {
+                    name: "Stock In",
+                    data: [40, 52, 55, 55, 62, 58, 60, 58, 65],
+                },
+                {
+                    name: "Stock Out",
+                    data: [75, 82, 98, 95, 83, 105, 90, 110, 112],
+                },
+            ],
+            xaxis: {
+                categories: [
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "May",
+                    "Jun",
+                    "Jul",
+                    "Aug",
+                    "Sep",
+                    "Oct",
+                ],
+            },
+            yaxis: {
+                title: {
+                    text: "(thousands)",
+                },
+            },
+            fill: {
+                opacity: 1,
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " units";
+                    },
+                },
+            },
+        };
+
+        const stockMovementChart = new ApexCharts(
+            document.querySelector("#stockMovementChart"),
+            stockMovementOptions,
+        );
+        stockMovementChart.render();
+    }
+
+    // Stock Level Trend Chart
+    if (document.getElementById("stockLevelTrendChart")) {
+        const stockLevelTrendOptions = {
+            chart: {
+                type: "area",
+                height: 350,
+                toolbar: {
+                    show: false,
+                },
+            },
+            colors: ["#E66239"],
+            dataLabels: {
+                enabled: false,
+            },
+            stroke: {
+                curve: "smooth",
+                width: 2,
+            },
+            fill: {
+                type: "gradient",
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.5,
+                    opacityTo: 0.1,
+                    stops: [0, 90, 100],
+                },
+            },
+            series: [
+                {
+                    name: "Stock Level",
+                    data: [
+                        100, 300, 500, 800, 1200, 1500, 1800, 2000, 2200, 2350,
+                        2400, 2450, 2480, 2500,
+                    ],
+                },
+            ],
+            xaxis: {
+                categories: [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5",
+                    "6",
+                    "7",
+                    "8",
+                    "9",
+                    "10",
+                    "11",
+                    "12",
+                    "13",
+                    "14",
+                ],
+            },
+            yaxis: {
+                title: {
+                    text: "Units",
+                },
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val + " units";
+                    },
+                },
+            },
+        };
+
+        const stockLevelTrendChart = new ApexCharts(
+            document.querySelector("#stockLevelTrendChart"),
+            stockLevelTrendOptions,
+        );
+        stockLevelTrendChart.render();
+    }
 });

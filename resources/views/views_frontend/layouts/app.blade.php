@@ -101,9 +101,10 @@
 											<div class="collapse navbar-collapse js-navbar-collapse">
 												<ul class="nav navbar-nav">
 													<li @if(request()->routeIs('home')) class="active" @endif><a href="{{ route('home') }}">Home</a></li>
-													<li @if(request()->routeIs('about')) class="active" @endif><a href="{{ route('about') }}">About</a></li>
+													{{-- <li @if(request()->routeIs('about')) class="active" @endif><a href="{{ route('about') }}">About</a></li> --}}
 													<li @if(request()->routeIs('team')) class="active" @endif><a href="{{ route('team') }}">Team</a></li>
-													<li @if(request()->routeIs('news')) class="active" @endif><a href="{{ route('news') }}">News</a></li>
+													<li @if(request()->routeIs('events')) class="active" @endif><a href="{{ route('events') }}">Events</a></li>
+													{{-- <li @if(request()->routeIs('news')) class="active" @endif><a href="{{ route('news') }}">News</a></li> --}}
 													<li class="dropdown mega-dropdown">
 														<a href="#" class="dropdown-toggle" data-toggle="dropdown">Match<span class="caret"></span></a>
 														<ul class="dropdown-menu mega-dropdown-menu">
@@ -154,8 +155,8 @@
 															</li>
 														</ul>
 													</li>
-													<li @if(request()->routeIs('blog')) class="active" @endif><a href="{{ route('blog') }}">Blog</a></li>
-													<li @if(request()->routeIs('contact')) class="active" @endif><a href="{{ route('contact') }}">Contact</a></li>
+													{{-- <li @if(request()->routeIs('blog')) class="active" @endif><a href="{{ route('blog') }}">Blog</a></li>
+													<li @if(request()->routeIs('contact')) class="active" @endif><a href="{{ route('contact') }}">Contact</a></li> --}}
 												</ul>
 											</div>
 											<!-- /.nav-collapse -->

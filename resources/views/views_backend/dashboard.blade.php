@@ -1,6 +1,6 @@
 @extends('views_backend.layouts.app')
 
-@section('title', 'Dashboard - InApp Inventory Dashboard')
+@section('title', 'InApp Inventory Dashboard')
 
 @section('content')
 <div class="row ">
@@ -11,7 +11,7 @@
     </div>
   </div>
 </div>
-<div class="row g-3 mb-3">
+<div class="row g-5 mb-5">
   <div class="col-lg-3 col-12">
     <div class="card p-4  bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-2">
       <div class="d-flex gap-3 ">
@@ -69,10 +69,10 @@
     </div>
   </div>
 </div>
-<div class="row g-3 mb-3">
+<div class="row g-5 mb-5">
   <div class="col-lg-4 col-12">
     <div class="card">
-      <div class="card-body p-4">
+      <div class="card-body p-6">
         <div class="d-flex justify-content-between border-bottom pb-5 mb-3">
           <div>
             <h3 class="fw-bold h4">$25,458</h3>
@@ -91,7 +91,7 @@
   </div>
   <div class="col-lg-4 col-12">
     <div class="card">
-      <div class="card-body p-4">
+      <div class="card-body p-6">
         <div class="d-flex justify-content-between border-bottom pb-5 mb-3">
           <div>
             <h3 class="fw-bold h4">$45,458</h3>
@@ -110,7 +110,7 @@
   </div>
   <div class="col-lg-4 col-12">
     <div class="card">
-      <div class="card-body p-4">
+      <div class="card-body p-6">
         <div class="d-flex justify-content-between border-bottom pb-5 mb-3">
           <div>
             <h3 class="fw-bold h4">$34,458</h3>
@@ -128,7 +128,7 @@
     </div>
   </div>
 </div>
-<div class="row g-3 mb-3">
+<div class="row g-5 mb-5">
   <div class="col-12 col-lg-6">
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center bg-transparent px-4 py-3">
@@ -141,7 +141,7 @@
           </select>
         </div>
       </div>
-      <div class="card-body p-4">
+      <div class="card-body p-6">
         <div id="salesPurchaseChart"></div>
       </div>
     </div>
@@ -158,7 +158,7 @@
           </select>
         </div>
       </div>
-      <div class="card-body p-4">
+      <div class="card-body p-6">
         <h3 class="h6">Customers Overview</h3>
         <div class="row align-items-center">
           <div class="col-sm-6">
@@ -202,7 +202,7 @@
     </div>
   </div>
 </div>
-<div class="row g-3">
+<div class="row g-5">
   <div class="col-lg-4">
     <div class="card  h-100">
       <div class="card-header bg-white d-flex justify-content-between align-items-center px-4 py-3">
