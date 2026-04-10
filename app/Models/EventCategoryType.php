@@ -30,6 +30,7 @@ class EventCategoryType extends Model
      * @var list<string>
      */
     protected $fillable = [
+        'id',
         'event_id',
         'category_type_id',
         'created_date',
@@ -58,7 +59,7 @@ class EventCategoryType extends Model
         ];
     }
 
-    protected function categoryType(): BelongsTo
+    public function categoryType(): BelongsTo
     {
         return $this->belongsTo(CategoryType::class, 'category_type_id', 'id');
     }

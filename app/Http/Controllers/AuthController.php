@@ -17,6 +17,41 @@ use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
+    public function login()
+    {
+        return view("views_backend.signin");
+    }
+
+    public function authenticate(Request $request)
+    {
+        // Validate the login form
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
+        ]);
+
+        // Attempt to authenticate the user
+        if (Auth::attempt($credentials, $request->filled('remember'))) {
+            // Regenerate session to prevent session fixation attacks
+            $request->session()->regenerate();
+
+            return redirect()->route('admin.dashboard')->with('success', 'Login successful!');
+        }
+
+        // Authentication failed
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
+    }
+
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('admin.signin');
+    }
+
     public function signup()
     {
         $data = [
@@ -57,7 +92,7 @@ class AuthController extends Controller
             'email.unique' => 'This email address is already registered.',
         ]);
 
-        // 2. Mulai Database Transaction 
+        // 2. Mulai Database Transaction
         // (Agar jika gagal insert Team, insert User dibatalkan secara otomatis)
         DB::beginTransaction();
 
