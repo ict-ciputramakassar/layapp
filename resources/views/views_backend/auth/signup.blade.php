@@ -157,7 +157,8 @@
                   <option value="" disabled {{ old('team_province_id') ? '' : 'selected' }}>Select</option>
                   @foreach ($provinces as $province)
                     <option value="{{ $province->id }}" {{ old('team_province_id') == $province->id ? 'selected' : '' }}>
-                      {{ $province->name }}</option>
+                      {{ $province->name }}
+                    </option>
                   @endforeach
                 </select>
                 <div class="invalid-feedback">Required.</div>
@@ -186,16 +187,14 @@
               </div>
             </div>
 
-
-          </div>
-
-          <div class="mb-2">
-            <label for="team_image" class="form-label">Team Logo </label>
-            <input type="file" class="form-control" id="team_image" name="team_image" accept="image/*">
-            <!-- Info Old Value File (File upload tidak bisa otomatis keisi gara2 sekuritas browser) -->
-            @if(old('team_name') && $errors->any())
-              <small class="text-danger">Please re-upload your logo if you had one.</small>
-            @endif
+            <div class="mb-2">
+              <label for="team_image" class="form-label">Team Logo </label>
+              <input type="file" class="form-control" id="team_image" name="team_image" accept="image/*">
+              <!-- Info Old Value File (File upload tidak bisa otomatis keisi gara2 sekuritas browser) -->
+              @if(old('team_name') && $errors->any())
+                <small class="text-danger">Please re-upload your logo if you had one.</small>
+              @endif
+            </div>
           </div>
       </div>
       <!-- AKHIR FORM TAMBAHAN -->

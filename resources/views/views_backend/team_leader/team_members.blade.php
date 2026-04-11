@@ -26,7 +26,7 @@
     <div class="col-12">
       <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h1 class="fs-3 mb-1">Team: <span id="teamNameDisplay">...</span></h1>
+          <h1 class="fs-3 mb-1">Team: <span id="teamNameDisplay">{{ $user->team->name }}</span></h1>
           <p class="mb-0">Manage your team members</p>
         </div>
         <div>
@@ -101,8 +101,6 @@
           },
           dataSrc: function (res) {
             if (res.success) {
-              // Update nama team di UI
-              $('#teamNameDisplay').text(res.team.name);
               return res.members;
             } else {
               alert(res.message || "Unknown Error Occurred");
@@ -120,7 +118,7 @@
           {
             data: null,
             render: function (data) {
-              let img = data.image ? data.image : 'https://via.placeholder.com/40';
+              let img = `{{ asset(Storage::url('${data.image}')) }}`;
               return `
                                   <div class="d-flex align-items-center">
                                       <img src="${img}" class="avatar avatar-md rounded me-3" />

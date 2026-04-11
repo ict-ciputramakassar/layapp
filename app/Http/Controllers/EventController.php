@@ -10,6 +10,7 @@ use App\Models\Event;
 use App\Models\EventCategoryAge;
 use App\Models\EventCategoryGame;
 use App\Models\EventCategoryType;
+use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -47,6 +48,38 @@ class EventController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Error fetching events',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function getTeamPointsFrontend()
+    {
+        try {
+            $teams = Team::all();
+
+            $data = $teams->map(function ($team) {
+                return [
+                    'id' => $team->id,
+                    'name' => $team->name,
+                    'image' => $team->image,
+                    'points' => [
+                        'p' => 0,
+                        'win' => 0,
+                        'lose' => 0,
+                    ],
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'teams' => $data,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Error in getTeamPointsFrontend:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching points',
                 'error' => $e->getMessage(),
             ], 500);
         }

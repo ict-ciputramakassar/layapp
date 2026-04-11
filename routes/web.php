@@ -25,6 +25,7 @@ Route::get('/events', function () {
 })->name('events');
 
 Route::get('/api/events-frontend', [EventController::class, 'getEventsFrontend'])->name('api.events-frontend');
+Route::get('/api/points-frontend', [EventController::class, 'getTeamPointsFrontend'])->name('api.points-frontend');
 
 Route::get('/team_datas', [TeamLeaderController::class, 'getTeams'])->name('team_datas');
 
@@ -166,12 +167,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
 });
 
 // Backend Routes - Team Leader
-Route::prefix('team_leader')->name('team_leader.')->group(function () {
+Route::prefix('team_leader')->name('team_leader.')->middleware("teamleader")->group(function () {
     Route::get('/add_team_member', [TeamLeaderController::class, 'addMemberView'])->name('add_team_member');
 
-    Route::get('/team_members', function () {
-        return view('views_backend.team_leader.team_members');
-    })->name('team_members');
+    Route::get('/team_members', [TeamLeaderController::class, 'viewTeamMembers'])->name('team_members');
 
     Route::get('/getMembers', [TeamLeaderController::class, 'getMembers'])->name('get_members');
     Route::post('/addMembers', [TeamLeaderController::class, 'addMembersBulk'])->name('add_members_bulk');

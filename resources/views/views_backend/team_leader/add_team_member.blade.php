@@ -23,6 +23,18 @@
       <div class="card">
         <div class="card-body p-4">
           <form id="addMemberForm">
+            <div class="col-md-12 mb-3">
+              <label for="member_type_id" class="form-label">Member Type</label>
+              <select class="form-select" id="member_type_id" name="member_type_id" required>
+                <option value="" disabled selected>Select Type</option>
+                @foreach ($types as $type)
+                  <!-- Added data-code attribute for JS targeting -->
+                  <option value="{{ $type->id }}" data-code="{{ $type->code }}">{{ $type->code }} - {{ $type->name }}</option>
+                @endforeach
+              </select>
+              <!-- Hidden input for type_code -->
+              <input type="hidden" name="type_code" id="type_code">
+            </div>
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="full_name" class="form-label">Member Name</label>
@@ -44,45 +56,42 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-3 mb-3">
+              <div class="col-md-6 mb-3">
                 <label for="height" class="form-label">Member Height</label>
                 <input type="number" class="form-control" id="height" name="height" placeholder="180" required>
               </div>
-              <div class="col-md-3 mb-3">
+              <div class="col-md-6 mb-3">
                 <label for="weight" class="form-label">Member Weight</label>
                 <input type="number" class="form-control" id="weight" name="weight" placeholder="80" required>
               </div>
-              <div class="col-md-3 mb-3">
+            </div>
+
+            <!-- COACH INPUTS -->
+            <div class="row d-none" id="coach-inputs">
+              <div class="col-md-6 mb-3">
                 <label for="license" class="form-label">License</label>
-                <input type="text" class="form-control" id="license" name="license" placeholder="A" required maxlength="1">
+                <input type="text" class="form-control" id="license" name="license" placeholder="A" maxlength="1">
               </div>
-              <div class="col-md-3 mb-3">
+              <div class="col-md-6 mb-3">
                 <label for="valid_date" class="form-label">License Valid Date</label>
-                <input type="date" class="form-control" id="valid_date" name="valid_date" required>
+                <input type="date" class="form-control" id="valid_date" name="valid_date">
               </div>
             </div>
-            <div class="row">
-              <div class="col-md-4 mb-3">
-                <label for="member_type_id" class="form-label">Member Type</label>
-                <select class="form-select" id="member_type_id" name="member_type_id" required>
-                  <option value="" disabled selected>Select Type</option>
-                  @foreach ($types as $type)
-                    <option value="{{ $type->id }}">{{ $type->code }} - {{ $type->name }}</option>
-                  @endforeach
-                </select>
-              </div>
-              <div class="col-md-4 mb-3">
+
+            <!-- PLAYER INPUTS -->
+            <div class="row d-none" id="player-inputs">
+              <div class="col-md-6 mb-3">
                 <label for="position_id" class="form-label">Member Position</label>
-                <select class="form-select" id="position_id" name="position_id" required>
+                <select class="form-select" id="position_id" name="position_id">
                   <option value="" disabled selected>Select Position</option>
                   @foreach ($positions as $position)
                     <option value="{{ $position->id }}">{{ $position->code }} - {{ $position->name }}</option>
                   @endforeach
                 </select>
               </div>
-              <div class="col-md-4 mb-3">
+              <div class="col-md-6 mb-3">
                 <label for="category_age_id" class="form-label">Member Age</label>
-                <select class="form-select" id="category_age_id" name="category_age_id" required>
+                <select class="form-select" id="category_age_id" name="category_age_id">
                   <option value="" disabled selected>Select Age Category</option>
                   @foreach ($age_categories as $age_category)
                     <option value="{{ $age_category->id }}">{{ $age_category->code }} - {{ $age_category->name }}</option>
@@ -90,24 +99,14 @@
                 </select>
               </div>
             </div>
-
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label for="start_date" class="form-label">Start Date</label>
-                <input type="date" class="form-control" id="start_date" name="start_date" required>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label for="end_date" class="form-label">End Date</label>
-                <input type="date" class="form-control" id="end_date" name="end_date" required>
-              </div>
-            </div>
+            
             <div class="mb-3">
               <label for="image" class="form-label">Member Image</label>
               <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
             </div>
             <div class="d-flex gap-2">
               <button type="submit" class="btn btn-primary">Add to Temporary List</button>
-              <button type="reset" class="btn btn-secondary">Clear</button>
+              <button type="reset" class="btn btn-secondary" id="resetFormBtn">Clear</button>
             </div>
           </form>
         </div>
@@ -137,7 +136,7 @@
                 </tr>
               </thead>
               <tbody id="tempTableBody">
-                <!-- Data akan masuk kesini via JS -->
+                <!-- Data will be injected here via JS -->
               </tbody>
             </table>
           </div>
@@ -171,9 +170,8 @@
         </div>
         <form id="editMemberForm">
           <div class="modal-body">
-            <input type="hidden" id="edit_id"> <!-- Hidden ID untuk identifikasi -->
-            
-            <!-- Struktur Form Edit Sama dengan Form Utama (Hanya ID yang diubah dengan awalan edit_) -->
+            <input type="hidden" id="edit_id"> <!-- Hidden ID -->
+
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label class="form-label">Member Name</label>
@@ -195,43 +193,56 @@
               </div>
             </div>
             <div class="row">
-              <div class="col-md-3 mb-3">
+              <div class="col-md-6 mb-3">
                 <label class="form-label">Member Height</label>
                 <input type="number" class="form-control" id="edit_height" required>
               </div>
-              <div class="col-md-3 mb-3">
+              <div class="col-md-6 mb-3">
                 <label class="form-label">Member Weight</label>
                 <input type="number" class="form-control" id="edit_weight" required>
               </div>
-              <div class="col-md-3 mb-3">
-                <label class="form-label">License</label>
-                <input type="text" class="form-control" id="edit_license" required maxlength="1">
-              </div>
-              <div class="col-md-3 mb-3">
-                <label class="form-label">License Valid Date</label>
-                <input type="date" class="form-control" id="edit_valid_date" required>
-              </div>
             </div>
+
             <div class="row">
-              <div class="col-md-4 mb-3">
+              <div class="col-md-12 mb-3">
                 <label class="form-label">Member Type</label>
                 <select class="form-select" id="edit_member_type_id" required>
                   @foreach ($types as $type)
-                    <option value="{{ $type->id }}">{{ $type->code }} - {{ $type->name }}</option>
+                    <option value="{{ $type->id }}" data-code="{{ $type->code }}">{{ $type->code }} - {{ $type->name }}</option>
                   @endforeach
                 </select>
+                <!-- Hidden input for edit_type_code -->
+                <input type="hidden" id="edit_type_code">
               </div>
-              <div class="col-md-4 mb-3">
+            </div>
+
+            <!-- EDIT COACH INPUTS WRAPPER -->
+            <div class="row d-none" id="edit_coach-inputs">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">License</label>
+                <input type="text" class="form-control" id="edit_license" maxlength="1">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">License Valid Date</label>
+                <input type="date" class="form-control" id="edit_valid_date">
+              </div>
+            </div>
+
+            <!-- EDIT PLAYER INPUTS WRAPPER -->
+            <div class="row d-none" id="edit_player-inputs">
+              <div class="col-md-6 mb-3">
                 <label class="form-label">Member Position</label>
-                <select class="form-select" id="edit_position_id" required>
+                <select class="form-select" id="edit_position_id">
+                  <option value="" disabled selected>Select Position</option>
                   @foreach ($positions as $position)
                     <option value="{{ $position->id }}">{{ $position->code }} - {{ $position->name }}</option>
                   @endforeach
                 </select>
               </div>
-              <div class="col-md-4 mb-3">
+              <div class="col-md-6 mb-3">
                 <label class="form-label">Member Age</label>
-                <select class="form-select" id="edit_category_age_id" required>
+                <select class="form-select" id="edit_category_age_id">
+                  <option value="" disabled selected>Select Age Category</option>
                   @foreach ($age_categories as $age_category)
                     <option value="{{ $age_category->id }}">{{ $age_category->code }} - {{ $age_category->name }}</option>
                   @endforeach
@@ -239,18 +250,9 @@
               </div>
             </div>
 
-            <div class="row">
-              <div class="col-md-6 mb-3">
-                <label class="form-label">Start Date</label>
-                <input type="date" class="form-control" id="edit_start_date" required>
-              </div>
-              <div class="col-md-6 mb-3">
-                <label class="form-label">End Date</label>
-                <input type="date" class="form-control" id="edit_end_date" required>
-              </div>
-            </div>
             <div class="mb-3">
-              <label class="form-label">Member Image <span class="text-danger" style="font-size: 12px;">(Leave blank to keep current image: <span id="current_image_name"></span>)</span></label>
+              <label class="form-label">Member Image <span class="text-danger" style="font-size: 12px;">(Leave blank to
+                  keep current image: <span id="current_image_name"></span>)</span></label>
               <input type="file" class="form-control" id="edit_image" accept="image/*">
             </div>
           </div>
@@ -265,8 +267,8 @@
   <!-- END MODAL -->
 
   <script>
-    let tempMembers = []; 
-    let editModalInstance = null; // Menyimpan instance Bootstrap Modal
+    let tempMembers = [];
+    let editModalInstance = null;
 
     document.addEventListener('DOMContentLoaded', function () {
       const form = document.getElementById('addMemberForm');
@@ -275,11 +277,104 @@
       const saveToDatabaseBtn = document.getElementById('saveToDatabaseBtn');
       const memberCount = document.getElementById('memberCount');
       const editForm = document.getElementById('editMemberForm');
+      const resetBtn = document.getElementById('resetFormBtn');
 
-      // Inisialisasi Bootstrap Modal
+      // Initialize Bootstrap Modal
       editModalInstance = new bootstrap.Modal(document.getElementById('editMemberModal'));
 
-      // 1. ADD MEMBER KE TABEL
+      // ==========================================
+      // DYNAMIC INPUTS LOGIC (COACH vs PLAYER)
+      // ==========================================
+      function handleTypeChange(selectId, prefix = '') {
+        const selectElement = document.getElementById(selectId);
+        if (!selectElement || selectElement.selectedIndex === -1) return;
+
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const code = selectedOption.getAttribute('data-code') || '';
+        const firstTwoLetters = code.substring(0, 2).toUpperCase();
+        
+        // Dynamically set the hidden input value (works for both 'type_code' and 'edit_type_code')
+        const hiddenTypeCodeInput = document.getElementById(prefix + 'type_code');
+        if (hiddenTypeCodeInput) {
+            hiddenTypeCodeInput.value = firstTwoLetters;
+        }
+
+        // Containers
+        const coachContainer = document.getElementById(prefix + 'coach-inputs');
+        const playerContainer = document.getElementById(prefix + 'player-inputs');
+
+        // Coach Inputs
+        const licenseInput = document.getElementById(prefix + 'license');
+        const validDateInput = document.getElementById(prefix + 'valid_date');
+
+        // Player Inputs
+        const positionInput = document.getElementById(prefix + 'position_id');
+        const ageInput = document.getElementById(prefix + 'category_age_id');
+
+        if (firstTwoLetters === 'AT') {
+          // Show Player, Hide Coach
+          playerContainer.classList.remove('d-none');
+          coachContainer.classList.add('d-none');
+
+          // Set Required
+          positionInput.required = true;
+          ageInput.required = true;
+          licenseInput.required = false;
+          validDateInput.required = false;
+
+          // Clear hidden values
+          licenseInput.value = '';
+          validDateInput.value = '';
+
+        } else if (firstTwoLetters === 'CO') {
+          // Show Coach, Hide Player
+          coachContainer.classList.remove('d-none');
+          playerContainer.classList.add('d-none');
+
+          // Set Required
+          licenseInput.required = true;
+          validDateInput.required = true;
+          positionInput.required = false;
+          ageInput.required = false;
+
+          // Clear hidden values
+          positionInput.value = '';
+          ageInput.value = '';
+
+        } else {
+          // Hide Both (Default state)
+          coachContainer.classList.add('d-none');
+          playerContainer.classList.add('d-none');
+
+          licenseInput.required = false;
+          validDateInput.required = false;
+          positionInput.required = false;
+          ageInput.required = false;
+        }
+      }
+
+      // Event Listeners for Dropdowns
+      document.getElementById('member_type_id').addEventListener('change', function() {
+        handleTypeChange('member_type_id', '');
+      });
+
+      document.getElementById('edit_member_type_id').addEventListener('change', function() {
+        handleTypeChange('edit_member_type_id', 'edit_');
+      });
+
+      // Trigger on Page Load
+      handleTypeChange('member_type_id', '');
+
+      // Handle Form Reset Button
+      resetBtn.addEventListener('click', function() {
+        setTimeout(() => {
+          handleTypeChange('member_type_id', '');
+        }, 10);
+      });
+      // ==========================================
+
+
+      // 1. ADD MEMBER TO TABLE
       form.addEventListener('submit', function (e) {
         e.preventDefault();
 
@@ -287,68 +382,67 @@
         const imageFile = document.getElementById('image').files[0];
 
         const positionSelect = document.getElementById('position_id');
-        const positionText = positionSelect.options[positionSelect.selectedIndex].text;
+        const positionText = positionSelect.value ? positionSelect.options[positionSelect.selectedIndex].text : '-';
 
         const typeSelect = document.getElementById('member_type_id');
         const typeText = typeSelect.options[typeSelect.selectedIndex].text;
 
         const member = {
-          id: Date.now(), 
+          id: Date.now(),
           full_name: formData.get('full_name'),
           dob: formData.get('dob'),
           phone_number: formData.get('phone_number'),
           email: formData.get('email'),
           height: formData.get('height'),
           weight: formData.get('weight'),
-          license: formData.get('license'),
-          valid_date: formData.get('valid_date'),
+          license: formData.get('license') || '',
+          valid_date: formData.get('valid_date') || '',
           member_type_id: formData.get('member_type_id'),
-          member_type_text: typeText, 
-          position_id: formData.get('position_id'),
-          position_text: positionText, 
-          category_age_id: formData.get('category_age_id'),
-          start_date: formData.get('start_date'),
-          end_date: formData.get('end_date'),
-          imageFile: imageFile, 
+          type_code: formData.get('type_code'), // Captured from hidden input
+          member_type_text: typeText,
+          position_id: formData.get('position_id') || '',
+          position_text: positionText,
+          category_age_id: formData.get('category_age_id') || '',
+          imageFile: imageFile,
           imageName: imageFile ? imageFile.name : 'No Image'
         };
 
         tempMembers.push(member);
         renderTable();
         form.reset();
+        handleTypeChange('member_type_id', ''); 
       });
 
-      // 2. RENDER TABEL
+      // 2. RENDER TABLE
       function renderTable() {
-        tempTableBody.innerHTML = ''; 
+        tempTableBody.innerHTML = '';
 
         if (tempMembers.length > 0) {
-          tempTableContainer.style.display = 'block'; 
+          tempTableContainer.style.display = 'block';
           memberCount.innerText = tempMembers.length;
 
           tempMembers.forEach((member) => {
             const row = `
-                <tr>
-                  <td>${member.full_name}</td>
-                  <td>${member.email}</td>
-                  <td><span class="badge bg-secondary">${member.position_text}</span></td>
-                  <td>${member.member_type_text}</td>
-                  <td>${member.imageName}</td>
-                  <td>
-                    <!-- Tombol Edit Ditambahkan Disini -->
-                    <button type="button" class="btn btn-sm btn-warning me-1" onclick="openEditModal(${member.id})">
-                      Edit
-                    </button>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="removeMember(${member.id})">
-                      Remove
-                    </button>
-                  </td>
-                </tr>
-              `;
+                    <tr>
+                      <td>${member.full_name}</td>
+                      <td>${member.email}</td>
+                      <td><span class="badge bg-secondary">${member.position_text}</span></td>
+                      <td>${member.member_type_text}</td>
+                      <td>${member.imageName}</td>
+                      <td>
+                        <button type="button" class="btn btn-sm btn-warning me-1" onclick="openEditModal(${member.id})">
+                          Edit
+                        </button>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="removeMember(${member.id})">
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  `;
             tempTableBody.insertAdjacentHTML('beforeend', row);
           });
         } else {
-          tempTableContainer.style.display = 'none'; 
+          tempTableContainer.style.display = 'none';
         }
       }
 
@@ -358,13 +452,11 @@
         renderTable();
       };
 
-      // 4. BUKA MODAL EDIT DAN ISI DATANYA
-      window.openEditModal = function(id) {
-        // Cari member di array berdasarkan ID
+      // 4. OPEN EDIT MODAL
+      window.openEditModal = function (id) {
         const member = tempMembers.find(m => m.id === id);
-        if(!member) return;
+        if (!member) return;
 
-        // Isi form modal dengan data yang ada
         document.getElementById('edit_id').value = member.id;
         document.getElementById('edit_full_name').value = member.full_name;
         document.getElementById('edit_dob').value = member.dob;
@@ -375,29 +467,27 @@
         document.getElementById('edit_license').value = member.license;
         document.getElementById('edit_valid_date').value = member.valid_date;
         document.getElementById('edit_member_type_id').value = member.member_type_id;
+        document.getElementById('edit_type_code').value = member.type_code; // Set hidden input
         document.getElementById('edit_position_id').value = member.position_id;
         document.getElementById('edit_category_age_id').value = member.category_age_id;
-        document.getElementById('edit_start_date').value = member.start_date;
-        document.getElementById('edit_end_date').value = member.end_date;
-        
-        // Tampilkan nama gambar saat ini
+
         document.getElementById('current_image_name').innerText = member.imageName;
-        // Reset input file (karena tidak bisa diisi secara programatik)
         document.getElementById('edit_image').value = '';
 
-        // Tampilkan Modal
+        // Trigger dynamic inputs logic for the modal
+        handleTypeChange('edit_member_type_id', 'edit_');
+
         editModalInstance.show();
       };
 
-      // 5. SUBMIT FORM EDIT
-      editForm.addEventListener('submit', function(e) {
+      // 5. SUBMIT EDIT FORM
+      editForm.addEventListener('submit', function (e) {
         e.preventDefault();
 
         const id = parseInt(document.getElementById('edit_id').value);
         const index = tempMembers.findIndex(m => m.id === id);
 
-        if(index !== -1) {
-          // Update data di array
+        if (index !== -1) {
           tempMembers[index].full_name = document.getElementById('edit_full_name').value;
           tempMembers[index].dob = document.getElementById('edit_dob').value;
           tempMembers[index].phone_number = document.getElementById('edit_phone_number').value;
@@ -406,37 +496,31 @@
           tempMembers[index].weight = document.getElementById('edit_weight').value;
           tempMembers[index].license = document.getElementById('edit_license').value;
           tempMembers[index].valid_date = document.getElementById('edit_valid_date').value;
-          tempMembers[index].start_date = document.getElementById('edit_start_date').value;
-          tempMembers[index].end_date = document.getElementById('edit_end_date').value;
-          
-          // Update Dropdown Values & Texts
+
           const typeSelect = document.getElementById('edit_member_type_id');
           tempMembers[index].member_type_id = typeSelect.value;
           tempMembers[index].member_type_text = typeSelect.options[typeSelect.selectedIndex].text;
+          tempMembers[index].type_code = document.getElementById('edit_type_code').value; // Update type_code
 
           const positionSelect = document.getElementById('edit_position_id');
           tempMembers[index].position_id = positionSelect.value;
-          tempMembers[index].position_text = positionSelect.options[positionSelect.selectedIndex].text;
+          tempMembers[index].position_text = positionSelect.value ? positionSelect.options[positionSelect.selectedIndex].text : '-';
 
           const ageSelect = document.getElementById('edit_category_age_id');
           tempMembers[index].category_age_id = ageSelect.value;
 
-          // Cek apakah user mengupload gambar baru saat edit
           const newImageFile = document.getElementById('edit_image').files[0];
-          if(newImageFile) {
+          if (newImageFile) {
             tempMembers[index].imageFile = newImageFile;
             tempMembers[index].imageName = newImageFile.name;
           }
 
-          // Render ulang tabel untuk menampilkan perubahan
           renderTable();
-
-          // Tutup Modal
           editModalInstance.hide();
         }
       });
 
-      // 6. SUBMIT ALL KE CONTROLLER (DATABASE)
+      // 6. SUBMIT ALL TO DATABASE
       saveToDatabaseBtn.addEventListener('click', function () {
         if (tempMembers.length === 0) {
           alert('Table is empty!');
@@ -455,11 +539,10 @@
           serverFormData.append(`members[${index}][license]`, member.license);
           serverFormData.append(`members[${index}][valid_date]`, member.valid_date);
           serverFormData.append(`members[${index}][member_type_id]`, member.member_type_id);
+          serverFormData.append(`members[${index}][type_code]`, member.type_code); // Sending type_code to backend
           serverFormData.append(`members[${index}][position_id]`, member.position_id);
           serverFormData.append(`members[${index}][category_age_id]`, member.category_age_id);
-          serverFormData.append(`members[${index}][start_date]`, member.start_date);
-          serverFormData.append(`members[${index}][end_date]`, member.end_date);
-          serverFormData.append(`members[${index}][image]`, member.imageFile); 
+          serverFormData.append(`members[${index}][image]`, member.imageFile);
         });
 
         const originalText = saveToDatabaseBtn.innerHTML;
@@ -470,31 +553,29 @@
           method: 'POST',
           headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Accept': 'application/json' 
+            'Accept': 'application/json'
           },
           body: serverFormData
         })
           .then(async response => {
-             const data = await response.json();
-             // Menangani validasi Laravel (Error 422 Unprocessable Entity)
-             if (!response.ok) {
-                 if(response.status === 422) {
-                     // Kumpulkan pesan error validasi
-                     let errorString = 'Validation Error:\n';
-                     for (const [key, value] of Object.entries(data.errors)) {
-                         errorString += `- ${value[0]}\n`;
-                     }
-                     throw new Error(errorString);
-                 }
-                 throw new Error(data.message || 'Something went wrong.');
-             }
-             return data;
+            const data = await response.json();
+            if (!response.ok) {
+              if (response.status === 422) {
+                let errorString = 'Validation Error:\n';
+                for (const [key, value] of Object.entries(data.errors)) {
+                  errorString += `- ${value[0]}\n`;
+                }
+                throw new Error(errorString);
+              }
+              throw new Error(data.message || 'Something went wrong.');
+            }
+            return data;
           })
           .then(data => {
             if (data.success) {
               alert('All members saved successfully!');
-              tempMembers = []; 
-              renderTable(); 
+              tempMembers = [];
+              renderTable();
             }
           })
           .catch(error => {

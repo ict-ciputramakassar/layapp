@@ -6,29 +6,32 @@ use App\Models\CategoryAge;
 use App\Models\MemberType;
 use App\Models\Position;
 use App\Models\Team;
-use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\TeamMember; // Sesuaikan dengan nama Model Anda
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class TeamLeaderController extends Controller
 {
+    protected $user;
+    public function __construct()
+    {
+        $this->user = Auth::user();
+    }
     public function getMembers()
     {
-        // $user = Auth::user();
-        $user = User::where("id", "17258d88-31c2-11f1-8cba-a036bc3bed8f")->first();
-
-        if (!$user || $user->userType?->code !== 'TL') {
+        if (!$this->user || $this->user->userType?->code !== 'TL') {
             return response()->json([
                 'success' => false,
                 'message' => 'User is not a Team Leader or not found.'
             ], 403);
         }
 
-        $team = $user->team;
+        $team = $this->user->team;
 
         $mappedMembers = $team->teamMembers->map(function ($member) {
             // if($member->is_active == 1)
@@ -45,9 +48,9 @@ class TeamLeaderController extends Controller
                     'id' => $member->memberType->id,
                 ],
                 'age_category' => [
-                    'name' => $member->categoryAge->name,
-                    'code' => $member->categoryAge->code,
-                    'id' => $member->categoryAge->id,
+                    'name' => $member->categoryAge?->name,
+                    'code' => $member->categoryAge?->code,
+                    'id' => $member->categoryAge?->id,
                 ],
                 'dob' => $member->dob,
                 'phone_number' => $member->phone_number,
@@ -55,23 +58,19 @@ class TeamLeaderController extends Controller
                 'height' => $member->height,
                 'weight' => $member->weight,
                 'position' => [
-                    "name" => $member->position->name,
-                    "code" => $member->position->code,
-                    "id" => $member->position->id,
+                    "name" => $member->position?->name,
+                    "code" => $member->position?->code,
+                    "id" => $member->position?->id,
                 ],
                 'license' => [
-                    "name" => $member->license,
-                    "valid_date" => $member->valid_date,
+                    "name" => $member->license ?? "",
+                    "valid_date" => $member->valid_date ?? "",
                 ],
             ];
         });
 
         return response()->json([
             'success' => true,
-            'team' => [
-                "id" => $team->id,
-                "name" => $team->name,
-            ],
             'members' => $mappedMembers,
         ]);
     }
@@ -79,7 +78,6 @@ class TeamLeaderController extends Controller
     public function addMembersBulk(Request $request)
     {
         // 1. Validasi Data
-        // Memastikan request 'members' ada, berupa array, dan memvalidasi isinya
         $request->validate(
             [
                 'members' => 'required|array',
@@ -90,22 +88,26 @@ class TeamLeaderController extends Controller
                     'required',
                     'email',
                     'max:255',
-                    'distinct', // Mencegah email kembar di dalam form array yang dikirim
-                    // Ganti 'm_team_member' dengan nama tabel asli Anda jika berbeda
+                    'distinct',
                     Rule::unique('m_team_member', 'email')->where(function ($query) {
                         return $query->where('is_active', 1);
                     }),
                 ],
                 'members.*.height' => 'required|numeric',
                 'members.*.weight' => 'required|numeric',
-                'members.*.license' => 'required|string|max:1',
-                'members.*.valid_date' => 'required|date',
-                'members.*.member_type_id' => 'required|string', // Sesuai value UUID dari HTML
-                'members.*.position_id' => 'required|string',
-                'members.*.category_age_id' => 'required|string',
-                'members.*.start_date' => 'required|date',
-                'members.*.end_date' => 'required|date|after_or_equal:members.*.start_date',
-                'members.*.image' => 'required|image|mimes:jpeg,png,jpg|max:2048', // Max 2MB
+                'members.*.member_type_id' => 'required|string',
+                'members.*.image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+
+                // UBAH MENJADI NULLABLE: 
+                // Karena jika yang dipilih Player, License & Valid Date akan kosong.
+                // Jika yang dipilih Coach, Position & Category Age akan kosong.
+                'members.*.type_code' => 'required|string',
+                'members.*.license' => 'required_if:type_code,CO|nullable|string|max:1',
+                'members.*.valid_date' => 'required_if:type_code,CO|nullable|date',
+                'members.*.position_id' => 'required_if:type_code,AT|nullable|string',
+                'members.*.category_age_id' => 'required_if:type_code,AT|nullable|string',
+
+                // start_date dan end_date DIHAPUS dari validasi karena dibuat di controller
             ],
             [
                 'members.*.email.distinct' => 'Duplicate emails exist inside the table.',
@@ -113,20 +115,20 @@ class TeamLeaderController extends Controller
             ]
         );
 
-        // Array untuk menyimpan path gambar, berguna jika terjadi error dan harus dihapus
-        $uploadedImages = [];
-
-        // $user = Auth::user();
-        $user = User::where("id", "17258d88-31c2-11f1-8cba-a036bc3bed8f")->first();
-
-        if (!$user || $user->userType?->code !== 'TL') {
+        // Cek Otorisasi User
+        if (!$this->user || $this->user->userType?->code !== 'TL') {
             return response()->json([
                 'success' => false,
                 'message' => 'User is not a Team Leader or not found.'
             ], 403);
         }
 
-        $team = $user->team;
+        $team = $this->user->team;
+        $uploadedImages = [];
+
+        // SET TANGGAL OTOMATIS (Sekarang dan 2 Tahun dari Sekarang)
+        $startDate = Carbon::now()->format('Y-m-d');
+        $endDate = Carbon::now()->addYears(2)->format('Y-m-d');
 
         // 2. Mulai Database Transaction
         DB::beginTransaction();
@@ -137,31 +139,35 @@ class TeamLeaderController extends Controller
 
                 $imagePath = null;
 
-                // Upload Gambar ke folder storage/app/public/members
+                // Upload Gambar
                 if (isset($memberData['image']) && $memberData['image'] instanceof \Illuminate\Http\UploadedFile) {
                     $imagePath = $memberData['image']->store('members', 'public');
-                    $uploadedImages[] = $imagePath; // Simpan path untuk track record
+                    $uploadedImages[] = $imagePath;
                 }
 
                 // Simpan ke database
                 TeamMember::create([
                     'team_id' => $team->id,
-                    'created_by' => $user->id,
-                    'modified_by' => $user->id,
+                    'created_by' => $this->user->id,
+                    'modified_by' => $this->user->id,
                     'full_name' => $memberData['full_name'],
                     'dob' => $memberData['dob'],
                     'phone_number' => $memberData['phone_number'],
                     'email' => $memberData['email'],
                     'height' => $memberData['height'],
                     'weight' => $memberData['weight'],
-                    'license' => $memberData['license'],
-                    'valid_date' => $memberData['valid_date'],
                     'member_type_id' => $memberData['member_type_id'],
-                    'position_id' => $memberData['position_id'],
-                    'category_age_id' => $memberData['category_age_id'],
-                    'start_date' => $memberData['start_date'],
-                    'end_date' => $memberData['end_date'],
                     'image' => $imagePath,
+
+                    // Gunakan null coalescing operator (??) untuk mencegah error jika key tidak ada
+                    'license' => $memberData['license'] ?? null,
+                    'valid_date' => $memberData['valid_date'] ?? null,
+                    'position_id' => $memberData['position_id'] ?? null,
+                    'category_age_id' => $memberData['category_age_id'] ?? null,
+
+                    // Masukkan tanggal yang di-generate otomatis dari controller
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
                 ]);
             }
 
@@ -173,20 +179,17 @@ class TeamLeaderController extends Controller
                 'message' => 'All team members have been successfully saved.'
             ], 200);
         } catch (\Exception $e) {
-            // Jika terjadi error pada database (misal struktur kolom tidak pas)
             DB::rollBack();
 
-            // Hapus semua gambar yang sudah terlanjur di-upload di perulangan sebelumnya
+            // Hapus gambar jika terjadi error
             foreach ($uploadedImages as $path) {
                 if (Storage::disk('public')->exists($path)) {
                     Storage::disk('public')->delete($path);
                 }
             }
 
-            // Catat error aslinya di log Laravel untuk keperluan debugging
             Log::error('Bulk Insert Member Error: ' . $e->getMessage());
 
-            // Kembalikan response error ke frontend AJAX
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while saving to the database. ' . $e->getMessage()
@@ -251,10 +254,8 @@ class TeamLeaderController extends Controller
 
     public function addMemberView()
     {
-        // $user = Auth::user();
-        $user = User::where("id", "17258d88-31c2-11f1-8cba-a036bc3bed8f")->first();
 
-        if (!$user || $user->userType?->code !== 'TL') {
+        if (!$this->user || $this->user->userType?->code !== 'TL') {
             return redirect('auth.login');
         }
 
@@ -264,5 +265,10 @@ class TeamLeaderController extends Controller
             "age_categories" => CategoryAge::all(['id', 'name', 'code']),
         ];
         return view('views_backend.team_leader.add_team_member', $data);
+    }
+
+    public function viewTeamMembers()
+    {
+        return view('views_backend.team_leader.team_members', ["user" => $this->user]);
     }
 }

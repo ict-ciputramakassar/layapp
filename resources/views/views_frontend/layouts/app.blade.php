@@ -142,7 +142,7 @@
 															</li>
 															<li class="col-sm-4">
 																<ul class="menu-inner">
-																	<li class="dropdown-header">Next Matchs</li>
+																	<li class="dropdown-header">Next Matches</li>
 																	<li><a href="#">Contrary vs classical</a></li>
 																	<li><a href="#">Discovered vs undoubtable</a></li>
 																	<li><a href="#">Contrary vs classical</a></li>
@@ -161,7 +161,7 @@
 											</div>
 											<!-- /.nav-collapse -->
 										</nav>
-										<div class="search-bar">
+										{{-- <div class="search-bar">
 											<div id="imaginary_container">
 												<div class="input-group stylish-input-group">
 													<input type="text" class="form-control"  placeholder="Search" >
@@ -170,7 +170,7 @@
 													</span>
 												</div>
 											</div>
-										</div>
+										</div> --}}
 									</div>
 								</div>
 							</div>
@@ -189,7 +189,7 @@
 	<!-- FOOTER START -->
 	<footer id="footer" class="footer">
 		<div class="container">
-			<div class="row">
+			{{-- <div class="row">
 				<div class="col-md-4">
 					<div class="full">
 						<div class="footer-widget">
@@ -240,7 +240,7 @@
 						</div>
 					</div>
 				</div>
-			</div>
+			</div> --}}
 		</div>
 		<div class="footer-bottom">
 			<div class="container">

@@ -36,7 +36,13 @@ class AuthController extends Controller
             // Regenerate session to prevent session fixation attacks
             $request->session()->regenerate();
 
-            return redirect()->route('admin.dashboard')->with('success', 'Login successful!');
+            $routeLogin = match(Auth::user()->userType->code){
+                "SA" => "admin.dashboard",
+                "TL" => "team_leader.team_members",
+                default => "admin.signin",
+            };
+
+            return redirect()->route($routeLogin)->with('success', 'Login successful!');
         }
 
         // Authentication failed
@@ -146,11 +152,15 @@ class AuthController extends Controller
             // 5. Simpan permanen ke database
             DB::commit();
 
-            // 6. (Opsional) Langsung login-kan user setelah mendaftar
-            Auth::login($user);
+            // 6 Rerouting
+            Auth::login($user, true);
+            $routeLogin = match($request->role_code){
+                "SA" => "admin.dashboard",
+                "TL" => "team_leader.team_members",
+                default => "admin.signin",
+            };
 
-            // 7. Redirect ke Dashboard dengan pesan sukses
-            return redirect()->route('admin.dashboard')->with('success', 'Registration successful! Welcome to LayApp.');
+            return redirect()->route($routeLogin)->with('success', 'Login successful!');
         } catch (\Exception $e) {
             // Jika ada error (Database / Upload), batalkan semua insert
             DB::rollBack();
