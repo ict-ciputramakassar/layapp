@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class Event extends Model
+class EventRegistrationList extends Model
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
@@ -22,7 +22,7 @@ class Event extends Model
     public $timestamps = false;
     public $incrementing = false;
     protected $keyType = 'string';
-    protected $table = 'm_event';
+    protected $table = 't_event_registration_list';
 
     /**
      * The attributes that are mass assignable.
@@ -30,14 +30,8 @@ class Event extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'id',
-        'name',
-        'start_date',
-        'end_date',
-        'description',
-        'category_level_id',
-        'eo_name',
-        'eo_logo',
+        'event_registration_id',
+        'team_member_id',
         'created_date',
         'created_by',
         'modified_date',
@@ -59,35 +53,19 @@ class Event extends Model
     protected function casts(): array
     {
         return [
-            'start_date' => 'datetime',
-            'end_date' => 'datetime',
             'created_date' => 'datetime',
             'modified_date' => 'datetime',
         ];
     }
 
-    public function categoryLevel(): BelongsTo
+    public function eventRegistration(): BelongsTo
     {
-        return $this->belongsTo(CategoryLevel::class, 'category_level_id', 'id');
+        return $this->belongsTo(EventRegistration::class, 'event_registration_id', 'id');
     }
 
-    public function eventCategoryAges(): HasMany
+    public function teamMember(): BelongsTo
     {
-        return $this->hasMany(EventCategoryAge::class, 'event_id', 'id');
+        return $this->belongsTo(TeamMember::class, 'team_member_id', 'id');
     }
 
-    public function eventCategoryGames(): HasMany
-    {
-        return $this->hasMany(EventCategoryGame::class, 'event_id', 'id');
-    }
-
-    public function eventCategoryTypes(): HasMany
-    {
-        return $this->hasMany(EventCategoryType::class, 'event_id', 'id');
-    }
-
-    public function eventRegistrations(): HasMany
-    {
-        return $this->hasMany(EventRegistration::class, 'event_id', 'id');
-    }
 }

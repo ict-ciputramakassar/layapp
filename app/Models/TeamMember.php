@@ -5,6 +5,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
@@ -92,5 +93,10 @@ class TeamMember extends Model
     public function position(): BelongsTo
     {
         return $this->belongsTo(Position::class, 'position_id', 'id');
+    }
+
+    public function eventRegistrationLists(): HasMany
+    {
+        return $this->hasMany(EventRegistrationList::class, 'team_member_id', 'id');
     }
 }

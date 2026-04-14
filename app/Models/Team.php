@@ -99,4 +99,19 @@ class Team extends Model
     {
         return $this->hasMany(TeamSocial::class, 'team_id', 'id');
     }
+
+    public function eventRegistrations(): HasMany
+    {
+        return $this->hasMany(EventRegistration::class, 'team_id', 'id');
+    }
+
+    public function grouSchedulesA(): HasMany
+    {
+        return $this->hasMany(GroupSchedule::class, 'team_id_a', 'id');
+    }
+
+    public function grouSchedulesH(): HasMany
+    {
+        return $this->hasMany(GroupSchedule::class, 'team_id_h', 'id');
+    }
 }
