@@ -122,7 +122,7 @@
               <label for="image" class="form-label">Member Image</label>
               <div class="d-flex align-items-center gap-3 mb-2">
                 @if($member->image)
-                  <img src="{{ asset(Storage::url($member->image)) }}" alt="Current Image" class="rounded border"
+                  <img src="{{ asset($member->image) }}" alt="Current Image" class="rounded border"
                     style="width: 60px; height: 60px; object-fit: cover;">
                 @else
                   <div class="rounded border bg-light d-flex align-items-center justify-content-center text-muted"

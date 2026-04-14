@@ -119,7 +119,7 @@
                         html += `
                             <div class="col-md-3 col-sm-6 mb-4" style="margin-bottom: 20px;">
                                 <div class="card" style="box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 15px; border-radius: 8px;">
-                                    <img class="img-responsive" src="{{ asset(Storage::url('${event.logo}')) }}" alt="${event.name}" style="width:100%; height: 200px; object-fit: cover; border-radius: 6px;">
+                                    <img class="img-responsive" src="{{ asset('${event.logo}') }}" alt="${event.name}" style="width:100%; height: 200px; object-fit: cover; border-radius: 6px;">
                                     <div style="margin-top: 15px;">
                                         <h4 style="font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${event.name}">${event.name}</h4>
                                         <p style="margin-bottom: 5px; font-size: 13px; color: #555;"><i class="fa fa-calendar"></i> Mulai: ${event.start_date}</p>

@@ -128,9 +128,7 @@ class AuthController extends Controller
 
         try {
             // 3. Buat Data User
-            $userId = Str::uuid()->toString();
             $user = User::create([
-                'id' => $userId,
                 'full_name' => $request->fullName,
                 'email' => $request->email,
                 'phone_number' => $request->phone_number,
@@ -149,8 +147,8 @@ class AuthController extends Controller
                 }
 
                 Team::create([
-                    'user_id'      => $userId,
-                    'name'         => $request->team_name,
+                    'user_id'      => $user->id,
+                    'name'         => mb_convert_case($request->team_name, MB_CASE_TITLE, 'UTF-8'),
                     'address'      => $request->team_address,
                     'is_verified'  => 1,
                     'is_active'    => 1,
@@ -164,8 +162,8 @@ class AuthController extends Controller
                     'city_id'      => $request->team_city_id,
                     'team_type_id' => $request->team_type_id,
                     'image'        => $imagePath,
-                    'created_by'   => $userId,
-                    'modified_by'  => $userId,
+                    'created_by'   => $user->id,
+                    'modified_by'  => $user->id,
                 ]);
             }
 

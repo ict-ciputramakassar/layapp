@@ -9,7 +9,6 @@ use App\Models\Team;
 use Illuminate\Http\Request;
 use App\Models\TeamMember; // Sesuaikan dengan nama Model Anda
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
@@ -170,7 +169,9 @@ class TeamLeaderController extends Controller
 
                 // Upload Gambar
                 if (isset($memberData['image']) && $memberData['image'] instanceof \Illuminate\Http\UploadedFile) {
-                    $imagePath = $memberData['image']->store('members', 'public');
+                    $filename = time() . '_' . $memberData['image']->getClientOriginalName();
+                    $memberData['image']->move(public_path('images/upload'), $filename);
+                    $imagePath = 'images/upload/' . $filename;
                     $uploadedImages[] = $imagePath;
                 }
 
@@ -212,8 +213,9 @@ class TeamLeaderController extends Controller
 
             // Hapus gambar jika terjadi error
             foreach ($uploadedImages as $path) {
-                if (Storage::disk('public')->exists($path)) {
-                    Storage::disk('public')->delete($path);
+                $fullPath = public_path($path);
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
                 }
             }
 
@@ -458,8 +460,9 @@ class TeamLeaderController extends Controller
 
             // 9. Hapus Gambar Lama JIKA ada gambar baru yang berhasil diupload dan disimpan
             if ($newImagePath && $oldImagePath) {
-                if (Storage::disk('public')->exists($oldImagePath)) {
-                    Storage::disk('public')->delete($oldImagePath);
+                $fullPath = public_path($oldImagePath);
+                if (file_exists($fullPath)) {
+                    unlink($fullPath);
                 }
             }
 
@@ -472,8 +475,8 @@ class TeamLeaderController extends Controller
             DB::rollBack();
 
             // Jika error terjadi, HAPUS gambar BARU yang terlanjur terupload (agar tidak jadi sampah)
-            if ($newImagePath && Storage::disk('public')->exists($newImagePath)) {
-                Storage::disk('public')->delete($newImagePath);
+            if ($newImagePath && file_exists(public_path($newImagePath))) {
+                unlink(public_path($newImagePath));
             }
 
             Log::error('Update Member Error: ' . $e->getMessage());

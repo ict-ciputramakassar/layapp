@@ -69,7 +69,7 @@
                 <div class="col-md-3 col-sm-4">
                     <div class="td-logo-container">
                         @php
-                            $teamImage = asset(Storage::url($team['image']));
+                            $teamImage = asset($team['image']);
                         @endphp
                         <img src="{{ $teamImage }}" alt="{{ $team['name'] }} Logo" onerror="this.src='{{ asset('images/client.png') }}'">
                     </div>
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Sesuaikan variabel di bawah (member.full_name, member.position.name) dengan field JSON/Tabel Anda
             let name = member.full_name;
             let position = member.type;
-            let image = `{{ asset(Storage::url('${member.image}')) }}`;
+            let image = `{{ asset('${member.image}') }}`;
 
             html += `
             <div class="col-md-4 col-sm-6 mb-3">

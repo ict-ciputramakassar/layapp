@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Looping Data Tim menjadi Card
         teamsToRender.forEach(team => {
             // Tentukan Gambar (gunakan image tim dari DB, atau fallback jika null)
-            const teamImage = `{{ asset(Storage::url('${team.image}')) }}`;
+            const teamImage = `{{ asset('${team.image}') }}`;
             
             // Tentukan Link Detail Tim (Siapkan URL untuk layar baru nanti)
             // Asumsi rutenya nanti seperti /team/{id}

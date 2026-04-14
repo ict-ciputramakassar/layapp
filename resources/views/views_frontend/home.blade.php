@@ -419,7 +419,7 @@
 					const newRow = `
 					<tr>
 						<td>${i}</td>
-						<td><img  class="align-baseline mx-1" style="width: 2em; height: 2em;" src="{{ asset(Storage::url('${team.image}')) }}" alt="">${team.name}</td>
+						<td><img  class="align-baseline mx-1" style="width: 2em; height: 2em;" src="{{ asset('${team.image}') }}" alt="">${team.name}</td>
 						<td>${team.points.p}</td>
 						<td>${team.points.win}</td>
 						<td>${team.points.lose}</td>
