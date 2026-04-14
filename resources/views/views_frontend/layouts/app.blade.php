@@ -59,12 +59,12 @@
 						<div class="col-md-6">
 							<div class="right_top_section">
 								<!-- social icon -->
-								<ul class="social-icons pull-left">
+								{{-- <ul class="social-icons pull-left">
 									<li><a class="facebook" href="#"><i class="fa fa-facebook"></i></a></li>
 									<li><a class="twitter" href="#"><i class="fa fa-twitter"></i></a></li>
 									<li><a class="youtube" href="#"><i class="fa fa-youtube-play"></i></a></li>
 									<li><a class="pinterest" href="#"><i class="fa fa-pinterest-p"></i></a></li>
-								</ul>
+								</ul> --}}
 								<!-- end social icon -->
 								<!-- button section -->
 								<ul class="login">
