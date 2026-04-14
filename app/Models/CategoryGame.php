@@ -59,7 +59,7 @@ class CategoryGame extends Model
         ];
     }
 
-    protected function eventCategoryGame(): HasMany
+    public function eventCategoryGame(): HasMany
     {
         return $this->hasMany(EventCategoryGame::class, 'category_game_id', 'id');
     }

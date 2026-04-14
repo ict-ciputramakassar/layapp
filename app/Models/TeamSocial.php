@@ -60,12 +60,12 @@ class TeamSocial extends Model
         ];
     }
     
-    protected function team(): BelongsTo
+    public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class, 'team_id', 'id');
     }
 
-    protected function social(): BelongsTo
+    public function social(): BelongsTo
     {
         return $this->belongsTo(Social::class, 'social_id', 'id');
     }

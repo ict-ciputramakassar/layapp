@@ -70,27 +70,32 @@ class Team extends Model
         ];
     }
 
-    protected function user(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    protected function province(): BelongsTo
+    public function teamType(): BelongsTo
+    {
+        return $this->belongsTo(TeamType::class, 'team_type_id', 'id');
+    }
+
+    public function province(): BelongsTo
     {
         return $this->belongsTo(Province::class, 'province_id', 'id');
     }
 
-    protected function city(): BelongsTo
+    public function city(): BelongsTo
     {
         return $this->belongsTo(City::class, 'city_id', 'id');
     }
 
-    protected function teamMembers(): HasMany
+    public function teamMembers(): HasMany
     {
         return $this->hasMany(TeamMember::class, 'team_id', 'id');
     }
 
-    protected function teamSocials(): HasMany
+    public function teamSocials(): HasMany
     {
         return $this->hasMany(TeamSocial::class, 'team_id', 'id');
     }

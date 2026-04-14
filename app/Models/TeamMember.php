@@ -74,22 +74,22 @@ class TeamMember extends Model
         ];
     }
     
-    protected function team(): BelongsTo
+    public function team(): BelongsTo
     {
         return $this->belongsTo(Team::class, 'team_id', 'id');
     }
 
-    protected function memberType(): BelongsTo
+    public function memberType(): BelongsTo
     {
         return $this->belongsTo(MemberType::class, 'member_type_id', 'id');
     }
 
-    protected function categoryAge(): BelongsTo
+    public function categoryAge(): BelongsTo
     {
         return $this->belongsTo(CategoryAge::class, 'category_age_id', 'id');
     }
 
-    protected function position(): BelongsTo
+    public function position(): BelongsTo
     {
         return $this->belongsTo(Position::class, 'position_id', 'id');
     }

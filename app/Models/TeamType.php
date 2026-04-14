@@ -59,7 +59,7 @@ class TeamType extends Model
         ];
     }
 
-    protected function teams(): HasMany
+    public function teams(): HasMany
     {
         return $this->hasMany(Team::class, 'team_type_id', 'id');
     }

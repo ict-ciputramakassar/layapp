@@ -58,7 +58,7 @@ class Position extends Model
         ];
     }
 
-    protected function teamMembers(): HasMany
+    public function teamMembers(): HasMany
     {
         return $this->hasMany(TeamMember::class, 'position_id', 'id');
     }

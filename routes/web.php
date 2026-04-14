@@ -28,6 +28,7 @@ Route::get('/api/events-frontend', [EventController::class, 'getEventsFrontend']
 Route::get('/api/points-frontend', [EventController::class, 'getTeamPointsFrontend'])->name('api.points-frontend');
 
 Route::get('/team_datas', [TeamLeaderController::class, 'getTeams'])->name('team_datas');
+Route::get('/team/{id}', [TeamLeaderController::class, 'viewTeamDetails'])->name('team_details');
 
 Route::get('/news', function () {
     return view('views_frontend.news');
@@ -174,6 +175,10 @@ Route::prefix('team_leader')->name('team_leader.')->middleware("teamleader")->gr
 
     Route::get('/getMembers', [TeamLeaderController::class, 'getMembers'])->name('get_members');
     Route::post('/addMembers', [TeamLeaderController::class, 'addMembersBulk'])->name('add_members_bulk');
+    Route::get('/getMember/{id}', [TeamLeaderController::class, 'getMemberById'])->name('get_member_by_id');
+    Route::get('/editMember/{id}', [TeamLeaderController::class, 'editMemberView'])->name('edit_member');
+    Route::put('/updateMember/{id}', [TeamLeaderController::class, 'updateMember'])->name('update_member');
+    Route::delete('/deleteMember/{id}', [TeamLeaderController::class, 'deleteMember'])->name('delete_member');
 });
 
 // Auth Routes

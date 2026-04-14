@@ -59,7 +59,7 @@ class City extends Model
         ];
     }
 
-    protected function province(): BelongsTo
+    public function province(): BelongsTo
     {
         return $this->belongsTo(Province::class, 'province_id', 'id');
     }

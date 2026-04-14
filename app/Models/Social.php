@@ -58,7 +58,7 @@ class Social extends Model
         ];
     }
 
-    protected function teamSocials(): HasMany
+    public function teamSocials(): HasMany
     {
         return $this->hasMany(TeamSocial::class, 'social_id', 'id');
     }

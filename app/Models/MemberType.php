@@ -59,7 +59,7 @@ class MemberType extends Model
         ];
     }
 
-    protected function teamMembers(): HasMany
+    public function teamMembers(): HasMany
     {
         return $this->hasMany(TeamMember::class, 'member_type_id', 'id');
     }

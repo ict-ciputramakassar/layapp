@@ -59,7 +59,7 @@ class CategoryType extends Model
         ];
     }
 
-    protected function eventCategoryType(): HasMany
+    public function eventCategoryType(): HasMany
     {
         return $this->hasMany(EventCategoryType::class, 'category_type_id', 'id');
     }

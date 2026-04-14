@@ -22,7 +22,7 @@ class TeamLeaderController extends Controller
     {
         $this->user = Auth::user();
     }
-    public function getMembers()
+    public function getMembers(Request $request)
     {
         if (!$this->user || $this->user->userType?->code !== 'TL') {
             return response()->json([
@@ -33,7 +33,36 @@ class TeamLeaderController extends Controller
 
         $team = $this->user->team;
 
-        $mappedMembers = $team->teamMembers->map(function ($member) {
+        // 1. Mulai Query
+        $query = TeamMember::with(['memberType', 'categoryAge', 'position'])
+            ->where('team_id', $team->id);
+
+        // 2. Tangkap Filter Status (Selalu dikirim)
+        $status = $request->query('status', '1');
+        if ($status !== 'both') {
+            $query->where('is_active', $status);
+        }
+
+        // 3. Tangkap Filter Dinamis (Hanya salah satu yang akan terisi)
+        if ($request->filled('full_name')) {
+            $query->where('full_name', 'LIKE', '%' . $request->full_name . '%');
+        }
+
+        if ($request->filled('member_type')) {
+            $query->where('member_type_id', $request->member_type);
+        }
+
+        if ($request->filled('dob_year')) {
+            $query->whereYear('dob', $request->dob_year);
+        }
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('start_date', [$request->start_date, $request->end_date]);
+        }
+
+        // 4. Ambil Data
+        $members = $query->orderBy('created_date', 'desc')->get();
+        $mappedMembers = $members->map(function ($member) {
             // if($member->is_active == 1)
             return [
                 'id' => $member->id,
@@ -71,7 +100,7 @@ class TeamLeaderController extends Controller
 
         return response()->json([
             'success' => true,
-            'members' => $mappedMembers,
+            'members' => $mappedMembers
         ]);
     }
 
@@ -202,46 +231,11 @@ class TeamLeaderController extends Controller
         $teams = Team::all();
         $mappedTeams = $teams->map(function ($team) {
             if ($team->is_active) {
-                $mappedMembers = $team->teamMembers->map(function ($member) {
-                    // if($member->is_active == 1)
-                    return [
-                        'id' => $member->id,
-                        'full_name' => $member->full_name,
-                        'start_date' => $member->start_date,
-                        'end_date' => $member->end_date,
-                        'is_active' => $member->is_active,
-                        'image' => $member->image,
-                        'member_type' => [
-                            'name' => $member->memberType->name,
-                            'code' => $member->memberType->code,
-                            'id' => $member->memberType->id,
-                        ],
-                        'age_category' => [
-                            'name' => $member->categoryAge->name,
-                            'code' => $member->categoryAge->code,
-                            'id' => $member->categoryAge->id,
-                        ],
-                        'dob' => $member->dob,
-                        'phone_number' => $member->phone_number,
-                        'email' => $member->email,
-                        'height' => $member->height,
-                        'weight' => $member->weight,
-                        'position' => [
-                            "name" => $member->position->name,
-                            "code" => $member->position->code,
-                            "id" => $member->position->id,
-                        ],
-                        'license' => [
-                            "name" => $member->license,
-                            "valid_date" => $member->valid_date,
-                        ],
-                    ];
-                });
-
                 return [
                     "id" => $team->id,
                     "name" => $team->name,
-                    'members' => $mappedMembers
+                    "image" => $team->image,
+                    // 'members' => $mappedMembers
                 ];
             }
         });
@@ -250,6 +244,59 @@ class TeamLeaderController extends Controller
             'success' => true,
             'teams' => $mappedTeams,
         ]);
+    }
+
+    public function viewTeamDetails($id)
+    {
+        // Gunakan findOrFail agar otomatis memunculkan 404 jika ID tim tidak valid
+        // Lakukan Eager Loading ('members') agar tidak terjadi N+1 Query Problem
+        $teamData = Team::with('teamMembers')->findOrFail($id);
+
+        // Ambil semua member dari tim tersebut ke dalam bentuk Collection
+        $allMembers = $teamData->teamMembers;
+
+        // 1. Filter Athlete (Depannya "AT")
+        $athletes = $allMembers->filter(function ($member) {
+            // Sesuaikan variabel di bawah dengan field database Anda
+            // Jika memberType adalah kolom string biasa: $type = $member->member_type;
+            // Jika memberType adalah relasi (tabel terpisah): $type = $member->memberType->code;
+            $type = $member->member_type;
+
+            return str_starts_with($type, 'AT');
+        })->values(); // values() digunakan untuk me-reset index array agar rapi di JSON/Frontend
+
+        // 2. Filter Coach (Depannya "CO" atau "ACO")
+        $coaches = $allMembers->filter(function ($member) {
+            $type = $member->member_type;
+            return str_starts_with($type, 'CO') || str_starts_with($type, 'ACO');
+        })->values();
+
+        // 3. Filter Official (Sisanya)
+        $officials = $allMembers->filter(function ($member) {
+            $type = $member->member_type;
+
+            // Pastikan tidak berawalan AT, CO, dan ACO
+            return !str_starts_with($type, 'AT') &&
+                !str_starts_with($type, 'CO') &&
+                !str_starts_with($type, 'ACO');
+        })->values();
+
+        // Susun data untuk dilempar ke View
+        $data = [
+            "team" => [
+                "id" => $teamData->id,
+                "name" => $teamData->name,
+                "image" => $teamData->image,
+                "type" => $teamData->teamType->name,
+            ],
+            "members" => [
+                "athletes" => $athletes,
+                "coaches" => $coaches,
+                "officials" => $officials,
+            ]
+        ];
+
+        return view('views_frontend.team_details', $data);
     }
 
     public function addMemberView()
@@ -269,6 +316,203 @@ class TeamLeaderController extends Controller
 
     public function viewTeamMembers()
     {
-        return view('views_backend.team_leader.team_members', ["user" => $this->user]);
+        $data = [
+            "user" => $this->user,
+            "types" => MemberType::all(['id', 'name', 'code']),
+        ];
+        return view('views_backend.team_leader.team_members', $data);
+    }
+
+    // Method untuk menampilkan halaman Edit
+    public function editMemberView($id)
+    {
+        if (!$this->user || $this->user->userType?->code !== 'TL') {
+            return redirect('auth.login');
+        }
+        $team = $this->user->team;
+
+        $data = [
+            "types" => MemberType::all(['id', 'name', 'code']),
+            "positions" => Position::all(['id', 'name', 'code']),
+            "age_categories" => CategoryAge::all(['id', 'name', 'code']),
+            "member" => $member = TeamMember::where('id', $id)->where('team_id', $team->id)->firstOrFail(),
+        ];
+
+        return view('views_backend.team_leader.edit_team_member', $data);
+    }
+
+    public function updateMember(Request $request, $id)
+    {
+        // 1. Cek Otorisasi User
+        if (!$this->user || $this->user->userType?->code !== 'TL') {
+            return response()->json([
+                'success' => false,
+                'message' => 'User is not a Team Leader or not found.'
+            ], 403);
+        }
+
+        $team = $this->user->team;
+
+        // 2. Cari Data Member & Pastikan member ini milik tim dari TL yang sedang login
+        $member = TeamMember::where('id', $id)->where('team_id', $team->id)->firstOrFail();
+
+        if (!$member) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Member not found or you do not have permission to edit this member.'
+            ], 404);
+        }
+
+        // 3. Validasi Data
+        $request->validate(
+            [
+                'full_name'       => 'required|string|max:255',
+                'dob'             => 'required|date',
+                'phone_number'    => 'required|string|max:20',
+                'email'           => [
+                    'required',
+                    'email',
+                    'max:255',
+                    // Abaikan ID member ini saat mengecek keunikan email
+                    Rule::unique('m_team_member', 'email')->ignore($member->id)->where(function ($query) {
+                        return $query->where('is_active', 1);
+                    }),
+                ],
+                'height'          => 'required|numeric',
+                'weight'          => 'required|numeric',
+                'member_type_id'  => 'required|string',
+
+                // Image dibuat nullable karena user mungkin tidak ingin mengganti foto
+                'image'           => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+
+                'type_code'       => 'required|string',
+                'license'         => 'required_if:type_code,CO|nullable|string|max:1',
+                'valid_date'      => 'required_if:type_code,CO|nullable|date',
+                'position_id'     => 'required_if:type_code,AT|nullable|string',
+                'category_age_id' => 'required_if:type_code,AT|nullable|string',
+            ],
+            [
+                'email.unique' => 'This email has been used by another active member.'
+            ]
+        );
+
+        // Variabel penampung untuk gambar
+        $newImagePath = null;
+        $oldImagePath = $member->image; // Simpan path gambar lama
+
+        // 4. Mulai Database Transaction
+        DB::beginTransaction();
+
+        try {
+            // 5. Handle Upload Gambar Baru (Jika Ada)
+            if ($request->hasFile('image') && $request->file('image')->isValid()) {
+                $newImagePath = $request->file('image')->store('members', 'public');
+            }
+
+            // 6. Siapkan Data Update & Cleansing Data
+            // Jika tipe adalah Coach (CO), kosongkan data Athlete. Jika Athlete (AT), kosongkan data Coach.
+            $isCoach = $request->type_code === 'CO';
+            $isAthlete = $request->type_code === 'AT';
+
+            $updateData = [
+                'modified_by'     => $this->user->id,
+                'full_name'       => $request->full_name,
+                'dob'             => $request->dob,
+                'phone_number'    => $request->phone_number,
+                'email'           => $request->email,
+                'height'          => $request->height,
+                'weight'          => $request->weight,
+                'member_type_id'  => $request->member_type_id,
+
+                // Logika Cleansing
+                'license'         => $isCoach ? $request->license : null,
+                'valid_date'      => $isCoach ? $request->valid_date : null,
+                'position_id'     => $isAthlete ? $request->position_id : null,
+                'category_age_id' => $isAthlete ? $request->category_age_id : null,
+            ];
+
+            // Jika ada gambar baru, masukkan ke array update
+            if ($newImagePath) {
+                $updateData['image'] = $newImagePath;
+            }
+
+            // 7. Lakukan Update ke Database
+            $member->update($updateData);
+
+            // 8. Commit Database
+            DB::commit();
+
+            // 9. Hapus Gambar Lama JIKA ada gambar baru yang berhasil diupload dan disimpan
+            if ($newImagePath && $oldImagePath) {
+                if (Storage::disk('public')->exists($oldImagePath)) {
+                    Storage::disk('public')->delete($oldImagePath);
+                }
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Team member has been successfully updated.'
+            ], 200);
+        } catch (\Exception $e) {
+            // Rollback Database
+            DB::rollBack();
+
+            // Jika error terjadi, HAPUS gambar BARU yang terlanjur terupload (agar tidak jadi sampah)
+            if ($newImagePath && Storage::disk('public')->exists($newImagePath)) {
+                Storage::disk('public')->delete($newImagePath);
+            }
+
+            Log::error('Update Member Error: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating the database. ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function deleteMember($id)
+    {
+        // 1. Cek Otorisasi User
+        if (!$this->user || $this->user->userType?->code !== 'TL') {
+            return response()->json([
+                'success' => false,
+                'message' => 'User is not a Team Leader or not found.'
+            ], 403);
+        }
+
+        $team = $this->user->team;
+
+        // 2. Cari Data Member & Pastikan member ini milik tim dari TL yang sedang login
+        $member = TeamMember::where('id', $id)->where('team_id', $team->id)->firstOrFail();
+
+        if (!$member) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Member not found or you do not have permission to delete this member.'
+            ], 404);
+        }
+
+        DB::beginTransaction();
+
+        try {
+            $member->update(['is_active' => 0]);
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Team member has been successfully deleted.',
+                'member' => $member,
+            ], 200);
+        } catch (\Exception $e) {
+            // Rollback Database
+            DB::rollBack();
+
+            Log::error('Delete Member Error: ' . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while deleting the member. ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

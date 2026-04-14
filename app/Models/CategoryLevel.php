@@ -59,7 +59,7 @@ class CategoryLevel extends Model
         ];
     }
 
-    protected function events(): HasMany
+    public function events(): HasMany
     {
         return $this->hasMany(Event::class, 'category_level_id', 'id');
     }
