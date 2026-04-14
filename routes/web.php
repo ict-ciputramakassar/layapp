@@ -20,9 +20,8 @@ Route::get('/team', function () {
     return view('views_frontend.team');
 })->name('team');
 
-Route::get('/events', function () {
-    return view('views_frontend.events');
-})->name('events');
+Route::get('/events', [EventController::class, 'viewEventList'])->name('events');
+Route::post('/event/register', [EventController::class, 'registerTeam'])->name('api.event.register');
 
 Route::get('/api/events-frontend', [EventController::class, 'getEventsFrontend'])->name('api.events-frontend');
 Route::get('/api/points-frontend', [EventController::class, 'getTeamPointsFrontend'])->name('api.points-frontend');

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\CategoryLevel;
 use App\Models\CategoryAge;
+use App\Models\EventRegistration;
+use App\Models\EventRegistrationList;
 use App\Models\CategoryGame;
 use App\Models\CategoryType;
 use App\Models\Event;
@@ -14,10 +16,102 @@ use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class EventController extends Controller
 {
+    public function registerTeam(Request $request)
+    {
+        // Validasi data yang masuk dari Fetch API
+        $request->validate([
+            'event_id'   => 'required',
+            'player_ids' => 'required|array|min:1|max:13',
+        ]);
+
+        // 1. Dapatkan User/Tim yang sedang login
+        $user = Auth::user();
+        $team = $user->team;
+
+        $eventId   = $request->event_id;
+        $playerIds = $request->player_ids;
+
+        // 2. Ambil ID semua anggota tim yang valid dari relasi
+        $validMemberIds = $team->teamMembers->pluck('id')->toArray();
+
+        // 3. Filter: hanya player_ids yang benar-benar ada di dalam tim
+        $validPlayerIds = array_values(
+            array_filter($playerIds, fn($pid) => in_array($pid, $validMemberIds))
+        );
+
+        // 4. Periksa apakah jumlah yang valid tepat 13 orang
+        if (count($validPlayerIds) !== 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Must Select 13 Players. '
+                    . 'Found: ' . count($validPlayerIds) . ' Valid Players From Your Team.',
+            ], 422);
+        }
+
+        // 5. Mulai DB Transaction
+        DB::beginTransaction();
+        try {
+
+            // Buat data pendaftaran utama
+            $registration = EventRegistration::create([
+                'event_id' => $eventId,
+                'team_id'  => $team->id,
+                'created_by' => $user->id,
+                'modified_by' => $user->id,
+            ]);
+
+            // Insert setiap pemain ke tabel detail
+            foreach ($validPlayerIds as $pid) {
+                EventRegistrationList::create([
+                    'event_registration_id' => $registration->id,
+                    'team_member_id' => $pid,
+                    'created_by' => $user->id,
+                    'modified_by' => $user->id,
+                ]);
+            }
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Pendaftaran event berhasil!',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Event Registration Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal Server Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function viewEventList()
+    {
+        // Default: bukan team leader
+        $isTeamLeader = false;
+
+        // Cek apakah user sudah login
+        if (Auth::check()) {
+            $user = Auth::user();
+
+            // Cek apakah relasi userType ada dan code-nya adalah 'TL'
+            if ($user->userType && $user->userType->code === 'TL') {
+                $isTeamLeader = true;
+            }
+        }
+
+        // Lempar variabel ke view
+        return view('views_frontend.events', [
+            'isTeamLeader' => $isTeamLeader,
+            'name' => $user->full_name ?? "",
+        ]);
+    }
+
     /**
      * Get events for frontend display
      */
@@ -34,7 +128,7 @@ class EventController extends Controller
                     'name' => $event->name,
                     'start_date' => $event->start_date ? date('d-m-Y', strtotime($event->start_date)) : '-',
                     'end_date' => $event->end_date ? date('d-m-Y', strtotime($event->end_date)) : '-',
-                    'logo' => $event->eo_logo ? asset('images/upload/' . $event->eo_logo) : 'No Photo',
+                    'logo' => $event->eo_logo,
                     'description' => $event->description ?? '-',
                 ];
             });
