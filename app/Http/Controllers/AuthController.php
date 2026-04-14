@@ -12,7 +12,6 @@ use App\Models\Team; // Pastikan Model Team sudah ada
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -55,7 +54,7 @@ class AuthController extends Controller
 
             Log::info("User logged in successfully: {$credentials['email']}");
             return redirect()->route('admin.dashboard')->with('success', 'Login successful!');
-            $routeLogin = match(Auth::user()->userType->code){
+            $routeLogin = match (Auth::user()->userType->code) {
                 "SA" => "admin.dashboard",
                 "TL" => "team_leader.team_members",
                 default => "admin.signin",
@@ -143,7 +142,10 @@ class AuthController extends Controller
                 $imagePath = null;
 
                 if ($request->hasFile('team_image')) {
-                    $imagePath = $request->file('team_image')->store('teams', 'public');
+                    $extension = $request->file('team_image')->getClientOriginalExtension();
+                    $filename = Str::uuid() . '.' . $extension;
+                    $request->file('team_image')->move(public_path('images/upload/teams/'), $filename);
+                    $imagePath = 'images/upload/teams/' . $filename;
                 }
 
                 Team::create([
@@ -172,7 +174,7 @@ class AuthController extends Controller
 
             // 6 Rerouting
             Auth::login($user, true);
-            $routeLogin = match($request->role_code){
+            $routeLogin = match ($request->role_code) {
                 "SA" => "admin.dashboard",
                 "TL" => "team_leader.team_members",
                 default => "admin.signin",

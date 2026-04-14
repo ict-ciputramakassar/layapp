@@ -310,8 +310,9 @@ class EventController extends Controller
             $logoFile = null;
             if ($request->hasFile('eoLogo')) {
                 $file = $request->file('eoLogo');
-                $logoFile = time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('images/upload'), $logoFile);
+                $extension = $file->getClientOriginalExtension();
+                $logoFile = Str::uuid() . '.' . $extension;
+                $file->move(public_path('images/upload/events'), $logoFile);
             }
 
             // Create Event
@@ -456,12 +457,12 @@ class EventController extends Controller
             if ($request->hasFile('eoLogo')) {
                 // Delete old file if exists
                 if ($logoFile && file_exists(public_path('images/upload/' . $logoFile))) {
-                    unlink(public_path('images/upload/' . $logoFile));
+                    unlink(public_path('images/upload/events/' . $logoFile));
                 }
 
                 $file = $request->file('eoLogo');
                 $logoFile = time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('images/upload'), $logoFile);
+                $file->move(public_path('images/upload/events/'), $logoFile);
             }
 
             // Update Event
@@ -544,7 +545,7 @@ class EventController extends Controller
         try {
             // Delete logo file
             if ($event->eo_logo && file_exists(public_path('images/upload/' . $event->eo_logo))) {
-                unlink(public_path('images/upload/' . $event->eo_logo));
+                unlink(public_path('images/upload/events/' . $event->eo_logo));
             }
 
             // Delete relations
