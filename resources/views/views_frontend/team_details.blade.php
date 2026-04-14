@@ -117,8 +117,8 @@
 
         <div class="td-filter-year" id="td-years">
             <button class="td-btn-year active" data-year="all">Semua Tahun</button>
-            <button class="td-btn-year" data-year="2026">Musim 2026</button>
-            <button class="td-btn-year" data-year="2025">Musim 2025</button>
+            {{-- <button class="td-btn-year" data-year="2026">Musim 2026</button>
+            <button class="td-btn-year" data-year="2025">Musim 2025</button> --}}
         </div>
 
         <div class="td-content-box" id="td-content">
@@ -164,14 +164,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         membersArray.forEach(member => {
             // Sesuaikan variabel di bawah (member.full_name, member.position.name) dengan field JSON/Tabel Anda
-            let name = member.full_name || member.name || "Anonim";
-            let position = member.position ? member.position.name : (member.member_type || 'Anggota');
+            let name = member.full_name;
+            let position = member.type;
             let image = `{{ asset(Storage::url('${member.image}')) }}`;
 
             html += `
             <div class="col-md-4 col-sm-6 mb-3">
                 <div class="member-card-mini">
-                    <img src="${image}" class="member-img" onerror="this.src='${defaultImg}'">
+                    <img src="${image}" class="member-img">
                     <div class="member-info">
                         <strong title="${name}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">${name}</strong>
                         <small>${position}</small>

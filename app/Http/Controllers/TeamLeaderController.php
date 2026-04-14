@@ -255,30 +255,44 @@ class TeamLeaderController extends Controller
         // Ambil semua member dari tim tersebut ke dalam bentuk Collection
         $allMembers = $teamData->teamMembers;
 
-        // 1. Filter Athlete (Depannya "AT")
+        // 1. Filter & Map Athlete (Depannya "AT")
         $athletes = $allMembers->filter(function ($member) {
-            // Sesuaikan variabel di bawah dengan field database Anda
-            // Jika memberType adalah kolom string biasa: $type = $member->member_type;
-            // Jika memberType adalah relasi (tabel terpisah): $type = $member->memberType->code;
-            $type = $member->member_type;
-
-            return str_starts_with($type, 'AT');
-        })->values(); // values() digunakan untuk me-reset index array agar rapi di JSON/Frontend
-
-        // 2. Filter Coach (Depannya "CO" atau "ACO")
-        $coaches = $allMembers->filter(function ($member) {
-            $type = $member->member_type;
-            return str_starts_with($type, 'CO') || str_starts_with($type, 'ACO');
+            return str_starts_with($member->memberType->code, 'AT');
+        })->map(function ($member) {
+            // Mapping key dan value untuk frontend
+            return [
+                'id'         => $member->id,
+                'full_name'  => $member->full_name,
+                'image'      => $member->image,
+                'position'   => $member->position->name ?? '',
+                'type'       => $member->memberType->name
+            ];
         })->values();
 
-        // 3. Filter Official (Sisanya)
-        $officials = $allMembers->filter(function ($member) {
-            $type = $member->member_type;
+        // 2. Filter & Map Coach (Depannya "CO" atau "ACO")
+        $coaches = $allMembers->filter(function ($member) {
+            return str_starts_with($member->memberType->code, 'CO') || str_starts_with($member->memberType->code, 'ACO');
+        })->map(function ($member) {
+            return [
+                'id'         => $member->id,
+                'full_name'  => $member->full_name,
+                'image'      => $member->image,
+                'type'       => $member->memberType->name
+            ];
+        })->values();
 
-            // Pastikan tidak berawalan AT, CO, dan ACO
-            return !str_starts_with($type, 'AT') &&
-                !str_starts_with($type, 'CO') &&
-                !str_starts_with($type, 'ACO');
+        // 3. Filter & Map Official (Sisanya)
+        $officials = $allMembers->filter(function ($member) {
+            return !str_starts_with($member->memberType->code, 'AT') &&
+                !str_starts_with($member->memberType->code, 'CO') &&
+                !str_starts_with($member->memberType->code, 'ACO');
+        })->map(function ($member) {
+            return [
+                'id'         => $member->id,
+                'full_name'  => $member->full_name,
+                'image'      => $member->image,
+                'type'       => $member->memberType->name
+            ];
         })->values();
 
         // Susun data untuk dilempar ke View
