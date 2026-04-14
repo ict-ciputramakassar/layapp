@@ -31,11 +31,30 @@ class AuthController extends Controller
             'password' => 'required|string|min:6',
         ]);
 
+        // Check if user exists and is active
+        $user = User::where('email', $credentials['email'])->first();
+
+        if (!$user) {
+            Log::warning("Login attempt with non-existent email: {$credentials['email']}");
+            return back()->withErrors([
+                'email' => 'The provided credentials do not match our records.',
+            ])->onlyInput('email');
+        }
+
+        if (!$user->is_active) {
+            Log::warning("Login attempt with inactive user: {$credentials['email']}");
+            return back()->withErrors([
+                'email' => 'Your account has been deactivated. Please contact support.',
+            ])->onlyInput('email');
+        }
+
         // Attempt to authenticate the user
         if (Auth::attempt($credentials, $request->filled('remember'))) {
             // Regenerate session to prevent session fixation attacks
             $request->session()->regenerate();
 
+            Log::info("User logged in successfully: {$credentials['email']}");
+            return redirect()->route('admin.dashboard')->with('success', 'Login successful!');
             $routeLogin = match(Auth::user()->userType->code){
                 "SA" => "admin.dashboard",
                 "TL" => "team_leader.team_members",
@@ -46,6 +65,7 @@ class AuthController extends Controller
         }
 
         // Authentication failed
+        Log::warning("Failed login attempt for user: {$credentials['email']}");
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');

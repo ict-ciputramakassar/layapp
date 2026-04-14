@@ -272,8 +272,8 @@
 
       // 4. EVENT: Tombol Reset
       // $('#resetBtn').on('click', function() {
-      //   $('#filterStatus').val('1'); 
-      //   $('#filterSelector').val('all').trigger('change'); 
+      //   $('#filterStatus').val('1');
+      //   $('#filterSelector').val('all').trigger('change');
       //   table.clear().draw(); // Kosongkan tabel kembali
       // });
 
