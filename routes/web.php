@@ -172,6 +172,7 @@ Route::prefix('team_leader')->name('team_leader.')->middleware("teamleader")->gr
 
     Route::get('/team_members', [TeamLeaderController::class, 'viewTeamMembers'])->name('team_members');
 
+    Route::get('/getAthletes/{eventId}', [TeamLeaderController::class, 'getAthletesForRegistration'])->name('get_athlete');
     Route::get('/getMembers', [TeamLeaderController::class, 'getMembers'])->name('get_members');
     Route::post('/addMembers', [TeamLeaderController::class, 'addMembersBulk'])->name('add_members_bulk');
     Route::get('/getMember/{id}', [TeamLeaderController::class, 'getMemberById'])->name('get_member_by_id');

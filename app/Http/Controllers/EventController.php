@@ -26,7 +26,7 @@ class EventController extends Controller
         // Validasi data yang masuk dari Fetch API
         $request->validate([
             'event_id'   => 'required',
-            'player_ids' => 'required|array|min:1|max:13',
+            'player_ids' => 'required|array|min:13|max:20',
         ]);
 
         // 1. Dapatkan User/Tim yang sedang login
@@ -44,11 +44,11 @@ class EventController extends Controller
             array_filter($playerIds, fn($pid) => in_array($pid, $validMemberIds))
         );
 
-        // 4. Periksa apakah jumlah yang valid tepat 13 orang
-        if (count($validPlayerIds) !== 1) {
+        // 4. Periksa apakah jumlah yang valid
+        if (count($validPlayerIds) < 13 || count($validPlayerIds) > 20) {
             return response()->json([
                 'success' => false,
-                'message' => 'Must Select 13 Players. '
+                'message' => 'Must Select Minimum of 13 Players and Maximum of 20 Players. '
                     . 'Found: ' . count($validPlayerIds) . ' Valid Players From Your Team.',
             ], 422);
         }
@@ -153,14 +153,20 @@ class EventController extends Controller
             $teams = Team::all();
 
             $data = $teams->map(function ($team) {
+                $eventRegistrations = $team->eventRegistrations;
+
+                $play = $eventRegistrations->sum(fn($registration) => $registration->groupEvents->sum('play'));
+                $win  = $eventRegistrations->sum(fn($registration) => $registration->groupEvents->sum('win'));
+                $lose = $eventRegistrations->sum(fn($registration) => $registration->groupEvents->sum('lose'));
+
                 return [
-                    'id' => $team->id,
-                    'name' => $team->name,
+                    'id'    => $team->id,
+                    'name'  => $team->name,
                     'image' => $team->image,
                     'points' => [
-                        'p' => 0,
-                        'win' => 0,
-                        'lose' => 0,
+                        'play' => $play,
+                        'win'  => $win,
+                        'lose' => $lose,
                     ],
                 ];
             });
