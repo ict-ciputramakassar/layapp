@@ -145,12 +145,12 @@
                                 <ul>
                                     <li>
                                         <img src="{{ asset('images/img-03.png') }}" alt="">
-                                        <span>Footbal Team</span>
+                                        <span>SMA Athirah</span>
                                     </li>
                                     <li class="vs"><span>vs</span></li>
                                     <li>
                                         <img src="{{ asset('images/img-04.png') }}" alt="">
-                                        <span>Super Team Club</span>
+                                        <span>SMAN 17</span>
                                     </li>
                                 </ul>
                             </div>
@@ -165,12 +165,13 @@
                     <div class="right-match-time">
                         <h2>Next Match</h2>
                         <ul id="countdown-1" class="countdown">
-                            <li><span class="days">10 </span>Day </li>
+                            <li><span>12/02/2017 /19:00pm</span></li>
+                            {{-- <li><span class="days">10 </span>Day </li>
                             <li><span class="hours">5 </span>Hours </li>
                             <li><span class="minutes">25 </span>Minutes </li>
-                            <li><span class="seconds">10 </span>Seconds </li>
+                            <li><span class="seconds">10 </span>Seconds </li> --}}
                         </ul>
-                        <span>12/02/2017 /19:00pm</span>
+                        {{-- <span>12/02/2017 /19:00pm</span> --}}
                     </div>
                 </div>
             </div>
@@ -194,56 +195,56 @@
                                 <ul>
                                     <li>
                                         <img src="{{ asset('images/img-01_002.png') }}" alt="">
-                                        <span>Portugal</span>
+                                        <span>SMA Athirah</span>
                                     </li>
                                     <li class="vs"><span>vs</span></li>
                                     <li>
                                         <img src="{{ asset('images/img-02.png') }}" alt="">
-                                        <span>Germany</span>
+                                        <span>SMAN 17</span>
                                     </li>
                                 </ul>
                                 <ul>
                                     <li>
                                         <img src="{{ asset('images/img-03_002.png') }}" alt="">
-                                        <span>Portugal</span>
+                                        <span>SDH</span>
                                     </li>
                                     <li class="vs"><span>vs</span></li>
                                     <li>
                                         <img src="{{ asset('images/img-04_003.png') }}" alt="">
-                                        <span>Germany</span>
+                                        <span>SMAN 11</span>
                                     </li>
                                 </ul>
                                 <ul>
                                     <li>
                                         <img src="{{ asset('images/img-05_002.png') }}" alt="">
-                                        <span>Portugal</span>
+                                        <span>SMA 2</span>
                                     </li>
                                     <li class="vs"><span>vs</span></li>
                                     <li>
                                         <img src="{{ asset('images/img-06.png') }}" alt="">
-                                        <span>Germany</span>
+                                        <span>SMAN Rajawali</span>
                                     </li>
                                 </ul>
                                 <ul>
                                     <li>
                                         <img src="{{ asset('images/img-07_002.png') }}" alt="">
-                                        <span>Portugal</span>
+                                        <span>SMA YPS</span>
                                     </li>
                                     <li class="vs"><span>vs</span></li>
                                     <li>
                                         <img src="{{ asset('images/img-08.png') }}" alt="">
-                                        <span>Germany</span>
+                                        <span>Eleven</span>
                                     </li>
                                 </ul>
                                 <ul>
                                     <li>
                                         <img src="{{ asset('images/img-05_002.png') }}" alt="">
-                                        <span>Portugal</span>
+                                        <span>SMAN 16</span>
                                     </li>
                                     <li class="vs"><span>vs</span></li>
                                     <li>
                                         <img src="{{ asset('images/img-06.png') }}" alt="">
-                                        <span>Germany</span>
+                                        <span>Absa</span>
                                     </li>
                                 </ul>
                             </div>
