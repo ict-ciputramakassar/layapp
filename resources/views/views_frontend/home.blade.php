@@ -349,8 +349,8 @@
                         <p class="sponsor-name">Yamaha</p>
                     </div>
                     <div class="sponsor-card">
-                        <img class="sponsor-image" src="{{ asset("images/sponsors/BankSulselbar.png") }}" alt="">
-                        <p class="sponsor-name">Bank Sulselbar</p>
+                        <img class="sponsor-image" src="{{ asset("images/sponsors/BankSampoerna.png") }}" alt="">
+                        <p class="sponsor-name">Bank Sampoerna</p>
                     </div>
                     <div class="sponsor-card">
                         <img class="sponsor-image" src="{{ asset("images/sponsors/CocaCola.png") }}" alt="">
