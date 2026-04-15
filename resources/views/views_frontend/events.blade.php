@@ -44,17 +44,17 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white; opacity: 0.8;">
                     <span aria-hidden="true">&times;</span>
                 </button>
-                <h4 class="modal-title" id="registerModalLabel" style="color: white; margin: 0;">Pendaftaran Event</h4>
+                <h4 class="modal-title" id="registerModalLabel" style="color: white; margin: 0;">Event Registration</h4>
             </div>
             <div class="modal-body">
-                <p>Anda akan mendaftarkan tim ke event: <strong id="modalEventName" style="color: #e32124;"></strong></p>
-
+                <p>You will register to event: <strong id="modalEventName" style="color: #e32124;"></strong></p>
+                
                 <form id="registerEventForm">
                     <input type="hidden" id="modalEventId">
 
                     <div class="form-group" style="margin-top: 20px;">
-                        <label>Pilih Pemain (Maksimal 13 Pemain) - <span id="selectionCounter" class="text-danger font-weight-bold">0/13 Terpilih</span></label>
-
+                        <label>Select Players - <span id="selectionCounter" class="text-danger font-weight-bold">0/20 Terpilih</span></label>
+                        
                         <div class="filter-group">
                             <div>
                                 <input type="text" id="searchPlayer" class="form-control" placeholder="Ketik nama pemain..." onkeyup="filterPlayers()">
@@ -75,14 +75,14 @@
                             <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
-                                        <th class="text-center" width="10%">Pilih</th>
-                                        <th>Nama Pemain</th>
-                                        <th>Posisi</th>
-                                        <th>Kategori Umur</th>
+                                        <th class="text-center" width="10%">Select</th>
+                                        <th>Player Name</th>
+                                        <th>Position</th>
+                                        <th>Age Category</th>
                                     </tr>
                                 </thead>
                                 <tbody id="playersTableBody">
-                                    <tr><td colspan="4" class="text-center"><i class="fa fa-spinner fa-spin"></i> Mengambil data pemain...</td></tr>
+                                    <tr><td colspan="4" class="text-center"><i class="fa fa-spinner fa-spin"></i> Fetching players data...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -91,7 +91,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-primary" id="btnSubmitRegister" onclick="submitRegistration()" style="background: #e32124; border-color: #e32124;">Kirim Pendaftaran</button>
+                <button type="button" class="btn btn-primary" id="btnSubmitRegister" onclick="submitRegistration()" style="background: #e32124; border-color: #e32124;">Send Registration</button>
             </div>
         </div>
     </div>
@@ -100,7 +100,8 @@
 <script>
     const isTeamLeader = @json($isTeamLeader);
     let selectedPlayers = []; // Menyimpan ID pemain yang dipilih
-    const MAX_PLAYERS = 13;
+    const MAX_PLAYERS = 20;
+    const MIN_PLAYERS = 13;
 
     document.addEventListener('DOMContentLoaded', function() {
         // Fetch List Events
@@ -216,12 +217,12 @@
             });
     }
 
-    // 2. FUNGSI CHECKBOX (Limit maksimal 13)
+    // 2. FUNGSI CHECKBOX (Limit maksimal)
     function handleCheckbox(checkbox) {
         if (checkbox.checked) {
             if (selectedPlayers.length >= MAX_PLAYERS) {
                 checkbox.checked = false; // Batalkan centang
-                alert(`Anda hanya dapat memilih maksimal ${MAX_PLAYERS} pemain.`);
+                alert(`You can only choose up to ${MAX_PLAYERS} players.`);
                 return;
             }
             selectedPlayers.push(checkbox.value);
@@ -230,8 +231,8 @@
         }
 
         // Update Counter
-        document.getElementById('selectionCounter').innerText = `${selectedPlayers.length}/${MAX_PLAYERS} Terpilih`;
-
+        document.getElementById('selectionCounter').innerText = `${selectedPlayers.length}/${MAX_PLAYERS} Selected`;
+        
         // Disable sisanya jika sudah mencapai batas maksimal
         const allCheckboxes = document.querySelectorAll('.chk-player');
         allCheckboxes.forEach(cb => {
@@ -268,13 +269,13 @@
 
     // 4. FUNGSI SUBMIT KE API
     function submitRegistration() {
-        if (selectedPlayers.length !== 1) {
-            alert('Needs 13 Players!');
+        if (selectedPlayers.length < MIN_PLAYERS) {
+            alert(`Needs at Least ${MIN_PLAYERS} Players!`);
             return;
         }
 
         const btnSubmit = document.getElementById('btnSubmitRegister');
-        btnSubmit.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Memproses...';
+        btnSubmit.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Processing...';
         btnSubmit.disabled = true;
 
         const payload = {
@@ -293,20 +294,20 @@
         })
         .then(res => res.json())
         .then(data => {
-            btnSubmit.innerHTML = 'Kirim Pendaftaran';
+            btnSubmit.innerHTML = 'Send Registration';
             btnSubmit.disabled = false;
 
             if (data.success) {
-                alert('Pendaftaran berhasil dikirim!');
+                alert('Registration Success!');
                 $('#registerEventModal').modal('hide');
             } else {
-                alert(data.message || 'Terjadi kesalahan saat mendaftar.');
+                alert(data.message || 'An error occured during registration.');
             }
         })
         .catch(err => {
-            btnSubmit.innerHTML = 'Kirim Pendaftaran';
+            btnSubmit.innerHTML = 'Send Registration';
             btnSubmit.disabled = false;
-            alert('Gagal terhubung ke server. Silakan coba lagi.');
+            alert('Failed to connect to server, please try again.');
         });
     }
 </script>

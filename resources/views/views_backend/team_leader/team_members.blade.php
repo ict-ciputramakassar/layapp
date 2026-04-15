@@ -2,24 +2,6 @@
 
 @section('title', 'Team Members - LayApp')
 
-@push('styles')
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.css" rel="stylesheet" />
-  <style>
-    .avatar-md {
-      height: 40px;
-      width: 40px;
-      object-fit: cover;
-    }
-
-    .table-responsive {
-      padding: 20px;
-      background: #fff;
-      border-radius: 8px;
-    }
-  </style>
-@endpush
-
 @section('content')
   <!-- MODAL KONFIRMASI DELETE -->
   <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">

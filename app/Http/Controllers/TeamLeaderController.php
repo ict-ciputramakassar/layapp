@@ -22,7 +22,90 @@ class TeamLeaderController extends Controller
     {
         $this->user = Auth::user();
     }
+    
     public function getMembers(Request $request)
+    {
+        if (!$this->user || $this->user->userType?->code !== 'TL') {
+            return response()->json([
+                'success' => false,
+                'message' => 'User is not a Team Leader or not found.'
+            ], 403);
+        }
+
+        $team = $this->user->team;
+
+        // 1. Mulai Query
+        $query = TeamMember::with(['memberType', 'categoryAge', 'position'])
+            ->where('team_id', $team->id);
+
+        // 2. Tangkap Filter Status (Selalu dikirim)
+        $status = $request->query('status', '1');
+        if ($status !== 'both') {
+            $query->where('is_active', $status);
+        }
+
+        // 3. Tangkap Filter Dinamis (Hanya salah satu yang akan terisi)
+        if ($request->filled('full_name')) {
+            $query->where('full_name', 'LIKE', '%' . $request->full_name . '%');
+        }
+
+        if ($request->filled('member_type')) {
+            $query->where('member_type_id', $request->member_type);
+        }
+
+        if ($request->filled('dob_year')) {
+            $query->whereYear('dob', $request->dob_year);
+        }
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $query->whereBetween('start_date', [$request->start_date, $request->end_date]);
+        }
+
+        // 4. Ambil Data
+        $members = $query->orderBy('created_date', 'desc')->get();
+        $mappedMembers = $members->map(function ($member) {
+            // if($member->is_active == 1)
+            return [
+                'id' => $member->id,
+                'full_name' => $member->full_name,
+                'start_date' => $member->start_date,
+                'end_date' => $member->end_date,
+                'is_active' => $member->is_active,
+                'image' => $member->image,
+                'member_type' => [
+                    'name' => $member->memberType->name,
+                    'code' => $member->memberType->code,
+                    'id' => $member->memberType->id,
+                ],
+                'age_category' => [
+                    'name' => $member->categoryAge?->name,
+                    'code' => $member->categoryAge?->code,
+                    'id' => $member->categoryAge?->id,
+                ],
+                'dob' => $member->dob,
+                'phone_number' => $member->phone_number,
+                'email' => $member->email,
+                'height' => $member->height,
+                'weight' => $member->weight,
+                'position' => [
+                    "name" => $member->position?->name,
+                    "code" => $member->position?->code,
+                    "id" => $member->position?->id,
+                ],
+                'license' => [
+                    "name" => $member->license ?? "",
+                    "valid_date" => $member->valid_date ?? "",
+                ],
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'members' => $mappedMembers
+        ]);
+    }
+
+    public function getAthleteForRegistration(Request $request, $eventId)
     {
         if (!$this->user || $this->user->userType?->code !== 'TL') {
             return response()->json([
