@@ -199,7 +199,7 @@
       </div>
       <!-- AKHIR FORM TAMBAHAN -->
 
-      <button class="btn btn-primary w-100 py-2 fs-5" type="submit">Create Account</button>
+      <button class="btn btn-primary w-90 m-5 py-2 fs-5" type="submit">Create Account</button>
       </form>
 
       <div class="text-center mt-4 small text-muted">
