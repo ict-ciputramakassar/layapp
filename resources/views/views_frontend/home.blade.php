@@ -65,7 +65,7 @@
                 transform: translateX(0);
             }
             100% {
-                transform: translateX(calc(-50% - 1.5rem)); /* 1.5rem adalah setengah dari gap (3rem) */
+                transform: translateX(calc(-49%)); /* 1.5rem adalah setengah dari gap (3rem) */
             }
         }
     </style>
@@ -182,12 +182,12 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-4 col-sm-4 col-xs-12">
-                    <aside id="sidebar" class="left-bar">
+                    {{-- <aside id="sidebar" class="left-bar">
                         <div class="banner-sidebar">
                             <img class="img-responsive" src="{{ asset('images/img-05.jpg') }}" alt="#" />
                             <h3>Lorem Ipsum is simply dummy text..</h3>
                         </div>
-                    </aside>
+                    </aside> --}}
                     <h4>Match Fixture</h4>
                     <aside id="sidebar" class="left-bar">
                         <div class="feature-matchs">
@@ -268,7 +268,7 @@
                             </table>
                         </div>
                     </aside>
-                    <div class="content-widget top-story" style="background: url({{ asset('images/top-story-bg.jpg') }});">
+                    {{-- <div class="content-widget top-story" style="background: url({{ asset('images/top-story-bg.jpg') }});">
                         <div class="top-stroy-header">
                             <h2>Top Soccer Headlines Story <a href="#" class="fa fa-fa fa-angle-right"></a></h2>
                             <span class="date">July 05, 2017</span>
@@ -285,8 +285,8 @@
                             <li><a href="#">Messi wins libel case.</a></li>
                         </ul>
                     </div>
-                </div>
-                <div class="col-lg-8 col-sm-8 col-xs-12">
+                </div> --}}
+                {{-- <div class="col-lg-8 col-sm-8 col-xs-12">
                     <div class="news-post-holder">
                         <div class="news-post-widget">
                             <img class="img-responsive" src="{{ asset('images/img-01_002.jpg') }}" alt="">
@@ -324,7 +324,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             </div>
         </div>
     </section>
