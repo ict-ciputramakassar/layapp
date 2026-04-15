@@ -82,11 +82,11 @@
                     
                     <div class="td-address">
                         <i class="fa fa-map-marker" style="color: #e32124; margin-right: 5px;"></i> 
-                        Informasi alamat tim bisa Anda tambahkan ke database nanti.
+                        {{ $team['address'] }}
                     </div>
                     
                     <div class="td-tags">
-                        <span class="td-tag td-tag-region"><i class="fa fa-map"></i> Reg: UMUM</span>
+                        <span class="td-tag td-tag-region"><i class="fa fa-map"></i> Reg: {{ $team['city'] }}</span>
                         <span class="td-tag td-tag-type"><i class="fa fa-shield"></i> Tipe: {{ $team['type'] }}</span>
                     </div>
                 </div>
@@ -95,10 +95,10 @@
                     <div class="td-match-widget">
                         <div class="td-match-title"><i class="fa fa-history"></i> Last Match Results</div>
                         <div class="td-match-item">
-                            <div class="td-match-status status-l">L</div>
+                            {{-- <div class="td-match-status status-l">L</div>
                             <div class="td-match-ku">KU-16</div>
                             <div class="td-match-score">18 - 48</div>
-                            <div class="td-match-enemy">Junior Liga Bali</div>
+                            <div class="td-match-enemy">Junior Liga Bali</div> --}}
                         </div>
                     </div>
                 </div>
@@ -125,7 +125,7 @@
             </div>
 
         <div class="mt-3">
-            <a href="{{ route('team_datas') }}" class="btn" style="background: #333; color: #fff; border-radius: 20px; padding: 8px 20px;">
+            <a href="{{ route('team') }}" class="btn" style="background: #333; color: #fff; border-radius: 20px; padding: 8px 20px;">
                 <i class="fa fa-arrow-left"></i> Kembali ke Daftar Klub
             </a>
         </div>
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
             html += `
             <div class="col-md-4 col-sm-6 mb-3">
                 <div class="member-card-mini">
-                    <img src="${image}" class="member-img">
+                    <img src="${image}" class="member-img" onerror="this.src='{{ asset('images/client.png') }}'">
                     <div class="member-info">
                         <strong title="${name}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px;">${name}</strong>
                         <small>${position}</small>

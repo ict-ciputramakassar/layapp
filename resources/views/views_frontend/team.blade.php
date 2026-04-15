@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="col-md-4 col-sm-6" style="margin-bottom: 30px;">
                     <a href="${detailUrl}" class="team-link">
                         <div class="team-card">
-                            <img src="${teamImage}" alt="${team.name}">
+                            <img src="${teamImage}" alt="${team.name}" onerror="this.src='{{ asset('images/client.png') }}'">
                             <div class="team-card-body">
                                 <h3 class="team-card-title">${team.name}</h3>
                             </div>

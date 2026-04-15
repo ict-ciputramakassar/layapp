@@ -387,6 +387,8 @@ class TeamLeaderController extends Controller
             "team" => [
                 "id" => $teamData->id,
                 "name" => $teamData->name,
+                "address" => $teamData->address,
+                "city" => $teamData->city->name,
                 "image" => $teamData->image,
                 "type" => $teamData->teamType->name,
             ],
