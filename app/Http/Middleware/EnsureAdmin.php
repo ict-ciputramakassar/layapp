@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class EnsureTeamLeader
+class EnsureAdmin
 {
     /**
      * Handle an incoming request.
@@ -15,7 +15,7 @@ class EnsureTeamLeader
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->userType && Auth::user()->userType->code === 'TL') {
+        if (Auth::check() && Auth::user()->userType && Auth::user()->userType->code === 'A') {
             return $next($request);
         }
 

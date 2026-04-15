@@ -50,7 +50,7 @@
       </form>
 
       <div class="text-center mt-3 small text-muted">
-        Already have an account? <a href="{{ route('admin.signin') }}" class="link-primary">Sign in</a>
+        Already have an account? <a href="{{ route('auth.login') }}" class="link-primary">Sign in</a>
       </div>
     </div>
   </div>

@@ -16,7 +16,7 @@ class EnsureAuthenticated
     public function handle(Request $request, Closure $next)
     {
         if (!Auth::check()) {
-            return redirect()->route('admin.signin');
+            return redirect()->route('auth.login');
         }
 
         return $next($request);

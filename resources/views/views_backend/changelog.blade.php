@@ -23,7 +23,7 @@
             <div>
               <h3 class="mb-4">Added HTML Page</h3>
               <ul class="list-unstyled fs-5">
-                <li>User Roles <a class="link-primary fs-6" href="{{ route('admin.user-roles') }}">Demo <i class="ti ti-external-link"></i></a></li>
+                <li>User Roles <a class="link-primary fs-6" href="#">Demo <i class="ti ti-external-link"></i></a></li>
               </ul>
             </div>
           </div>

@@ -376,7 +376,15 @@ class EventController extends Controller
                 }
             }
 
-            return redirect()->route('admin.event-list')
+            // Determine redirect route based on user role
+            $userRole = Auth::user()->userType?->code;
+            $redirectRoute = match ($userRole) {
+                'SA' => 'superadmin.event-list',
+                'A' => 'admin.event-list',
+                default => 'admin.event-list',
+            };
+
+            return redirect()->route($redirectRoute)
                 ->with('success', 'Event created successfully!');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())
@@ -525,7 +533,15 @@ class EventController extends Controller
                 }
             }
 
-            return redirect()->route('admin.event-list')
+            // Determine redirect route based on user role
+            $userRole = Auth::user()->userType?->code;
+            $redirectRoute = match ($userRole) {
+                'SA' => 'superadmin.event-list',
+                'A' => 'admin.event-list',
+                default => 'admin.event-list',
+            };
+
+            return redirect()->route($redirectRoute)
                 ->with('success', 'Event updated successfully!');
         } catch (\Illuminate\Validation\ValidationException $e) {
             return back()->withErrors($e->errors())
@@ -560,9 +576,19 @@ class EventController extends Controller
                 return response()->json(['message' => 'Event deleted successfully!'], 200);
             }
 
-            return redirect()->route('admin.event-list')
+            // Determine redirect route based on user role
+            $userRole = Auth::user()->userType?->code;
+            $redirectRoute = match ($userRole) {
+                'SA' => 'superadmin.event-list',
+                'A' => 'admin.event-list',
+                default => 'admin.event-list',
+            };
+
+            return redirect()->route($redirectRoute)
                 ->with('success', 'Event deleted successfully!');
         } catch (\Exception $e) {
+            Log::error('Event Deletion Error: ' . $e->getMessage());
+
             // Check if it's an AJAX request
             if (request()->wantsJson()) {
                 return response()->json(['error' => $e->getMessage()], 500);

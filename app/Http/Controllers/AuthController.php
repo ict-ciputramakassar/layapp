@@ -20,7 +20,7 @@ class AuthController extends Controller
 {
     public function login()
     {
-        return view("views_backend.signin");
+        return view("views_backend.auth.signin");
     }
 
     public function authenticate(Request $request)
@@ -54,11 +54,11 @@ class AuthController extends Controller
             $request->session()->regenerate();
 
             Log::info("User logged in successfully: {$credentials['email']}");
-            return redirect()->route('admin.dashboard')->with('success', 'Login successful!');
-            $routeLogin = match(Auth::user()->userType->code){
-                "SA" => "admin.dashboard",
+            $routeLogin = match (Auth::user()->userType?->code) {
+                "SA" => "superadmin.dashboard",
+                "A" => "admin.dashboard",
                 "TL" => "team_leader.team_members",
-                default => "admin.signin",
+                default => "auth.login",
             };
 
             return redirect()->route($routeLogin)->with('success', 'Login successful!');
@@ -76,7 +76,7 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('admin.signin');
+        return redirect()->route('auth.login');
     }
 
     public function signup()
@@ -172,10 +172,11 @@ class AuthController extends Controller
 
             // 6 Rerouting
             Auth::login($user, true);
-            $routeLogin = match($request->role_code){
-                "SA" => "admin.dashboard",
+            $routeLogin = match ($request->role_code) {
+                "SA" => "superadmin.dashboard",
+                "A" => "admin.dashboard",
                 "TL" => "team_leader.team_members",
-                default => "admin.signin",
+                default => "auth.login",
             };
 
             return redirect()->route($routeLogin)->with('success', 'Login successful!');

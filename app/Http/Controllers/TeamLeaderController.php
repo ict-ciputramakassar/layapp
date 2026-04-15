@@ -126,7 +126,7 @@ class TeamLeaderController extends Controller
                 'members.*.member_type_id' => 'required|string',
                 'members.*.image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
 
-                // UBAH MENJADI NULLABLE: 
+                // UBAH MENJADI NULLABLE:
                 // Karena jika yang dipilih Player, License & Valid Date akan kosong.
                 // Jika yang dipilih Coach, Position & Category Age akan kosong.
                 'members.*.type_code' => 'required|string',
@@ -319,7 +319,7 @@ class TeamLeaderController extends Controller
     {
 
         if (!$this->user || $this->user->userType?->code !== 'TL') {
-            return redirect('auth.login');
+            return redirect()->route('auth.login');
         }
 
         $data = [
@@ -343,7 +343,7 @@ class TeamLeaderController extends Controller
     public function editMemberView($id)
     {
         if (!$this->user || $this->user->userType?->code !== 'TL') {
-            return redirect('auth.login');
+            return redirect()->route('auth.login');
         }
         $team = $this->user->team;
 

@@ -55,7 +55,7 @@
       </form>
 
       <div class="text-center mt-3 small text-muted">
-        Don't have an account? <a href="{{ route('admin.signup') }}"  class="link-primary">Sign up</a>
+        Don't have an account? <a href="{{ route('auth.signup') }}"  class="link-primary">Sign up</a>
       </div>
     </div>
   </div>

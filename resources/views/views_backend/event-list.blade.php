@@ -63,12 +63,16 @@
 
 <script>
 $(document).ready(function() {
+    // Determine the API endpoint based on user role
+    const userRole = '{{ Auth::user()->userType?->code }}';
+    const apiRoute = userRole === 'SA' ? '{{ route('superadmin.api.events.data') }}' : '{{ route('admin.api.events.data') }}';
+
     let table = $('#eventsTable').DataTable({
         processing: true,
         serverSide: true,
         responsive: true,
         ajax: {
-            url: '{{ route('admin.api.events.data') }}',
+            url: apiRoute,
             type: 'GET'
         },
         columns: [
@@ -104,8 +108,9 @@ $(document).ready(function() {
             {
                 data: 'id',
                 render: function(data, type, row) {
+                    const editRoute = userRole === 'SA' ? `/superadmin/events/${data}/edit` : `/admin/events/${data}/edit`;
                     return `
-                        <a href="/admin/events/${data}/edit" class="btn btn-sm btn-outline-primary">
+                        <a href="${editRoute}" class="btn btn-sm btn-outline-primary">
                             <i class="ti ti-edit"></i> Edit
                         </a>
                         <a href="javascript:void(0);" onclick="deleteEvent('${data}')" class="btn btn-sm btn-outline-danger">
@@ -137,9 +142,11 @@ $(document).ready(function() {
     // Delete function
     window.deleteEvent = function(eventId) {
         if (confirm('Are you sure you want to delete this event?')) {
+            const deleteRoute = userRole === 'SA' ? `/superadmin/events/${eventId}` : `/admin/events/${eventId}`;
             $.ajax({
-                url: `/admin/events/${eventId}`,
+                url: deleteRoute,
                 type: 'DELETE',
+                dataType: 'json',
                 headers: {
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },

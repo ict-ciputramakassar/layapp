@@ -11,7 +11,7 @@
         <p class="mb-0">SKU: PT001</p>
       </div>
       <div>
-        <a href="{{ route('admin.edit-product') }}" class="btn btn-secondary">
+        <a href="{{ route('edit-product') }}" class="btn btn-secondary">
           <span class="me-1"><i class="ti ti-edit"></i></span>
           <span>Edit</span>
         </a>

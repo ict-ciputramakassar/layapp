@@ -48,13 +48,13 @@
             </div>
             <div class="modal-body">
                 <p>Anda akan mendaftarkan tim ke event: <strong id="modalEventName" style="color: #e32124;"></strong></p>
-                
+
                 <form id="registerEventForm">
                     <input type="hidden" id="modalEventId">
-                    
+
                     <div class="form-group" style="margin-top: 20px;">
                         <label>Pilih Pemain (Maksimal 13 Pemain) - <span id="selectionCounter" class="text-danger font-weight-bold">0/13 Terpilih</span></label>
-                        
+
                         <div class="filter-group">
                             <div>
                                 <input type="text" id="searchPlayer" class="form-control" placeholder="Ketik nama pemain..." onkeyup="filterPlayers()">
@@ -70,7 +70,7 @@
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div class="table-responsive table-container">
                             <table class="table table-bordered table-hover">
                                 <thead>
@@ -112,14 +112,14 @@
                     let html = '';
 
                     data.data.forEach(event => {
-                        let registerBtn = isTeamLeader 
-                            ? `<div class="center" style="margin-top:15px;"><button class="btn btn-danger btn-block" onclick="openRegisterModal('${event.id}', '${event.name.replace(/'/g, "\\'")}')">Daftar Event</button></div>` 
+                        let registerBtn = isTeamLeader
+                            ? `<div class="center" style="margin-top:15px;"><button class="btn btn-danger btn-block" onclick="openRegisterModal('${event.id}', '${event.name.replace(/'/g, "\\'")}')">Daftar Event</button></div>`
                             : '';
 
                         html += `
                             <div class="col-md-3 col-sm-6 mb-4" style="margin-bottom: 20px;">
                                 <div class="card" style="box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 15px; border-radius: 8px;">
-                                    <img class="img-responsive" src="{{ asset('${event.logo}') }}" alt="${event.name}" style="width:100%; height: 200px; object-fit: cover; border-radius: 6px;">
+                                    <img class="img-responsive" src="/images/upload/${event.logo}" alt="${event.name}" style="width:100%; height: 200px; object-fit: cover; border-radius: 6px;">
                                     <div style="margin-top: 15px;">
                                         <h4 style="font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${event.name}">${event.name}</h4>
                                         <p style="margin-bottom: 5px; font-size: 13px; color: #555;"><i class="fa fa-calendar"></i> Mulai: ${event.start_date}</p>
@@ -144,12 +144,12 @@
     function openRegisterModal(eventId, eventName) {
         document.getElementById('modalEventName').innerText = eventName;
         document.getElementById('modalEventId').value = eventId;
-        
+
         // Reset Modal
         document.getElementById('searchPlayer').value = '';
         document.getElementById('selectionCounter').innerText = `0/${MAX_PLAYERS} Terpilih`;
         selectedPlayers = [];
-        
+
         $('#registerEventModal').modal('show');
 
         // Panggil API get_members
@@ -158,10 +158,10 @@
             .then(data => {
                 const tbody = document.getElementById('playersTableBody');
                 if (data.success && data.members) {
-                    
+
                     // FILTER: Hanya ambil yang depannya AT (Athlete)
                     const athletes = data.members.filter(m => m.member_type && m.member_type.code.startsWith('AT') && m.is_active == 1);
-                    
+
                     if(athletes.length === 0) {
                         tbody.innerHTML = '<tr><td colspan="4" class="text-center">Tidak ada atlet yang tersedia di tim Anda.</td></tr>';
                         return;
@@ -174,7 +174,7 @@
                     athletes.forEach(a => {
                         let pos = a.position ? a.position.name : '-';
                         let age = a.age_category ? a.age_category.name : '-';
-                        
+
                         positions.add(pos);
                         ages.add(age);
 
@@ -189,20 +189,20 @@
                             </tr>
                         `;
                     });
-                    
+
                     tbody.innerHTML = tableHtml;
 
                     // Populate Filter Dropdowns dynamically
                     const filterPos = document.getElementById('filterPosition');
                     const filterAge = document.getElementById('filterAge');
-                    
+
                     filterPos.innerHTML = '<option value="">Semua Posisi</option>';
                     filterAge.innerHTML = '<option value="">Semua Kategori Umur</option>';
-                    
+
                     Array.from(positions).sort().forEach(p => {
                         if(p !== '-') filterPos.innerHTML += `<option value="${p}">${p}</option>`;
                     });
-                    
+
                     Array.from(ages).sort().forEach(a => {
                         if(a !== '-') filterAge.innerHTML += `<option value="${a}">${a}</option>`;
                     });
@@ -231,7 +231,7 @@
 
         // Update Counter
         document.getElementById('selectionCounter').innerText = `${selectedPlayers.length}/${MAX_PLAYERS} Terpilih`;
-        
+
         // Disable sisanya jika sudah mencapai batas maksimal
         const allCheckboxes = document.querySelectorAll('.chk-player');
         allCheckboxes.forEach(cb => {
@@ -246,7 +246,7 @@
         const keyword = document.getElementById('searchPlayer').value.toLowerCase();
         const posValue = document.getElementById('filterPosition').value;
         const ageValue = document.getElementById('filterAge').value;
-        
+
         const rows = document.querySelectorAll('.player-row');
 
         rows.forEach(row => {
@@ -295,7 +295,7 @@
         .then(data => {
             btnSubmit.innerHTML = 'Kirim Pendaftaran';
             btnSubmit.disabled = false;
-            
+
             if (data.success) {
                 alert('Pendaftaran berhasil dikirim!');
                 $('#registerEventModal').modal('hide');

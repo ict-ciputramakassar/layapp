@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TeamLeaderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserRolesController;
-use App\Http\Controllers\UploadController;
 use App\Http\Controllers\EventController;
 
 // Frontend Routes
@@ -46,29 +45,14 @@ Route::get('/single-blog', function () {
 })->name('single-blog');
 
 // Backend Routes
-Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
-    // File Upload
-    Route::post('/upload', [UploadController::class, 'store'])->name('upload');
-
-    // Main Navigation
+Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('views_backend.dashboard');
     })->name('dashboard');
 
-    Route::get('/event-list', [EventController::class, 'index'])->name('event-list');
-
     Route::get('/reports', function () {
         return view('views_backend.reports');
     })->name('reports');
-
-    // Event Management
-    Route::get('/create-event', [EventController::class, 'create'])->name('create-event');
-    Route::post('/events', [EventController::class, 'store'])->name('events.store');
-    Route::get('/api/events', [EventController::class, 'getEventsData'])->name('api.events.data');
-    Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
-    Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
-    Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
-    Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
 
     Route::get('/edit-product', function () {
         return view('views_backend.edit-product');
@@ -140,18 +124,6 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         return view('views_backend.pos');
     })->name('pos');
 
-    // Account & Users
-    Route::get('/user-roles', [UserRolesController::class, 'index'])->name('user-roles')->middleware('superadmin');
-    Route::get('/api/users', [UserRolesController::class, 'getUsers'])->name('api.users')->middleware('superadmin');
-    Route::get('/api/roles', [UserRolesController::class, 'getRoles'])->name('api.roles')->middleware('superadmin');
-    Route::post('/users', [UserRolesController::class, 'storeUser'])->name('users.store')->middleware('superadmin');
-    Route::put('/users/{userId}', [UserRolesController::class, 'updateUser'])->name('users.update')->middleware('superadmin');
-    Route::put('/users/{userId}/role', [UserRolesController::class, 'updateUserRole'])->name('users.updateRole')->middleware('superadmin');
-    Route::delete('/users/{userId}', [UserRolesController::class, 'deleteUser'])->name('users.delete')->middleware('superadmin');
-    Route::post('/roles', [UserRolesController::class, 'storeRole'])->name('roles.store')->middleware('superadmin');
-    Route::put('/roles/{roleId}', [UserRolesController::class, 'updateRole'])->name('roles.update')->middleware('superadmin');
-    Route::delete('/roles/{roleId}', [UserRolesController::class, 'deleteRole'])->name('roles.delete')->middleware('superadmin');
-
     // Utilities
     Route::get('/404', function () {
         return view('views_backend.error-404');
@@ -180,14 +152,59 @@ Route::prefix('team_leader')->name('team_leader.')->middleware("teamleader")->gr
     Route::delete('/deleteMember/{id}', [TeamLeaderController::class, 'deleteMember'])->name('delete_member');
 });
 
+// Backend Routes - Superadmin
+Route::prefix('superadmin')->name('superadmin.')->middleware("superadmin")->group(function () {
+    // Main Navigation
+    Route::get('/dashboard', function () {
+        return view('views_backend.dashboard');
+    })->name('dashboard');
+
+    // User Management
+    Route::get('/user-roles', [UserRolesController::class, 'index'])->name('user-roles');
+    Route::get('/api/users', [UserRolesController::class, 'getUsers'])->name('api.users');
+    Route::get('/api/roles', [UserRolesController::class, 'getRoles'])->name('api.roles');
+    Route::post('/users', [UserRolesController::class, 'storeUser'])->name('users.store');
+    Route::put('/users/{userId}', [UserRolesController::class, 'updateUser'])->name('users.update');
+    Route::put('/users/{userId}/role', [UserRolesController::class, 'updateUserRole'])->name('users.updateRole');
+    Route::delete('/users/{userId}', [UserRolesController::class, 'deleteUser'])->name('users.delete');
+    Route::post('/roles', [UserRolesController::class, 'storeRole'])->name('roles.store');
+    Route::put('/roles/{roleId}', [UserRolesController::class, 'updateRole'])->name('roles.update');
+    Route::delete('/roles/{roleId}', [UserRolesController::class, 'deleteRole'])->name('roles.delete');
+
+    // Event Management
+    Route::get('/create-event', [EventController::class, 'create'])->name('create-event');
+    Route::get('/event-list', [EventController::class, 'index'])->name('event-list');
+    Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    Route::get('/api/events', [EventController::class, 'getEventsData'])->name('api.events.data');
+    Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+    Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
+    Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
+    Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+});
+
+// Backend Routes - Admin
+Route::prefix('admin')->name('admin.')->middleware("admin")->group(function () {
+    // Main Navigation
+    Route::get('/dashboard', function () {
+        return view('views_backend.dashboard');
+    })->name('dashboard');
+
+    // Event Management
+    Route::get('/create-event', [EventController::class, 'create'])->name('create-event');
+    Route::get('/event-list', [EventController::class, 'index'])->name('event-list');
+    Route::post('/events', [EventController::class, 'store'])->name('events.store');
+    Route::get('/api/events', [EventController::class, 'getEventsData'])->name('api.events.data');
+    Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+    Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
+    Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
+    Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+});
+
 // Auth Routes
 Route::prefix('auth')->name('auth.')->group(function () {
     Route::get('/signup', [AuthController::class, 'signup'])->name('signup');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
     Route::post('/authenticate', [AuthController::class, 'authenticate'])->name('authenticate');
+    Route::get('/login', [AuthController::class, 'login'])->name('login');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
-
-Route::get('/admin/signin', [AuthController::class, 'login'])->name('admin.signin');
-Route::get('/login', [AuthController::class, 'login'])->name('login');
-Route::get('/admin/signup', [AuthController::class, 'signup'])->name('admin.signup');
-Route::post('/admin/logout', [AuthController::class, 'logout'])->name('admin.logout');

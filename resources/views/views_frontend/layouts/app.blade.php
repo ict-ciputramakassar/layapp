@@ -69,7 +69,7 @@
 								<!-- button section -->
 								<ul class="login">
 									<li class="login-modal">
-										<a href="{{ route("admin.signin") }}" class="login"><i class="fa fa-user"></i>Login</a>
+										<a href="{{ route("auth.login") }}" class="login"><i class="fa fa-user"></i>Login</a>
 									</li>
 									<li>
 										<div class="cart-option">

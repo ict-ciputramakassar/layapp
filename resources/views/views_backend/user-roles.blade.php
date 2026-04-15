@@ -238,15 +238,15 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <script>
   // Define API endpoints with blade syntax (only works in .blade.php files)
-  const API_USERS = '{{ route("admin.api.users") }}';
-  const API_ROLES = '{{ route("admin.api.roles") }}';
-  const API_USERS_STORE = '{{ route("admin.users.store") }}';
-  const API_USERS_UPDATE = '{{ route("admin.users.update", ":userId") }}';
-  const API_USERS_UPDATE_ROLE = '{{ route("admin.users.updateRole", ":userId") }}';
-  const API_USERS_DELETE = '{{ route("admin.users.delete", ":userId") }}';
-  const API_ROLES_STORE = '{{ route("admin.roles.store") }}';
-  const API_ROLES_UPDATE = '{{ route("admin.roles.update", ":roleId") }}';
-  const API_ROLES_DELETE = '{{ route("admin.roles.delete", ":roleId") }}';
+  const API_USERS = '{{ route("superadmin.api.users") }}';
+  const API_ROLES = '{{ route("superadmin.api.roles") }}';
+  const API_USERS_STORE = '{{ route("superadmin.users.store") }}';
+  const API_USERS_UPDATE = '{{ route("superadmin.users.update", ":userId") }}';
+  const API_USERS_UPDATE_ROLE = '{{ route("superadmin.users.updateRole", ":userId") }}';
+  const API_USERS_DELETE = '{{ route("superadmin.users.delete", ":userId") }}';
+  const API_ROLES_STORE = '{{ route("superadmin.roles.store") }}';
+  const API_ROLES_UPDATE = '{{ route("superadmin.roles.update", ":roleId") }}';
+  const API_ROLES_DELETE = '{{ route("superadmin.roles.delete", ":roleId") }}';
 </script>
 <script src="{{ asset('js/backend/user-roles.js') }}"></script>
 @endsection
