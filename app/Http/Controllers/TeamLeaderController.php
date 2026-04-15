@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Carbon\Carbon;
 
 class TeamLeaderController extends Controller
@@ -169,9 +170,10 @@ class TeamLeaderController extends Controller
 
                 // Upload Gambar
                 if (isset($memberData['image']) && $memberData['image'] instanceof \Illuminate\Http\UploadedFile) {
-                    $filename = time() . '_' . $memberData['image']->getClientOriginalName();
-                    $memberData['image']->move(public_path('images/upload'), $filename);
-                    $imagePath = 'images/upload/' . $filename;
+                    $extension = $memberData['image']->getClientOriginalExtension();
+                    $filename = Str::uuid() . '.' . $extension;
+                    $memberData['image']->move(public_path('images/upload/members/'), $filename);
+                    $imagePath = 'images/upload/members/' . $filename;
                     $uploadedImages[] = $imagePath;
                 }
 
@@ -422,7 +424,10 @@ class TeamLeaderController extends Controller
         try {
             // 5. Handle Upload Gambar Baru (Jika Ada)
             if ($request->hasFile('image') && $request->file('image')->isValid()) {
-                $newImagePath = $request->file('image')->store('members', 'public');
+                $extension = $request->file('image')->getClientOriginalExtension();
+                $filename = Str::uuid() . '.' . $extension;
+                $request->file('image')->move(public_path('images/upload/members/'), $filename);
+                $newImagePath = 'images/upload/members/' . $filename;
             }
 
             // 6. Siapkan Data Update & Cleansing Data

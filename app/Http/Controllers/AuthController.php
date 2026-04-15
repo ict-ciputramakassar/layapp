@@ -12,7 +12,6 @@ use App\Models\Team; // Pastikan Model Team sudah ada
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -143,7 +142,10 @@ class AuthController extends Controller
                 $imagePath = null;
 
                 if ($request->hasFile('team_image')) {
-                    $imagePath = $request->file('team_image')->store('teams', 'public');
+                    $extension = $request->file('team_image')->getClientOriginalExtension();
+                    $filename = Str::uuid() . '.' . $extension;
+                    $request->file('team_image')->move(public_path('images/upload/teams/'), $filename);
+                    $imagePath = 'images/upload/teams/' . $filename;
                 }
 
                 Team::create([
