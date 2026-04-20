@@ -14,8 +14,8 @@
 <aside id="sidebar" class="sidebar overflow-y-auto overflow-x-hidden">
   <div class="logo-area">
     <a href="{{ route('dashboard') }}" class="d-inline-flex">
-      <img src="{{ asset('images/backend/logo-icon.svg') }}" alt="" width="24">
-      <span class="logo-text ms-2"><img src="{{ asset('images/backend/logo.svg') }}" alt=""></span>
+      <img src="{{ asset('images/backend/favicon_io/favicon-32x32.png') }}" alt="" width="24">
+      <span class="logo-text ms-2"><img src="{{ asset('images/backend/favicon_io/layapp_logo_text.png') }}" alt="" width="60"></span>
     </a>
   </div>
   <ul class="nav flex-column">
