@@ -7,7 +7,7 @@
     <div class="card" style="max-width:600px; width:100%;">
       <div class="card-body p-4 p-md-5">
         <div class="text-center mb-4">
-          <a href="{{ route('admin.dashboard') }}" class="mb-4 d-inline-block">
+          <a href="{{ route('dashboard') }}" class="mb-4 d-inline-block">
             <img src="{{ asset('images/backend/logo-icon.svg') }}" alt="" width="36">
             <span class="ms-2"><img src="{{ asset('images/backend/logo.svg') }}" alt=""></span>
           </a>
@@ -30,7 +30,7 @@
           @csrf
 
           <!-- PERSONAL INFORMATION -->
-          <h6 class="text-primary mb-3"><i class="fas fa-user me-2"></i>Personal Information</h6>
+          <h6 class="text-primary mb-3"><i class="fa-regular fa-user me-2"></i>Personal Information</h6>
 
           <div class="mb-3">
             <label for="fullName" class="form-label">Full name</label>
@@ -57,16 +57,26 @@
           <div class="row">
             <div class="col-md-6 mb-3">
               <label for="password" class="form-label">Password</label>
-              <input id="password" name="password" type="password" class="form-control" placeholder="Create password"
-                required minlength="6">
-              <div class="invalid-feedback">Min 6 characters.</div>
+              <div class="input-group has-validation">
+                <input id="password" name="password" type="password" class="form-control" placeholder="Create password"
+                  required minlength="6">
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('password', this)" tabindex="-1">
+                  <i class="ti ti-eye"></i>
+                </button>
+                <div class="invalid-feedback">Min 6 characters.</div>
+              </div>
             </div>
             <div class="col-md-6 mb-4">
               <label for="confirmPassword" class="form-label">Confirm password</label>
-              <input id="confirmPassword" name="confirmPassword" type="password" class="form-control"
-                placeholder="Repeat password" required
-                oninput="this.setCustomValidity(document.getElementById('password').value !== this.value ? 'Passwords do not match.' : '')">
-              <div class="invalid-feedback">Passwords must match.</div>
+              <div class="input-group has-validation">
+                <input id="confirmPassword" name="confirmPassword" type="password" class="form-control"
+                  placeholder="Repeat password" required
+                  oninput="this.setCustomValidity(document.getElementById('password').value !== this.value ? 'Passwords do not match.' : '')">
+                <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('confirmPassword', this)" tabindex="-1">
+                  <i class="ti ti-eye"></i>
+                </button>
+                <div class="invalid-feedback">Passwords must match.</div>
+              </div>
             </div>
           </div>
 
@@ -74,7 +84,7 @@
 
           <!-- DROPDOWN ROLE -->
           <div class="mb-4">
-            <label for="role" class="form-label fw-bold text-primary">Register As</label>
+            <label for="role" class="form-label text-primary"><i class="fa-solid fa-user-gear me-2"></i>Register As</label>
             <select id="role" name="role" class="form-select" required>
               <option value="" data-code="" disabled {{ old('role') ? '' : 'selected' }}>Select your role...</option>
               @foreach ($roles as $role)
@@ -190,6 +200,7 @@
             <div class="mb-2">
               <label for="team_image" class="form-label">Team Logo </label>
               <input type="file" class="form-control" id="team_image" name="team_image" accept="image/*">
+              <img id="logoPreview" src="#" alt="Logo Preview" class="img-thumbnail mt-2" style="display:none; max-width:150px;">
               <!-- Info Old Value File (File upload tidak bisa otomatis keisi gara2 sekuritas browser) -->
               @if(old('team_name') && $errors->any())
                 <small class="text-danger">Please re-upload your logo if you had one.</small>
@@ -203,7 +214,7 @@
       </form>
 
       <div class="text-center mt-3 small text-muted mb-5">
-        Already have an account? <a href="{{ route('auth.login') }}" class="link-primary fw-bold">Sign in</a>
+        Already have an account? <a href="{{ route('auth.login') }}" class="link-primary">Sign in</a>
       </div>
     </div>
   </div>
@@ -211,6 +222,32 @@
 
   <!-- SCRIPT JS -->
   <script>
+    // --- PREVIEW LOGO SAAT UPLOAD ---
+    document.getElementById('team_image').addEventListener('change', function(event) {
+      const [file] = this.files;
+      if (file) {
+        const preview = document.getElementById('logoPreview');
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+      }
+    });
+
+    // --- PASSWORD VISIBILITY ---
+    window.togglePasswordVisibility = function(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('i');
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('ti-eye');
+        icon.classList.add('ti-eye-off');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('ti-eye-off');
+        icon.classList.add('ti-eye');
+      }
+    };
+
     document.addEventListener('DOMContentLoaded', function () {
 
       // --- LOGIKA 1: DYNAMIC ROLE & OLD VALUES ---

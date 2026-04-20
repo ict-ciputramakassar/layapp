@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class EnsureSuperAdmin
+class EnsureReferee
 {
     /**
      * Handle an incoming request.
@@ -15,7 +15,7 @@ class EnsureSuperAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->userType && Auth::user()->userType->code === 'SA') {
+        if (Auth::check() && Auth::user()->userType && Auth::user()->userType->code === 'RF') {
             return $next($request);
         }
 

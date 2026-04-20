@@ -11,7 +11,7 @@
           <p class="mb-0">Manage your team members</p>
         </div>
         <div>
-          <a href="{{ route('team_leader.team_members') }}" class="btn btn-outline-primary">Go to Member List</a>
+          <a href="{{ route('team_members') }}" class="btn btn-outline-primary">Go to Member List</a>
         </div>
       </div>
     </div>
@@ -99,10 +99,11 @@
                 </select>
               </div>
             </div>
-            
+
             <div class="mb-3">
               <label for="image" class="form-label">Member Image</label>
               <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+              <img id="imagePreview" src="#" alt="Image Preview" class="img-thumbnail mt-2" style="display: none; max-width: 200px;">
             </div>
             <div class="d-flex gap-2">
               <button type="submit" class="btn btn-primary">Add to Temporary List</button>
@@ -161,6 +162,7 @@
   </div>
 
   <!-- MODAL EDIT MEMBER -->
+  <button type="button" id="triggerEditModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#editMemberModal"></button>
   <div class="modal fade" id="editMemberModal" tabindex="-1" aria-labelledby="editMemberModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
@@ -254,6 +256,7 @@
               <label class="form-label">Member Image <span class="text-danger" style="font-size: 12px;">(Leave blank to
                   keep current image: <span id="current_image_name"></span>)</span></label>
               <input type="file" class="form-control" id="edit_image" accept="image/*">
+              <img id="edit_imagePreview" src="" alt="" class="img-thumbnail mt-2" style="display: none; max-width: 200px;">
             </div>
           </div>
           <div class="modal-footer">
@@ -268,7 +271,6 @@
 
   <script>
     let tempMembers = [];
-    let editModalInstance = null;
 
     document.addEventListener('DOMContentLoaded', function () {
       const form = document.getElementById('addMemberForm');
@@ -278,9 +280,6 @@
       const memberCount = document.getElementById('memberCount');
       const editForm = document.getElementById('editMemberForm');
       const resetBtn = document.getElementById('resetFormBtn');
-
-      // Initialize Bootstrap Modal
-      editModalInstance = new bootstrap.Modal(document.getElementById('editMemberModal'));
 
       // ==========================================
       // DYNAMIC INPUTS LOGIC (COACH vs PLAYER)
@@ -292,7 +291,7 @@
         const selectedOption = selectElement.options[selectElement.selectedIndex];
         const code = selectedOption.getAttribute('data-code') || '';
         const firstTwoLetters = code.substring(0, 2).toUpperCase();
-        
+
         // Dynamically set the hidden input value (works for both 'type_code' and 'edit_type_code')
         const hiddenTypeCodeInput = document.getElementById(prefix + 'type_code');
         if (hiddenTypeCodeInput) {
@@ -367,6 +366,7 @@
 
       // Handle Form Reset Button
       resetBtn.addEventListener('click', function() {
+        document.getElementById('imagePreview').style.display = 'none';
         setTimeout(() => {
           handleTypeChange('member_type_id', '');
         }, 10);
@@ -407,10 +407,11 @@
           imageName: imageFile ? imageFile.name : 'No Image'
         };
 
+        document.getElementById('imagePreview').style.display = 'none';
         tempMembers.push(member);
         renderTable();
         form.reset();
-        handleTypeChange('member_type_id', ''); 
+        handleTypeChange('member_type_id', '');
       });
 
       // 2. RENDER TABLE
@@ -477,7 +478,7 @@
         // Trigger dynamic inputs logic for the modal
         handleTypeChange('edit_member_type_id', 'edit_');
 
-        editModalInstance.show();
+        document.getElementById('triggerEditModalBtn').click();
       };
 
       // 5. SUBMIT EDIT FORM
@@ -516,7 +517,7 @@
           }
 
           renderTable();
-          editModalInstance.hide();
+          document.querySelector('#editMemberModal .btn-close').click();
         }
       });
 
@@ -549,7 +550,7 @@
         saveToDatabaseBtn.innerHTML = 'Saving...';
         saveToDatabaseBtn.disabled = true;
 
-        fetch("{{ route('team_leader.add_members_bulk') }}", {
+        fetch("{{ route('add_members_bulk') }}", {
           method: 'POST',
           headers: {
             'X-CSRF-TOKEN': '{{ csrf_token() }}',
@@ -586,6 +587,40 @@
             saveToDatabaseBtn.innerHTML = originalText;
             saveToDatabaseBtn.disabled = false;
           });
+      });
+
+      // Preview Image Before Upload
+      const imageInput = document.getElementById('image');
+      const imagePreview = document.getElementById('imagePreview');
+      imageInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            imagePreview.setAttribute('src', e.target.result);
+            imagePreview.style.display = 'block';
+          }
+          reader.readAsDataURL(file);
+        } else {
+          imagePreview.style.display = 'none';
+        }
+      });
+
+      // Preview Image Before Upload for Edit Modal
+      const editImageInput = document.getElementById('edit_image');
+      const editImagePreview = document.getElementById('edit_imagePreview');
+      editImageInput.addEventListener('change', function () {
+        const file = this.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            editImagePreview.setAttribute('src', e.target.result);
+            editImagePreview.style.display = 'block';
+          }
+          reader.readAsDataURL(file);
+        } else {
+          editImagePreview.style.display = 'none';
+        }
       });
     });
   </script>

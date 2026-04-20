@@ -11,7 +11,7 @@
           <p class="mb-0">Update information for {{ $member->full_name }}</p>
         </div>
         <div>
-          <a href="{{ route('team_leader.team_members') }}" class="btn btn-outline-primary">Back to Member List</a>
+          <a href="{{ route('team_members') }}" class="btn btn-outline-primary">Back to Member List</a>
         </div>
       </div>
     </div>
@@ -120,17 +120,18 @@
 
             <div class="mb-4">
               <label for="image" class="form-label">Member Image</label>
-              <div class="d-flex align-items-center gap-3 mb-2">
+                <input type="file" class="form-control mb-2" id="image" name="image" accept="image/*">
+                <small class="text-muted d-block mb-2">Leave blank if you don't want to change the current image.</small>
+
+                <img id="imagePreview" src="#" alt="Image Preview" class="img-thumbnail mt-2" style="display: none; max-width: 200px;">
                 @if($member->image)
-                  <img src="{{ asset($member->image) }}" alt="Current Image" class="rounded border"
-                    style="width: 60px; height: 60px; object-fit: cover;">
+                    <div class="mt-2">
+                        <img id="currentImage" src="{{ asset($member->image) }}" alt="Current Image" class="img-thumbnail" style="max-width: 200px;">
+                    </div>
                 @else
-                  <div class="rounded border bg-light d-flex align-items-center justify-content-center text-muted"
-                    style="width: 60px; height: 60px; font-size: 12px;">No Img</div>
+                    {{-- <div class="rounded border bg-light d-flex align-items-center justify-content-center text-muted"
+                      style="width: 60px; height: 60px; font-size: 12px;">No Img</div> --}}
                 @endif
-                <input type="file" class="form-control" id="image" name="image" accept="image/*">
-              </div>
-              <small class="text-muted">Leave blank if you don't want to change the current image.</small>
             </div>
 
             <div class="d-flex gap-2">
@@ -239,7 +240,7 @@
       submitBtn.disabled = true;
 
       // Ganti URL ini dengan nama route update Anda
-      let updateUrl = "{{ route('team_leader.update_member', ':id') }}".replace(':id', memberId);
+      let updateUrl = "{{ route('update_member', ':id') }}".replace(':id', memberId);
 
       fetch(updateUrl, {
         method: 'POST', // Tetap POST karena kita pakai _method=PUT di formData
@@ -267,7 +268,7 @@
           if (data.success) {
             alert(data.message);
             // Redirect ke halaman list member
-            window.location.href = "{{ route('team_leader.team_members') }}";
+            window.location.href = "{{ route('team_members') }}";
           }
         })
         .catch(error => {
@@ -278,6 +279,28 @@
           submitBtn.innerHTML = originalText;
           submitBtn.disabled = false;
         });
+    });
+
+    // Preview Image Before Upload
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('imagePreview');
+    const currentImageSrc = document.getElementById('currentImage');
+    imageInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          imagePreview.setAttribute('src', e.target.result);
+          imagePreview.style.display = 'block';
+            if (currentImageSrc) {
+                currentImageSrc.style.display = 'none';
+            }
+        }
+        reader.readAsDataURL(file);
+      } else {
+        imagePreview.setAttribute('src', '#');
+        imagePreview.style.display = 'none';
+      }
     });
   });
 </script>

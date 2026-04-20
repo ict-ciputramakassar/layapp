@@ -1,6 +1,6 @@
 @extends('views_backend.layouts.app')
 
-@section('title', 'Changelog - InApp Inventory Dashboard')
+@section('title', 'Changelog - LayApp')
 
 @section('content')
 <div class="row">

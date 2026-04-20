@@ -21,7 +21,10 @@ class UserType extends Model
      *
      * @var string
      */
-    public $timestamps = false;
+    const CREATED_AT = 'created_date';
+    const UPDATED_AT = 'modified_date';
+
+    public $timestamps = true;
     public $incrementing = false;
     protected $keyType = 'string';
     protected $table = 'm_user_type';
@@ -34,6 +37,7 @@ class UserType extends Model
     protected $fillable = [
         'code',
         'name',
+        'permissions',
         'is_active',
         'created_date',
         'created_by',
@@ -46,14 +50,14 @@ class UserType extends Model
      *
      * @var list<string>
      */
-        protected static function boot()
+    protected static function boot()
     {
         parent::boot();
         static::creating(function ($model) {
             $model->id = (string) Str::uuid();
         });
     }
-protected $hidden = [];
+    protected $hidden = [];
 
     /**
      * Get the attributes that should be cast.

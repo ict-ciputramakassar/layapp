@@ -15,9 +15,12 @@
   <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
   <!-- Tabler Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ asset('css/backend/style.css') }}">
   @yield('extra-css')
+  @stack('styles')
 </head>
 
 <body>
@@ -137,17 +140,7 @@
   </nav>
 
   <!-- SIDEBAR - Role-based -->
-  @php
-    $userRole = Auth::user()->userType->code ?? null;
-  @endphp
-
-  @if($userRole === 'SA')
-    @include('views_backend.sidebars.superadmin')
-  @elseif($userRole === 'A')
-    @include('views_backend.sidebars.admin')
-  @elseif($userRole === 'TL')
-    @include('views_backend.sidebars.team_leader')
-  @endif
+  @include('views_backend.sidebars.dynamic')
 
   <!-- MAIN CONTENT -->
   <main id="content" class="content py-15">
@@ -156,17 +149,15 @@
     </div>
   </main>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.bundle.min.js"></script>
   <!-- Dropzone JS (File Upload) -->
   <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
   <!-- ApexCharts (Official CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
   <!-- Custom JS -->
   <script src="{{ asset('js/backend/main.js') }}"></script>
-  <script src="{{ asset('js/backend/custom.js') }}"></script>
-  <script src="{{ asset('js/backend/chart.js') }}"></script>
+
   @yield('extra-js')
+  @stack('scripts')
 </body>
 
 </html>

@@ -14,14 +14,14 @@
         <h1 class="card-title mb-5 h5">Sign in to your account</h1>
       </div>
 
-      @if ($errors->any())
+      {{-- @if ($errors->any())
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
           @foreach ($errors->all() as $error)
             <div>{{ $error }}</div>
           @endforeach
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-      @endif
+      @endif --}}
 
       <form method="POST" action="{{ route('auth.authenticate') }}" class="needs-validation" novalidate>
         @csrf
@@ -38,10 +38,15 @@
             <span>Password</span>
             <a href="#" class="small link-primary">Forgot Password?</a>
           </label>
-          <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="Password" required minlength="6">
-          @error('password')
-            <div class="invalid-feedback d-block">{{ $message }}</div>
-          @enderror
+          <div class="input-group has-validation">
+            <input id="password" type="password" style="border-end-end-radius: 0; border-top-right-radius: 0;" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="Password" required minlength="6">
+            <button class="btn btn-outline-secondary" type="button" onclick="togglePasswordVisibility('password', this)" tabindex="-1">
+                <i class="ti ti-eye"></i>
+            </button>
+            @error('password')
+              <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+          </div>
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -61,3 +66,23 @@
   </div>
 </div>
 @endsection
+
+@push('scripts')
+  <script>
+    // --- PASSWORD VISIBILITY ---
+    window.togglePasswordVisibility = function(inputId, btn) {
+      const input = document.getElementById(inputId);
+      const icon = btn.querySelector('i');
+
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('ti-eye');
+        icon.classList.add('ti-eye-off');
+      } else {
+        input.type = 'password';
+        icon.classList.remove('ti-eye-off');
+        icon.classList.add('ti-eye');
+      }
+    };
+  </script>
+@endpush

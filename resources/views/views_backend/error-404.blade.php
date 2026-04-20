@@ -7,7 +7,7 @@
   <div class="" style="max-width: 500px; width: 100%;">
     <div class="text-center">
       <div class="mb-4">
-        <a href="{{ route('admin.dashboard') }}" class="d-inline-block mb-4">
+        <a href="{{ route('dashboard') }}" class="d-inline-block mb-4">
           <img src="{{ asset('images/backend/logo-icon.svg') }}" alt="" width="36">
           <span class="ms-2"><img src="{{ asset('images/backend/logo.svg') }}" alt=""></span>
         </a>
@@ -17,7 +17,7 @@
       <h2 class="card-title h4 mb-3">Page Not Found</h2>
       <p class="text-muted mb-4">Sorry, the page you're looking for doesn't exist or has been moved.</p>
 
-      <a href="{{ route('admin.dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+      <a href="{{ route('dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
     </div>
   </div>
 </div>

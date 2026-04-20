@@ -1,6 +1,11 @@
 @extends('views_backend.layouts.app')
 
-@section('title', 'User Roles')
+@section('title', 'User Roles - LayApp')
+
+@push('styles')
+<!-- DataTables CSS for Bootstrap 5 -->
+<link href="https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+@endpush
 
 @section('content')
   <!-- Page Title -->
@@ -24,9 +29,9 @@
   <div class="row g-4">
     <!-- Users Table -->
     <div class="col-lg-8">
-      <div class="card overflow-hidden p-6">
+      <div class="card overflow-hidden px-6 py-3">
         <div class="table-responsive">
-          <table class="table mb-0 text-nowrap table-hover table-centered">
+          <table id="usersDataTable" class="table mb-0 text-nowrap table-hover table-centered w-100">
             <thead class="table-light border-light">
               <tr style="font-size: 0.875rem;">
                 <th>Name</th>
@@ -51,14 +56,14 @@
         <div class="card-body p-6">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="card-title mb-0">Available Roles</h5>
-            <button class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#roleModal">
+            <button class="btn btn-dark btn-sm" data-bs-toggle="modal" data-bs-target="#roleModal" onclick="resetRoleForm()">
               <i class="ti ti-plus"></i> Add Role
             </button>
           </div>
           <div id="rolesList" class="d-flex flex-column gap-2">
             <div class="p-4 bg-light rounded-2 border mb-2">
               <h6 class="mb-1">Loading roles...</h6>
-              <p class="text-muted small mb-0">Fetching from database</p>
+              <p class="text-muted small mb-0">Fetching...</p>
             </div>
           </div>
         </div>
@@ -76,25 +81,39 @@
         </div>
         <div class="modal-body">
           <div class="mb-3">
-            <label class="form-label">Full Name</label>
-            <input id="name" type="text" class="form-control" placeholder="Full Name" />
+            <label class="form-label">Full Name <span class="text-danger">*</span></label>
+            <input id="name" type="text" class="form-control" placeholder="Full Name" required/>
           </div>
           <div class="mb-3">
-            <label class="form-label">Email</label>
-            <input id="email" type="email" class="form-control" placeholder="Email" />
+            <label class="form-label">Email <span class="text-danger">*</span></label>
+            <input id="email" type="email" class="form-control" placeholder="Email" required/>
           </div>
           <div class="mb-3 phone-field">
-            <label class="form-label">Phone Number</label>
-            <input id="phone" type="text" class="form-control" placeholder="Phone Number" />
+            <label class="form-label">Phone Number <span class="text-danger">*</span></label>
+            <input id="phone" type="tel" class="form-control" placeholder="Phone Number" required/>
           </div>
           <div class="mb-3 password-field" style="display: none;">
-            <label class="form-label">Password</label>
-            <input id="password" type="password" class="form-control" placeholder="Password" />
+            <label class="form-label">Password <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input id="password" type="password" class="form-control" placeholder="Password" required/>
+              <span class="input-group-text" style="cursor: pointer;" onclick="togglePasswordVisibility('password')">
+                <i class="ti ti-eye" id="toggle-icon-password"></i>
+              </span>
+            </div>
+          </div>
+          <div class="mb-3 password-field" style="display: none;">
+            <label class="form-label">Confirm Password <span class="text-danger">*</span></label>
+            <div class="input-group">
+              <input id="confirm_password" type="password" class="form-control" placeholder="Repeat Password" required/>
+              <span class="input-group-text" style="cursor: pointer;" onclick="togglePasswordVisibility('confirm_password')">
+                <i class="ti ti-eye" id="toggle-icon-confirm_password"></i>
+              </span>
+            </div>
           </div>
           <div class="mb-3">
-            <label class="form-label">Role</label>
-            <select id="role" class="form-select">
-              <option value="">Select a role...</option>
+            <label class="form-label">Role <span class="text-danger">*</span></label>
+            <select id="role" class="form-select" required>
+              <option value="" disabled selected>Select a role...</option>
             </select>
           </div>
         </div>
@@ -131,84 +150,36 @@
                 <label class="form-check-label" for="perm_dashboard">Dashboard</label>
               </div>
               <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_inventory" />
-                <label class="form-check-label" for="perm_inventory">Inventory</label>
+                  <input class="form-check-input" type="checkbox" id="perm_reports" />
+                  <label class="form-check-label" for="perm_reports">Reports</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="perm_event_list" />
+                  <label class="form-check-label" for="perm_event_list">Event List</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="perm_create_event" />
+                    <label class="form-check-label" for="perm_create_event">Add Event</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="checkbox" id="perm_schedule_list" />
+                  <label class="form-check-label" for="perm_schedule_list">Schedule List</label>
+                </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="perm_create_schedule" />
+                <label class="form-check-label" for="perm_create_schedule">Create Schedule</label>
               </div>
               <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_reports" />
-                <label class="form-check-label" for="perm_reports">Reports</label>
+                <input class="form-check-input" type="checkbox" id="perm_team_members" />
+                <label class="form-check-label" for="perm_team_members">Team Members</label>
               </div>
               <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_create_event" />
-                <label class="form-check-label" for="perm_create_event">Add Event</label>
+                <input class="form-check-input" type="checkbox" id="perm_add_team_members" />
+                <label class="form-check-label" for="perm_add_team_members">Add Team Members</label>
               </div>
               <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_edit_product" />
-                <label class="form-check-label" for="perm_edit_product">Edit Product</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_product_details" />
-                <label class="form-check-label" for="perm_product_details">Product Details</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_categories" />
-                <label class="form-check-label" for="perm_categories">Categories</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_brands" />
-                <label class="form-check-label" for="perm_brands">Brands</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_variants" />
-                <label class="form-check-label" for="perm_variants">Variants</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_stock_overview" />
-                <label class="form-check-label" for="perm_stock_overview">Stock Overview</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_stock_in" />
-                <label class="form-check-label" for="perm_stock_in">Stock In</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_stock_out" />
-                <label class="form-check-label" for="perm_stock_out">Stock Out</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_low_stock" />
-                <label class="form-check-label" for="perm_low_stock">Low Stock Products</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_expired_stock" />
-                <label class="form-check-label" for="perm_expired_stock">Expired Stock</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_warehouse" />
-                <label class="form-check-label" for="perm_warehouse">Warehouse Location</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_order_list" />
-                <label class="form-check-label" for="perm_order_list">Order List</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_order_details" />
-                <label class="form-check-label" for="perm_order_details">Order Details</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_create_order" />
-                <label class="form-check-label" for="perm_create_order">Create Order</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_invoice" />
-                <label class="form-check-label" for="perm_invoice">Invoice</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_returns" />
-                <label class="form-check-label" for="perm_returns">Returns / Refunds</label>
-              </div>
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="checkbox" id="perm_pos" />
-                <label class="form-check-label" for="perm_pos">POS</label>
+                <input class="form-check-input" type="checkbox" id="perm_score_list" />
+                <label class="form-check-label" for="perm_score_list">Score List</label>
               </div>
               <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" id="perm_user_roles" />
@@ -238,15 +209,33 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <script>
   // Define API endpoints with blade syntax (only works in .blade.php files)
-  const API_USERS = '{{ route("superadmin.api.users") }}';
-  const API_ROLES = '{{ route("superadmin.api.roles") }}';
-  const API_USERS_STORE = '{{ route("superadmin.users.store") }}';
-  const API_USERS_UPDATE = '{{ route("superadmin.users.update", ":userId") }}';
-  const API_USERS_UPDATE_ROLE = '{{ route("superadmin.users.updateRole", ":userId") }}';
-  const API_USERS_DELETE = '{{ route("superadmin.users.delete", ":userId") }}';
-  const API_ROLES_STORE = '{{ route("superadmin.roles.store") }}';
-  const API_ROLES_UPDATE = '{{ route("superadmin.roles.update", ":roleId") }}';
-  const API_ROLES_DELETE = '{{ route("superadmin.roles.delete", ":roleId") }}';
+  const API_USERS = '{{ route("api.users") }}';
+  const API_ROLES = '{{ route("api.roles") }}';
+  const API_USERS_STORE = '{{ route("users.store") }}';
+  const API_USERS_UPDATE = '{{ route("users.update", ":userId") }}';
+  const API_USERS_UPDATE_ROLE = '{{ route("users.updateRole", ":userId") }}';
+  const API_USERS_DELETE = '{{ route("users.delete", ":userId") }}';
+  const API_ROLES_STORE = '{{ route("roles.store") }}';
+  const API_ROLES_UPDATE = '{{ route("roles.update", ":roleId") }}';
+  const API_ROLES_DELETE = '{{ route("roles.delete", ":roleId") }}';
+
+  function togglePasswordVisibility(inputId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById('toggle-icon-' + inputId);
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.classList.remove('ti-eye');
+      icon.classList.add('ti-eye-off');
+    } else {
+      input.type = 'password';
+      icon.classList.remove('ti-eye-off');
+      icon.classList.add('ti-eye');
+    }
+  }
 </script>
+<!-- jQuery, DataTables & Bootstrap 5 UI Script -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap5.min.js"></script>
 <script src="{{ asset('js/backend/user-roles.js') }}"></script>
 @endsection

@@ -21,7 +21,10 @@ class User extends Authenticatable
      *
      * @var string
      */
-    public $timestamps = false;
+    const CREATED_AT = 'created_date';
+    const UPDATED_AT = 'modified_date';
+
+    public $timestamps = true;
     public $incrementing = false;
     protected $keyType = 'string';
     protected $table = 'm_user';
@@ -50,14 +53,14 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-        protected static function boot()
+    protected static function boot()
     {
         parent::boot();
         static::creating(function ($model) {
             $model->id = (string) Str::uuid();
         });
     }
-protected $hidden = [
+    protected $hidden = [
         'password',
         'remember_token',
     ];

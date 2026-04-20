@@ -1,6 +1,6 @@
 @extends('views_frontend.layouts.app')
 
-@section('title', 'Game Info')
+@section('title', 'Events - LayApp')
 
 @section('content')
 <style>
@@ -48,13 +48,13 @@
             </div>
             <div class="modal-body">
                 <p>You will register to event: <strong id="modalEventName" style="color: #e32124;"></strong></p>
-                
+
                 <form id="registerEventForm">
                     <input type="hidden" id="modalEventId">
 
                     <div class="form-group" style="margin-top: 20px;">
                         <label>Select Players - <span id="selectionCounter" class="text-danger font-weight-bold">0/20 Terpilih</span></label>
-                        
+
                         <div class="filter-group">
                             <div>
                                 <input type="text" id="searchPlayer" class="form-control" placeholder="Ketik nama pemain..." onkeyup="filterPlayers()">
@@ -120,11 +120,11 @@
                         html += `
                             <div class="col-md-3 col-sm-6 mb-4" style="margin-bottom: 20px;">
                                 <div class="card" style="box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 15px; border-radius: 8px;">
-                                    <img class="img-responsive" src="/images/upload/${event.logo}" alt="${event.name}" style="width:100%; height: 200px; object-fit: cover; border-radius: 6px;">
+                                    <img class="img-responsive" src="{{ asset('images/upload/events') }}/${event.logo}" style="width:100%; height: 200px; object-fit: cover; border-radius: 6px;">
                                     <div style="margin-top: 15px;">
                                         <h4 style="font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${event.name}">${event.name}</h4>
                                         <p style="margin-bottom: 5px; font-size: 13px; color: #555;"><i class="fa fa-calendar"></i> Mulai: ${event.start_date}</p>
-                                        <p style="margin-bottom: 5px; font-size: 13px; color: #555;"><i class="fa fa-calendar-times-o"></i> Berakhir: ${event.end_date}</p>
+                                        <p style="margin-bottom: 5px; font-size: 13px; color: #555;"><i class="fa-solid fa-calendar-xmark"></i> Berakhir: ${event.end_date}</p>
                                         ${registerBtn}
                                     </div>
                                 </div>
@@ -154,7 +154,7 @@
         $('#registerEventModal').modal('show');
 
         // Panggil API get_members
-        fetch('{{ route("team_leader.get_members") }}')
+        fetch('{{ route("get_members") }}')
             .then(res => res.json())
             .then(data => {
                 const tbody = document.getElementById('playersTableBody');
@@ -232,7 +232,7 @@
 
         // Update Counter
         document.getElementById('selectionCounter').innerText = `${selectedPlayers.length}/${MAX_PLAYERS} Selected`;
-        
+
         // Disable sisanya jika sudah mencapai batas maksimal
         const allCheckboxes = document.querySelectorAll('.chk-player');
         allCheckboxes.forEach(cb => {

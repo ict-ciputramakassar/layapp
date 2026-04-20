@@ -54,9 +54,10 @@ class AuthController extends Controller
 
             Log::info("User logged in successfully: {$credentials['email']}");
             $routeLogin = match (Auth::user()->userType?->code) {
-                "SA" => "superadmin.dashboard",
-                "A" => "admin.dashboard",
-                "TL" => "team_leader.team_members",
+                "SA" => "dashboard",
+                "A" => "dashboard",
+                "TL" => "team_members",
+                "RF" => "score-list",
                 default => "auth.login",
             };
 
@@ -175,9 +176,10 @@ class AuthController extends Controller
             // 6 Rerouting
             Auth::login($user, true);
             $routeLogin = match ($request->role_code) {
-                "SA" => "superadmin.dashboard",
-                "A" => "admin.dashboard",
-                "TL" => "team_leader.team_members",
+                "SA" => "dashboard",
+                "A" => "dashboard",
+                "TL" => "team_members",
+                "RF" => "score-list",
                 default => "auth.login",
             };
 

@@ -23,6 +23,9 @@
     </div>
   </div>
 
+  <!-- HIDDEN BUTTON TO TRIGGER MODAL -->
+  <button type="button" id="triggerDeleteModalBtn" class="d-none" data-bs-toggle="modal" data-bs-target="#deleteConfirmModal"></button>
+
   <div class="row">
     <div class="col-12">
       <div class="d-flex justify-content-between align-items-center mb-4">
@@ -31,7 +34,7 @@
           <p class="mb-0">Manage your team members</p>
         </div>
         <div>
-          <a href="{{ route('team_leader.add_team_member') }}" class="btn btn-primary">Add Member</a>
+          <a href="{{ route('add_team_member') }}" class="btn btn-primary">Add Member</a>
         </div>
       </div>
     </div>
@@ -120,7 +123,9 @@
       </div>
     </div>
   </div>
+@endsection
 
+@section('extra-js')
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
@@ -141,7 +146,6 @@
           {
             data: null,
             render: function (data) {
-              // KODE GAMBAR ANDA DIKEMBALIKAN SEPERTI SEMULA
               let img = `{{ asset('${data.image}') }}`;
               let statusBadge = data.is_active == 0 ? '<span class="badge bg-danger ms-2" style="font-size:10px;">Inactive</span>' : '';
 
@@ -166,7 +170,7 @@
           {
             data: null,
             render: function (row) {
-              let editUrl = "{{ route('team_leader.edit_member', ':id') }}".replace(':id', row.id);
+              let editUrl = "{{ route('edit_member', ':id') }}".replace(':id', row.id);
               let actionButtons = `<div class="d-flex gap-2"><a href="${editUrl}" class="btn btn-sm btn-outline-primary"><i class="ti ti-edit"></i></a>`;
               if (row.is_active == 1) {
                 actionButtons += `<button onclick="showDeleteModal('${row.id}', '${row.full_name}')" class="btn btn-sm btn-outline-danger"><i class="ti ti-trash"></i></button>`;
@@ -184,7 +188,8 @@
         }
       });
 
-      deleteModalInstance = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
+      // Bypassing JS Modal instantiation due to minified scope
+      // deleteModalInstance = new bootstrap.Modal(document.getElementById('deleteConfirmModal'));
 
       // 2. LOGIKA UI: Tampilkan/Sembunyikan Input Filter
       function filterSelect() {
@@ -231,7 +236,7 @@
 
         // Lakukan AJAX Request Manual
         $.ajax({
-          url: "{{ route('team_leader.get_members') }}",
+          url: "{{ route('get_members') }}",
           type: "GET",
           data: payload, // Mengirim data filter ke controller
           success: function (res) {
@@ -262,7 +267,7 @@
       $('#confirmDeleteBtn').on('click', function () {
         let id = $('#deleteMemberId').val();
         let btn = $(this);
-        let deleteUrl = "{{ route('team_leader.delete_member', ':id') }}".replace(':id', id);
+        let deleteUrl = "{{ route('delete_member', ':id') }}".replace(':id', id);
 
         let originalText = btn.html();
         btn.html('Deleting...').prop('disabled', true);
@@ -281,19 +286,22 @@
           })
           .then(data => {
             if (data.success) {
-              deleteModalInstance.hide();
+              $('#deleteConfirmModal .btn-close').click(); // programmatic hide
               $('#searchForm').submit(); // Refresh tabel dengan filter yang sedang aktif
             }
           })
           .catch(error => { alert(error.message); })
           .finally(() => { btn.html(originalText).prop('disabled', false); });
       });
+
+      // Panggil initial data load saat buka page
+      $('#searchForm').submit();
     });
 
     function showDeleteModal(id, name) {
       $('#deleteMemberId').val(id);
       $('#deleteMemberName').text(name);
-      deleteModalInstance.show();
+      $('#triggerDeleteModalBtn').click(); // programmatic trigger
     }
   </script>
 @endsection

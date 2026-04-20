@@ -41,6 +41,7 @@ class GroupSchedule extends Model
         'created_by',
         'modified_date',
         'modified_by',
+        'event_id',
     ];
 
     /**
@@ -81,4 +82,8 @@ protected $hidden = [];
         return $this->belongsTo(Team::class, 'team_id_h', 'id');
     }
 
+    public function event(): BelongsTo
+    {
+        return $this->belongsTo(Event::class, 'event_id', 'id');
+    }
 }

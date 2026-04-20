@@ -1,6 +1,6 @@
 @extends('views_backend.layouts.app')
 
-@section('title', 'InApp Inventory Dashboard')
+@section('title', 'LayApp Dashboard')
 
 @section('content')
 <div class="row ">
@@ -415,10 +415,11 @@
     </div>
   </div>
 </div>
+<!-- Footer -->
 <div class="row">
   <div class="col-12">
-    <footer class="text-center py-2 mt-6 text-secondary ">
-      <p class="mb-0">Copyright © 2026 InApp Inventory Dashboard. Developed by <a href="https://codescandy.com/" target="_blank" class="text-primary">CodesCandy</a> • Distributed by <a href="https://themewagon.com/" target="_blank" class="text-primary">ThemeWagon</a> </p>
+    <footer class="text-center py-2 mt-6 text-secondary">
+      <p class="mb-0">Copyright © 2026 InApp Inventory Dashboard. Developed by <a href="https://wyattmatt.github.io/" target="_blank" class="text-primary">WyattMatt</a></p>
     </footer>
   </div>
 </div>

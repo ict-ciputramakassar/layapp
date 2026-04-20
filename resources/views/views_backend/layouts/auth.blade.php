@@ -12,9 +12,13 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css" rel="stylesheet">
   <!-- Tabler Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
   <!-- Custom CSS -->
   <link rel="stylesheet" href="{{ asset('css/backend/style.css') }}">
   @yield('extra-css')
+  @stack('styles')
+  @stack('scripts')
 </head>
 
 <body>

@@ -1,8 +1,9 @@
 @extends('views_backend.layouts.app')
 
-@section('title', 'Add Event - InApp Inventory Dashboard')
+@section('title', 'Add Event - LayApp')
 
 @section('content')
+
 <!-- Header -->
 <div class="row">
   <div class="col-12">
@@ -12,7 +13,7 @@
         <p class="mb-0">Manage your events</p>
       </div>
       <div>
-        <a class="btn btn-primary" href="{{ route('admin.event-list') }}">Go to Events List</a>
+        <a class="btn btn-primary" href="{{ route('event-list') }}">Go to Events List</a>
       </div>
     </div>
   </div>
@@ -49,7 +50,7 @@
           </div>
         @endif
 
-        <form action="{{ route('admin.events.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('events.store') }}" method="POST" enctype="multipart/form-data">
           @csrf
 
           <!-- Event Name -->
@@ -159,6 +160,7 @@
           <div class="mb-3">
             <label for="eoLogo" class="form-label">Event Organizer Logo</label>
             <input type="file" class="form-control @error('eoLogo') is-invalid @enderror" id="eoLogo" name="eoLogo" accept="image/*" required>
+            <img id="eoLogoPreview" src="#" alt="EO Logo Preview" class="img-fluid mt-2" style="max-height: 150px; display: none;">
             <small class="form-text text-muted">Max 10MB - Supported formats: jpeg, png, jpg, gif, svg</small>
             @error('eoLogo')<span class="invalid-feedback d-block">{{ $message }}</span>@enderror
           </div>
@@ -183,3 +185,24 @@
   </div>
 </div>
 @endsection
+
+@push('scripts')
+  <script>
+    // Clear EO Logo preview when reset button is clicked
+    document.querySelector('button[type="reset"]').addEventListener('click', function() {
+      const preview = document.getElementById('eoLogoPreview');
+      preview.src = '#';
+      preview.style.display = 'none';
+    });
+
+    // EO Logo Preview
+    document.getElementById('eoLogo').addEventListener('change', function(event) {
+      const [file] = event.target.files;
+      if (file) {
+        const preview = document.getElementById('eoLogoPreview');
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+      }
+    });
+  </script>
+@endpush

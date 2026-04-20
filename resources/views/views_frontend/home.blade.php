@@ -1,6 +1,6 @@
 @extends('views_frontend.layouts.app')
 
-@section('title', 'Game Info')
+@section('title', 'Home - LayApp')
 
 @section('extra-css')
     <style>
@@ -13,7 +13,7 @@
             width: max-content;
             align-items: center; /* Memastikan semua logo rata tengah secara vertikal */
             animation: slide-left 15s linear infinite;
-			height: 200px
+			height: 200px;
         }
 
         .sponsor-container:hover {
@@ -68,23 +68,49 @@
                 transform: translateX(calc(-49%)); /* 1.5rem adalah setengah dari gap (3rem) */
             }
         }
+
+        /* --- OVERRIDE CUSTOM.CSS CAROUSEL ARROWS --- */
+        #carousel-example-generic .carousel-control {
+            top: 50% !important;
+            bottom: auto !important;
+            width: 50px !important;
+            height: 50px !important;
+            transform: translateY(-50%);
+            opacity: 0.8;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+        #carousel-example-generic .left.carousel-control {
+            left: 20px !important;
+            right: auto !important;
+        }
+        #carousel-example-generic .right.carousel-control {
+            right: 20px !important;
+            left: auto !important;
+        }
+        #carousel-example-generic .carousel-control i {
+            font-size: 40px !important;
+            color: #fff !important;
+            background: transparent !important;
+            line-height: 50px !important;
+        }
+        /* ------------------------------------------- */
     </style>
 @endsection
 
 @section('content')
     <div class="full-slider">
-        <div id="carousel-example-generic" class="carousel slide">
+        <div id="carousel-example-generic" class="carousel slide" data-ride="carousel" data-pause="hover">
             <ol class="carousel-indicators">
                 <li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
                 <li data-target="#carousel-example-generic" data-slide-to="1"></li>
                 <li data-target="#carousel-example-generic" data-slide-to="2"></li>
             </ol>
             <div class="carousel-inner" role="listbox">
-                <div class="item active deepskyblue" data-ride="carousel" data-interval="5000">
+                <div class="item active deepskyblue">
                     <div class="carousel-caption">
                         <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12"></div>
                         <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-                            <div class="slider-contant" data-animation="animated fadeInRight">
+                            <div class="slider-contant" data-animation="animated fadeInRight" data-interval="5000">
                                 <h3>If you Don't Practice<br>You <span class="color-yellow">Don't Derserve</span><br>to win!
                                 </h3>
                                 <p>If you use this site regularly and would like to help keep the site on the Internet,<br>
@@ -95,41 +121,41 @@
                         </div>
                     </div>
                 </div>
-                <div class="item skyblue" data-ride="carousel" data-interval="5000">
+                <div class="item skyblue">
                     <div class="carousel-caption">
                         <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12"></div>
                         <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-                            <div class="slider-contant" data-animation="animated fadeInRight">
+                            <div class="slider-contant" data-animation="animated fadeInRight" data-interval="5000">
                                 <h3>If you Don't Practice<br>You <span class="color-yellow">Don't Derserve</span><br>to win!
                                 </h3>
                                 <p>You can make a case for several potential winners of<br>the expanded European
                                     Championships.</p>
-                                <button class="btn btn-primary btn-lg">Button</button>
+                                <button class="btn btn-primary btn-lg">Read More</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="item darkerskyblue" data-ride="carousel" data-interval="5000">
+                <div class="item darkerskyblue">
                     <div class="carousel-caption">
                         <div class="col-lg-7 col-md-7 col-sm-12 col-xs-12"></div>
                         <div class="col-lg-5 col-md-5 col-sm-12 col-xs-12">
-                            <div class="slider-contant" data-animation="animated fadeInRight">
+                            <div class="slider-contant" data-animation="animated fadeInRight" data-interval="5000">
                                 <h3>If you Don't Practice<br>You <span class="color-yellow">Don't Derserve</span><br>to win!
                                 </h3>
                                 <p>You can make a case for several potential winners of<br>the expanded European
                                     Championships.</p>
-                                <button class="btn btn-primary btn-lg">Button</button>
+                                <button class="btn btn-primary btn-lg">Read More</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                </div>
+            </div>
             <a class="left carousel-control" href="#carousel-example-generic" role="button" data-slide="prev">
-                <span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+                <i class="fa fa-chevron-left" aria-hidden="true"></i>
                 <span class="sr-only">Previous</span>
             </a>
             <a class="right carousel-control" href="#carousel-example-generic" role="button" data-slide="next">
-                <span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+                <i class="fa fa-chevron-right" aria-hidden="true"></i>
                 <span class="sr-only">Next</span>
             </a>
         </div>
@@ -143,15 +169,25 @@
                         <div class="vs-team">
                             <div class="team-btw-match">
                                 <ul>
-                                    <li>
-                                        <img src="{{ asset('images/img-03.png') }}" alt="">
-                                        <span>SMA Athirah</span>
-                                    </li>
-                                    <li class="vs"><span>vs</span></li>
-                                    <li>
-                                        <img src="{{ asset('images/img-04.png') }}" alt="">
-                                        <span>SMAN 17</span>
-                                    </li>
+                                    @if($nextMatch)
+                                        <li>
+                                            <img src="{{ asset($nextMatch->teamH->image ?? 'images/img-03.png') }}" alt="{{ $nextMatch->teamH->name }}">
+                                            <span>{{ $nextMatch->teamH->name }}</span>
+                                        </li>
+                                        <li class="vs"><span>vs</span></li>
+                                        <li>
+                                            <img src="{{ asset($nextMatch->teamA->image ?? 'images/img-04.png') }}" alt="{{ $nextMatch->teamA->name }}">
+                                            <span>{{ $nextMatch->teamA->name }}</span>
+                                        </li>
+                                    @else
+                                        <li>
+                                            <span>TBA</span>
+                                        </li>
+                                        <li class="vs"><span>vs</span></li>
+                                        <li>
+                                            <span>TBA</span>
+                                        </li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>
@@ -165,7 +201,7 @@
                     <div class="right-match-time">
                         <h2>Next Match</h2>
                         <ul id="countdown-1" class="countdown">
-                            <li><span>12/02/2017 /19:00pm</span></li>
+                            <li><span>{{ $nextMatch ? $nextMatch->play_date->format('d/m/Y H:i') : 'TBA' }}</span></li>
                             {{-- <li><span class="days">10 </span>Day </li>
                             <li><span class="hours">5 </span>Hours </li>
                             <li><span class="minutes">25 </span>Minutes </li>
@@ -192,61 +228,21 @@
                     <aside id="sidebar" class="left-bar">
                         <div class="feature-matchs">
                             <div class="team-btw-match">
-                                <ul>
-                                    <li>
-                                        <img src="{{ asset('images/img-01_002.png') }}" alt="">
-                                        <span>SMA Athirah</span>
-                                    </li>
-                                    <li class="vs"><span>vs</span></li>
-                                    <li>
-                                        <img src="{{ asset('images/img-02.png') }}" alt="">
-                                        <span>SMAN 17</span>
-                                    </li>
-                                </ul>
-                                <ul>
-                                    <li>
-                                        <img src="{{ asset('images/img-03_002.png') }}" alt="">
-                                        <span>SDH</span>
-                                    </li>
-                                    <li class="vs"><span>vs</span></li>
-                                    <li>
-                                        <img src="{{ asset('images/img-04_003.png') }}" alt="">
-                                        <span>SMAN 11</span>
-                                    </li>
-                                </ul>
-                                <ul>
-                                    <li>
-                                        <img src="{{ asset('images/img-05_002.png') }}" alt="">
-                                        <span>SMA 2</span>
-                                    </li>
-                                    <li class="vs"><span>vs</span></li>
-                                    <li>
-                                        <img src="{{ asset('images/img-06.png') }}" alt="">
-                                        <span>SMAN Rajawali</span>
-                                    </li>
-                                </ul>
-                                <ul>
-                                    <li>
-                                        <img src="{{ asset('images/img-07_002.png') }}" alt="">
-                                        <span>SMA YPS</span>
-                                    </li>
-                                    <li class="vs"><span>vs</span></li>
-                                    <li>
-                                        <img src="{{ asset('images/img-08.png') }}" alt="">
-                                        <span>Eleven</span>
-                                    </li>
-                                </ul>
-                                <ul>
-                                    <li>
-                                        <img src="{{ asset('images/img-05_002.png') }}" alt="">
-                                        <span>SMAN 16</span>
-                                    </li>
-                                    <li class="vs"><span>vs</span></li>
-                                    <li>
-                                        <img src="{{ asset('images/img-06.png') }}" alt="">
-                                        <span>Absa</span>
-                                    </li>
-                                </ul>
+                                @forelse($fixtures as $fixture)
+                                    <ul style="display: flex; align-items: center;">
+                                        <li>
+                                            <img style="width: 34px; height: 34px;" src="{{ asset($fixture->teamH->image ?? 'images/img-02.png') }}" alt="{{ $fixture->teamH->name }}">
+                                            <span>{{ $fixture->teamH->name }}</span>
+                                        </li>
+                                        <li class="vs"><span>vs</span></li>
+                                        <li>
+                                            <img style="width: 34px; height: 34px;" src="{{ asset($fixture->teamA->image ?? 'images/img-06.png') }}" alt="{{ $fixture->teamA->name }}">
+                                            <span>{{ $fixture->teamA->name }}</span>
+                                        </li>
+                                    </ul>
+                                @empty
+                                    <p class="text-center" style="color: #fff">No upcoming fixtures.</p>
+                                @endforelse
                             </div>
                         </div>
                     </aside>

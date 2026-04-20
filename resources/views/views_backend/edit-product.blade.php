@@ -125,8 +125,8 @@
 
     <!-- Action Buttons -->
     <div class="d-flex gap-2">
-      <a href="{{ route('admin.event-list') }}" class="btn btn-secondary">Cancel</a>
-      <a href="{{ route('admin.event-list') }}" class="btn btn-primary">Update Event</a>
+      <a href="{{ route('event-list') }}" class="btn btn-secondary">Cancel</a>
+      <a href="{{ route('event-list') }}" class="btn btn-primary">Update Event</a>
     </div>
   </div>
 </div>

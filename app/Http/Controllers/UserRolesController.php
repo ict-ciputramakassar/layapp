@@ -24,7 +24,7 @@ class UserRolesController extends Controller
      */
     public function getUsers()
     {
-        $users = User::with('userType')->get(['id', 'full_name', 'email', 'user_type_id']);
+        $users = User::with('userType')->get(['id', 'full_name', 'email', 'phone_number', 'user_type_id']);
 
         return response()->json([
             'success' => true,
@@ -37,7 +37,7 @@ class UserRolesController extends Controller
      */
     public function getRoles()
     {
-        $roles = UserType::where('is_active', 1)->get(['id', 'code', 'name']);
+        $roles = UserType::where('is_active', 1)->get(['id', 'code', 'name', 'permissions']);
 
         return response()->json([
             'success' => true,
@@ -126,6 +126,8 @@ class UserRolesController extends Controller
         $request->validate([
             'full_name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:m_user,email,' . $userId,
+            'phone_number' => 'required|string|max:20',
+            'password' => 'nullable|string|min:6',
             'user_type_id' => 'required|exists:m_user_type,id',
         ]);
 
@@ -136,6 +138,8 @@ class UserRolesController extends Controller
             $user->update([
                 'full_name' => $request->full_name,
                 'email' => $request->email,
+                'phone_number' => $request->phone_number,
+                'password' => $request->password ? Hash::make($request->password) : $user->password,
                 'user_type_id' => $request->user_type_id,
                 'modified_by' => $currentUserId,
             ]);
@@ -199,6 +203,7 @@ class UserRolesController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:3|unique:m_user_type,code',
+            'permissions' => 'required|string|max:255',
         ]);
 
         try {
@@ -207,6 +212,7 @@ class UserRolesController extends Controller
             $role = UserType::create([
                 'name' => $request->name,
                 'code' => strtoupper($request->code),
+                'permissions' => $request->permissions,
                 'is_active' => 1,
                 'created_by' => $currentUserId,
                 'modified_by' => $currentUserId,
@@ -234,6 +240,7 @@ class UserRolesController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:3|unique:m_user_type,code,' . $roleId,
+            'permissions' => 'required|string|max:255',
         ]);
 
         try {
@@ -243,6 +250,7 @@ class UserRolesController extends Controller
             $role->update([
                 'name' => $request->name,
                 'code' => strtoupper($request->code),
+                'permissions' => $request->permissions,
                 'modified_by' => $currentUserId,
             ]);
 

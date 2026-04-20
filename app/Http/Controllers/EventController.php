@@ -239,7 +239,7 @@ class EventController extends Controller
 
                 return [
                     'id' => $event->id,
-                    'logo' => $event->eo_logo ? asset('images/upload/' . $event->eo_logo) : '',
+                    'logo' => $event->eo_logo,
                     'name' => $event->name,
                     'start_date' => $event->start_date,
                     'end_date' => $event->end_date,
@@ -303,7 +303,7 @@ class EventController extends Controller
                 'eventDescription' => 'nullable|string',
                 'categoryLevel' => 'required|string|exists:m_category_level,id',
                 'eoName' => 'required|string|max:255',
-                'eoLogo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+                'eoLogo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
                 'categoryAge' => 'nullable|array',
                 'categoryAge.*' => 'exists:m_category_age,id',
                 'categoryGame' => 'nullable|array',
@@ -318,11 +318,12 @@ class EventController extends Controller
                 $file = $request->file('eoLogo');
                 $extension = $file->getClientOriginalExtension();
                 $logoFile = Str::uuid() . '.' . $extension;
-                $file->move(public_path('images/upload/events'), $logoFile);
+                $file->move(public_path('images/upload/events/'), $logoFile);
             }
 
+            $user_id = Auth::id();
+
             // Create Event
-            $userName = Auth::check() && Auth::user()->username ? Auth::user()->username : '-';
             $event = Event::create([
                 'id' => Str::uuid(),
                 'name' => $validated['eventName'],
@@ -333,9 +334,9 @@ class EventController extends Controller
                 'eo_name' => $validated['eoName'],
                 'eo_logo' => $logoFile,
                 'created_date' => now(),
-                'created_by' => $userName,
+                'created_by' => $user_id,
                 'modified_date' => now(),
-                'modified_by' => $userName,
+                'modified_by' => $user_id,
             ]);
 
             // Create EventCategoryAge relations
@@ -346,9 +347,9 @@ class EventController extends Controller
                         'event_id' => $event->id,
                         'category_age_id' => $categoryAgeId,
                         'created_date' => now(),
-                        'created_by' => $userName,
+                        'created_by' => $user_id,
                         'modified_date' => now(),
-                        'modified_by' => $userName,
+                        'modified_by' => $user_id,
                     ]);
                 }
             }
@@ -361,9 +362,9 @@ class EventController extends Controller
                         'event_id' => $event->id,
                         'category_game_id' => $categoryGameId,
                         'created_date' => now(),
-                        'created_by' => $userName,
+                        'created_by' => $user_id,
                         'modified_date' => now(),
-                        'modified_by' => $userName,
+                        'modified_by' => $user_id,
                     ]);
                 }
             }
@@ -376,9 +377,9 @@ class EventController extends Controller
                         'event_id' => $event->id,
                         'category_type_id' => $categoryTypeId,
                         'created_date' => now(),
-                        'created_by' => $userName,
+                        'created_by' => $user_id,
                         'modified_date' => now(),
-                        'modified_by' => $userName,
+                        'modified_by' => $user_id,
                     ]);
                 }
             }
@@ -386,9 +387,9 @@ class EventController extends Controller
             // Determine redirect route based on user role
             $userRole = Auth::user()->userType?->code;
             $redirectRoute = match ($userRole) {
-                'SA' => 'superadmin.event-list',
-                'A' => 'admin.event-list',
-                default => 'admin.event-list',
+                'SA' => 'event-list',
+                'A' => 'event-list',
+                default => 'event-list',
             };
 
             return redirect()->route($redirectRoute)
@@ -449,7 +450,7 @@ class EventController extends Controller
     public function update(Request $request, Event $event)
     {
         try {
-            $userName = Auth::check() && Auth::user()->username ? Auth::user()->username : '-';
+            $user_id = Auth::id();
 
             $validated = $request->validate([
                 'eventName' => 'required|string|max:255',
@@ -458,7 +459,7 @@ class EventController extends Controller
                 'eventDescription' => 'nullable|string',
                 'categoryLevel' => 'required|string|exists:m_category_level,id',
                 'eoName' => 'required|string|max:255',
-                'eoLogo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+                'eoLogo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:10240',
                 'categoryAge' => 'nullable|array',
                 'categoryAge.*' => 'exists:m_category_age,id',
                 'categoryGame' => 'nullable|array',
@@ -467,16 +468,17 @@ class EventController extends Controller
                 'categoryType.*' => 'exists:m_category_type,id',
             ]);
 
+            // Handle EO Logo upload if a new file is provided
             $logoFile = $event->eo_logo;
             if ($request->hasFile('eoLogo')) {
-                // Delete old file if exists
-                if ($logoFile && file_exists(public_path('images/upload/' . $logoFile))) {
-                    unlink(public_path('images/upload/events/' . $logoFile));
+                // Delete old logo file if it exists
+                if ($event->eo_logo && file_exists(public_path('images/upload/events/' . $event->eo_logo))) {
+                    unlink(public_path('images/upload/events/' . $event->eo_logo));
                 }
 
-                $file = $request->file('eoLogo');
-                $logoFile = time() . '_' . $file->getClientOriginalName();
-                $file->move(public_path('images/upload/events/'), $logoFile);
+                // Upload new logo file
+                $logoFile = Str::uuid() . '.' . $request->eoLogo->getClientOriginalExtension();
+                $request->eoLogo->move(public_path('images/upload/events'), $logoFile);
             }
 
             // Update Event
@@ -489,7 +491,7 @@ class EventController extends Controller
                 'eo_name' => $validated['eoName'],
                 'eo_logo' => $logoFile,
                 'modified_date' => now(),
-                'modified_by' => $userName,
+                'modified_by' => $user_id,
             ]);
 
             // Delete and recreate EventCategoryAge relations
@@ -501,9 +503,9 @@ class EventController extends Controller
                         'event_id' => $event->id,
                         'category_age_id' => $categoryAgeId,
                         'created_date' => now(),
-                        'created_by' => $userName,
+                        'created_by' => $user_id,
                         'modified_date' => now(),
-                        'modified_by' => $userName,
+                        'modified_by' => $user_id,
                     ]);
                 }
             }
@@ -517,9 +519,9 @@ class EventController extends Controller
                         'event_id' => $event->id,
                         'category_game_id' => $categoryGameId,
                         'created_date' => now(),
-                        'created_by' => $userName,
+                        'created_by' => $user_id,
                         'modified_date' => now(),
-                        'modified_by' => $userName,
+                        'modified_by' => $user_id,
                     ]);
                 }
             }
@@ -533,9 +535,9 @@ class EventController extends Controller
                         'event_id' => $event->id,
                         'category_type_id' => $categoryTypeId,
                         'created_date' => now(),
-                        'created_by' => $userName,
+                        'created_by' => $user_id,
                         'modified_date' => now(),
-                        'modified_by' => $userName,
+                        'modified_by' => $user_id,
                     ]);
                 }
             }
@@ -543,9 +545,9 @@ class EventController extends Controller
             // Determine redirect route based on user role
             $userRole = Auth::user()->userType?->code;
             $redirectRoute = match ($userRole) {
-                'SA' => 'superadmin.event-list',
-                'A' => 'admin.event-list',
-                default => 'admin.event-list',
+                'SA' => 'event-list',
+                'A' => 'event-list',
+                default => 'event-list',
             };
 
             return redirect()->route($redirectRoute)
@@ -566,7 +568,7 @@ class EventController extends Controller
     {
         try {
             // Delete logo file
-            if ($event->eo_logo && file_exists(public_path('images/upload/' . $event->eo_logo))) {
+            if ($event->eo_logo && file_exists(public_path('images/upload/events/' . $event->eo_logo))) {
                 unlink(public_path('images/upload/events/' . $event->eo_logo));
             }
 
@@ -586,9 +588,9 @@ class EventController extends Controller
             // Determine redirect route based on user role
             $userRole = Auth::user()->userType?->code;
             $redirectRoute = match ($userRole) {
-                'SA' => 'superadmin.event-list',
-                'A' => 'admin.event-list',
-                default => 'admin.event-list',
+                'SA' => 'event-list',
+                'A' => 'event-list',
+                default => 'event-list',
             };
 
             return redirect()->route($redirectRoute)

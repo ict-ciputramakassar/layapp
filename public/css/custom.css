@@ -557,7 +557,7 @@
      color: #fff;
      background-repeat: no-repeat;
      background-position: center bottom;
-     min-height: 320px;
+     min-height: 321px;
 }
  .full {
      position:relative;
@@ -570,6 +570,7 @@
      line-height: 55px;
      padding: 0;
      margin-bottom: 20px;
+     margin-top: 20px;
 }
  .right-match-time ul {
      margin: 0 auto 0;
@@ -607,6 +608,91 @@
      position: relative;
      z-index: 1;
 }
+
+@media (max-width: 824px) {
+    .right-match-time {
+        min-height: 335px;
+    }
+    .right-match-time h2 {
+        margin-top: 30px;
+    }
+    .team-btw-match li.vs span {
+        padding: 0 4px;
+        font-size: 14px;
+    }
+    .matchs-vs {
+        padding: 97px 0;
+    }
+}
+
+@media (max-width: 811px) {
+    .right-match-time {
+        min-height: 333px;
+    }
+    .right-match-time h2 {
+        margin-top: 30px;
+    }
+    .team-btw-match li.vs span {
+        padding: 0 4px;
+        font-size: 14px;
+    }
+    .team-btw-match ul li span {
+        font-size: 17px;
+    }
+    .matchs-vs {
+        padding: 97px 0;
+    }
+}
+
+@media (max-width: 791px) {
+    .right-match-time {
+        min-height: 331px;
+    }
+    .team-btw-match ul li span {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 770px) {
+    .right-match-time {
+        min-height: 327px;
+    }
+    .team-btw-match ul li span {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 768px) and (min-width: 767px) {
+    .right-match-time {
+        min-height: 329px;
+    }
+    .right-match-time ul {
+         margin: 0 10px;
+         justify-content: center;
+    }
+}
+
+@media (max-width: 767px) {
+    .right-match-time ul {
+         margin: 0 170px;
+         justify-content: center;
+    }
+}
+
+@media (max-width: 587px) {
+    .right-match-time ul {
+         margin: 0 100px;
+         justify-content: center;
+    }
+}
+
+@media (max-width: 399px) {
+    .right-match-time ul {
+         margin: 0 20px;
+         justify-content: center;
+    }
+}
+
 /** end search bar **/
  div.menu div.search-bar .input-group-addon {
      background: #d8302f;
@@ -1880,7 +1966,7 @@ body section#contant .post-info span h4 {
          font-size: 15px;
     }
      .right-match-time ul {
-         border: none;
+         /* border: none; */
          width: auto;
          display: flex;
     }
@@ -2014,7 +2100,7 @@ body section#contant .post-info span h4 {
          margin: 0;
     }
      .right-match-time ul li {
-         font-size: 17px;
+         font-size: 30px;
     }
      .theme-padding.middle-bg {
          padding-top: 60px;

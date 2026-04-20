@@ -1,6 +1,6 @@
 @extends('views_frontend.layouts.app')
 
-@section('title', $team['name'] . ' - Game Info')
+@section('title', $team['name'] . ' - LayApp')
 
 @section('content')
 <style>
@@ -37,7 +37,7 @@
     .td-btn-year.active { background: #333; color: #fff; border-color: #333; }
     .td-content-box { background: #fff; border-radius: 10px; padding: 40px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); min-height: 200px; transition: opacity 0.3s; border-left: 4px solid #ccc; }
     .mt-3 { margin-top: 20px; } .mb-3 { margin-bottom: 20px; }
-    
+
     /* Tambahan CSS untuk List Member */
     .member-card-mini { display: flex; align-items: center; background: #f9f9f9; padding: 12px; border-radius: 8px; border: 1px solid #eee; height: 100%; transition: 0.2s; }
     .member-card-mini:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.05); border-color: #ddd; }
@@ -62,10 +62,10 @@
 
 <section class="td-wrapper">
     <div class="container">
-        
+
         <div class="td-header-card">
             <div class="row">
-                
+
                 <div class="col-md-3 col-sm-4">
                     <div class="td-logo-container">
                         @php
@@ -74,23 +74,23 @@
                         <img src="{{ $teamImage }}" alt="{{ $team['name'] }} Logo" onerror="this.src='{{ asset('images/client.png') }}'">
                     </div>
                 </div>
-                
+
                 <div class="col-md-5 col-sm-8 mb-3">
                     <h2 class="td-team-name">
                         {{ $team['name'] }} <i class="fa fa-check-circle td-verified" title="Verified Team"></i>
                     </h2>
-                    
+
                     <div class="td-address">
-                        <i class="fa fa-map-marker" style="color: #e32124; margin-right: 5px;"></i> 
+                        <i class="fa fa-map-marker" style="color: #e32124; margin-right: 5px;"></i>
                         {{ $team['address'] }}
                     </div>
-                    
+
                     <div class="td-tags">
                         <span class="td-tag td-tag-region"><i class="fa fa-map"></i> Reg: {{ $team['city'] }}</span>
                         <span class="td-tag td-tag-type"><i class="fa fa-shield"></i> Tipe: {{ $team['type'] }}</span>
                     </div>
                 </div>
-                
+
                 <div class="col-md-4 col-sm-12 mt-3 mt-md-0">
                     <div class="td-match-widget">
                         <div class="td-match-title"><i class="fa fa-history"></i> Last Match Results</div>
@@ -102,7 +102,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </div>
 
@@ -112,7 +112,7 @@
             <div class="td-tab" data-target="stats"><i class="fa fa-bar-chart"></i> Statistik</div>
             <div class="td-tab" data-target="atlet"><i class="fa fa-id-badge"></i> Daftar Atlet</div>
             <div class="td-tab" data-target="coach"><i class="fa fa-user-secret"></i> Pelatih</div>
-            <div class="td-tab" data-target="official"><i class="fa fa-black-tie"></i> Official</div>
+            <div class="td-tab" data-target="official"><i class="fa-brands fa-black-tie"></i> Official</div>
         </div>
 
         <div class="td-filter-year" id="td-years">
@@ -135,7 +135,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    
+
     // TANGKAP DATA DARI BACKEND LARAVEL KE JAVASCRIPT
     const dbMembers = @json($members);
 
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let html = `<h4 style="margin-bottom: 20px;"><i class="fa ${iconClass}"></i> ${title}</h4>`;
         html += `<div class="row">`;
-        
+
         membersArray.forEach(member => {
             // Sesuaikan variabel di bawah (member.full_name, member.position.name) dengan field JSON/Tabel Anda
             let name = member.full_name;
@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </div>`;
         });
-        
+
         html += `</div>`;
         return html;
     }
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Fungsi Utama Render Konten ke Layar
     function renderData() {
         contentBox.style.opacity = 0; // Efek fade out
-        
+
         setTimeout(() => {
             let htmlContent = null;
 
@@ -202,12 +202,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Untuk Tab Team, Prestasi, dan Stats (Ambil dari dummy sementara)
                 htmlContent = dummyContent[currentTab];
             }
-            
+
             // JIKA ADA DATA
             if (htmlContent) {
                 contentBox.innerHTML = htmlContent;
                 contentBox.style.borderLeftColor = "#2ecc71"; // Garis hijau
-            } 
+            }
             // JIKA KOSONG (Array null/length 0)
             else {
                 contentBox.innerHTML = `
@@ -219,7 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
                 contentBox.style.borderLeftColor = "#e32124"; // Garis merah
             }
-            
+
             contentBox.style.opacity = 1; // Efek fade in
         }, 200);
     }
@@ -239,9 +239,9 @@ document.addEventListener('DOMContentLoaded', function() {
         year.addEventListener('click', function() {
             years.forEach(y => y.classList.remove('active'));
             this.classList.add('active');
-            // Saat ini filter tahun sekadar ganti warna tombol, 
+            // Saat ini filter tahun sekadar ganti warna tombol,
             // karena data members dari DB belum dikelompokkan per tahun.
-            renderData(); 
+            renderData();
         });
     });
 

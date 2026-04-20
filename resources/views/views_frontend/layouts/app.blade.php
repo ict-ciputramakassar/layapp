@@ -7,14 +7,14 @@
 	<!-- Mobile Metas -->
 	<meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<!-- Site Metas -->
-	<title>@yield('title', 'Game Info')</title>
+	<title>@yield('title', 'LayApp')</title>
 	<meta name="keywords" content="">
 	<meta name="description" content="">
 	<meta name="author" content="">
 	<!-- Site Icons -->
 	<link rel="shortcut icon" href="" type="image/x-icon" />
 	<link rel="apple-touch-icon" href="">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
 	<!-- Bootstrap CSS -->
 	<link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
 	<!-- Site CSS -->
@@ -35,6 +35,8 @@
 	<link href="http://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
 	<script src="{{ asset('js/3dslider.js') }}"></script>
 	@yield('extra-css')
+    @stack('styles')
+    @stack('scripts')
 </head>
 <body class="game_info" data-spy="scroll" data-target=".header">
 	<!-- LOADER -->
@@ -110,7 +112,7 @@
 														<ul class="dropdown-menu mega-dropdown-menu">
 															<li class="col-sm-8">
 																<ul>
-																	<li class="dropdown-header">Men Collection</li>
+																	<li class="dropdown-header">Collection</li>
 																	<div id="menCollection" class="carousel slide" data-ride="carousel">
 																		<div class="carousel-inner">
 																			<div class="item active">
@@ -129,11 +131,11 @@
 																		<!-- End Carousel Inner -->
 																		<!-- Controls -->
 																		<a class="left carousel-control" href="#menCollection" role="button" data-slide="prev">
-																		<span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span>
+																		<i class="fa fa-angle-left" aria-hidden="true"></i>
 																		<span class="sr-only">Previous</span>
 																		</a>
 																		<a class="right carousel-control" href="#menCollection" role="button" data-slide="next">
-																		<span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span>
+																		<i class="fa fa-angle-right" aria-hidden="true"></i>
 																		<span class="sr-only">Next</span>
 																		</a>
 																	</div>
@@ -141,18 +143,22 @@
 																</ul>
 															</li>
 															<li class="col-sm-4">
-																<ul class="menu-inner">
-																	<li class="dropdown-header">Next Matches</li>
-																	<li><a href="#">Contrary vs classical</a></li>
-																	<li><a href="#">Discovered vs undoubtable</a></li>
-																	<li><a href="#">Contrary vs classical</a></li>
-																	<li><a href="#">Discovered vs undoubtable</a></li>
-																	<li><a href="#">Contrary vs classical</a></li>
-																	<li><a href="#">Discovered vs undoubtable</a></li>
-																	<li><a href="#">Contrary vs classical</a></li>
-																	<li><a href="#">Discovered vs undoubtable</a></li>
-																</ul>
-															</li>
+                                                                <ul>
+                                                                    <li class="dropdown-header">Next Matches</li>
+                                                                    @php
+                                                                        $navFixtures = \App\Models\GroupSchedule::with(['teamH', 'teamA'])
+                                                                            ->where('play_date', '>=', now()->setTimezone('Asia/Makassar'))
+                                                                            ->orderBy('play_date', 'asc')
+                                                                            ->limit(4)
+                                                                            ->get();
+                                                                    @endphp
+                                                                    @forelse ($navFixtures as $fixture)
+                                                                        <li><a href="#">{{ $fixture->teamH->name ?? 'TBA' }} vs {{ $fixture->teamA->name ?? 'TBA' }}</a></li>
+                                                                    @empty
+                                                                        <li><a href="#">No Upcoming Matches</a></li>
+                                                                    @endforelse
+                                                                </ul>
+                                                            </li>
 														</ul>
 													</li>
 													{{-- <li @if(request()->routeIs('blog')) class="active" @endif><a href="{{ route('blog') }}">Blog</a></li>
@@ -244,7 +250,7 @@
 		</div>
 		<div class="footer-bottom">
 			<div class="container">
-				<p>Copyright © 2018 Distributed by <a href="https://themewagon.com/" target="_blank">ThemeWagon</a></p>
+				<p class="mb-0">Copyright © 2026 LayApp. Developed by <a href="https://wyattmatt.github.io/" target="_blank" class="text-primary">WyattMatt</a> and <a href="https://gibekkk.github.io/" target="_blank" class="text-primary">Gibekkk</a></p>
 			</div>
 		</div>
 	</footer>

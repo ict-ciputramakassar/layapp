@@ -1,6 +1,6 @@
 @extends('views_frontend.layouts.app')
 
-@section('title', 'Our Team - Game Info')
+@section('title', 'Team - LayApp')
 
 @section('content')
 <style>
@@ -13,7 +13,7 @@
         height: 100%;
         border: 1px solid #f0f0f0;
     }
-    
+
     .team-card:hover {
         transform: translateY(-10px);
         box-shadow: 0 12px 24px rgba(227, 33, 36, 0.2); /* Bayangan dengan sedikit warna merah */
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function() {
         try {
             const response = await fetch(API_URL);
             const data = await response.json();
-            
+
             if (data.success && data.teams) {
                 allTeams = data.teams;
                 renderPage(currentPage);
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hitung Index untuk Slice Array
         const startIndex = (page - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        
+
         const teamsToRender = allTeams.slice(startIndex, endIndex);
 
         if (teamsToRender.length === 0) {
@@ -130,11 +130,11 @@ document.addEventListener('DOMContentLoaded', function() {
         teamsToRender.forEach(team => {
             // Tentukan Gambar (gunakan image tim dari DB, atau fallback jika null)
             const teamImage = `{{ asset('${team.image}') }}`;
-            
+
             // Tentukan Link Detail Tim (Siapkan URL untuk layar baru nanti)
             // Asumsi rutenya nanti seperti /team/{id}
-            const detailUrl = `{{ url('team') }}/${team.id}`; 
-            
+            const detailUrl = `{{ url('team') }}/${team.id}`;
+
             // Hitung jumlah member hanya untuk label statistik
             const memberCount = team.members ? team.members.length : 0;
 
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     </a>
                 </div>
             `;
-            
+
             // Suntikkan ke container utama
             container.innerHTML += html;
         });
@@ -163,14 +163,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function renderPaginationControls() {
         const totalPages = Math.ceil(allTeams.length / itemsPerPage);
         const paginationContainer = document.getElementById('pagination-container');
-        
+
         if (totalPages <= 1) {
-            paginationContainer.innerHTML = ''; 
+            paginationContainer.innerHTML = '';
             return;
         }
 
         let html = '<ul class="pagination" style="display: inline-flex; list-style: none; padding:0;">';
-        
+
         // Tombol Prev
         const prevDisabled = currentPage === 1 ? 'pointer-events: none; opacity: 0.5;' : '';
         html += `<li style="margin: 0 5px;"><a href="javascript:void(0)" onclick="changePage(${currentPage - 1})" class="btn btn-default" style="${prevDisabled}">&laquo; Prev</a></li>`;
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Tombol Next
         const nextDisabled = currentPage === totalPages ? 'pointer-events: none; opacity: 0.5;' : '';
         html += `<li style="margin: 0 5px;"><a href="javascript:void(0)" onclick="changePage(${currentPage + 1})" class="btn btn-default" style="${nextDisabled}">Next &raquo;</a></li>`;
-        
+
         html += '</ul>';
         paginationContainer.innerHTML = html;
     }

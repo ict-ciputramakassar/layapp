@@ -1,6 +1,6 @@
 @extends('views_frontend.layouts.app')
 
-@section('title', 'Game Info')
+@section('title', 'Single Blog - LayApp')
 
 @section('content')
 <div class="inner-page-banner">

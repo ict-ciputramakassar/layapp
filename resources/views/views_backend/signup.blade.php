@@ -7,7 +7,7 @@
   <div class="card " style="max-width:420px; width:100%;">
     <div class="card-body p-5">
       <div class="text-center mb-3">
-        <a href="{{ route('admin.dashboard') }}" class="mb-4 d-inline-block">
+        <a href="{{ route('dashboard') }}" class="mb-4 d-inline-block">
           <img src="{{ asset('images/backend/logo-icon.svg') }}" alt="" width="36">
           <span class="ms-2"><img src="{{ asset('images/backend/logo.svg') }}" alt=""></span>
         </a>

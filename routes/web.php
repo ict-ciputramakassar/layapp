@@ -5,11 +5,11 @@ use App\Http\Controllers\TeamLeaderController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserRolesController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\ScoreController;
 
 // Frontend Routes
-Route::get('/', function () {
-    return view('views_frontend.home');
-})->name('home');
+Route::get('/', [App\Http\Controllers\ScheduleController::class, 'frontendHome'])->name('home');
 
 Route::get('/about', function () {
     return view('views_frontend.about');
@@ -79,10 +79,6 @@ Route::middleware('auth')->group(function () {
         return view('views_backend.stock-overview');
     })->name('stock-overview');
 
-    Route::get('/stock-in', function () {
-        return view('views_backend.stock-in');
-    })->name('stock-in');
-
     Route::get('/stock-out', function () {
         return view('views_backend.stock-out');
     })->name('stock-out');
@@ -138,67 +134,67 @@ Route::middleware('auth')->group(function () {
     })->name('changelog');
 });
 
-// Backend Routes - Team Leader
-Route::prefix('team_leader')->name('team_leader.')->middleware("teamleader")->group(function () {
-    Route::get('/add_team_member', [TeamLeaderController::class, 'addMemberView'])->name('add_team_member');
+// Secure Backend Routes
+Route::middleware('auth')->group(function () {
 
-    Route::get('/team_members', [TeamLeaderController::class, 'viewTeamMembers'])->name('team_members');
-
-    Route::get('/getAthletes/{eventId}', [TeamLeaderController::class, 'getAthletesForRegistration'])->name('get_athlete');
-    Route::get('/getMembers', [TeamLeaderController::class, 'getMembers'])->name('get_members');
-    Route::post('/addMembers', [TeamLeaderController::class, 'addMembersBulk'])->name('add_members_bulk');
-    Route::get('/getMember/{id}', [TeamLeaderController::class, 'getMemberById'])->name('get_member_by_id');
-    Route::get('/editMember/{id}', [TeamLeaderController::class, 'editMemberView'])->name('edit_member');
-    Route::put('/updateMember/{id}', [TeamLeaderController::class, 'updateMember'])->name('update_member');
-    Route::delete('/deleteMember/{id}', [TeamLeaderController::class, 'deleteMember'])->name('delete_member');
-});
-
-// Backend Routes - Superadmin
-Route::prefix('superadmin')->name('superadmin.')->middleware("superadmin")->group(function () {
-    // Main Navigation
-    Route::get('/dashboard', function () {
-        return view('views_backend.dashboard');
-    })->name('dashboard');
-
-    // User Management
-    Route::get('/user-roles', [UserRolesController::class, 'index'])->name('user-roles');
-    Route::get('/api/users', [UserRolesController::class, 'getUsers'])->name('api.users');
-    Route::get('/api/roles', [UserRolesController::class, 'getRoles'])->name('api.roles');
-    Route::post('/users', [UserRolesController::class, 'storeUser'])->name('users.store');
-    Route::put('/users/{userId}', [UserRolesController::class, 'updateUser'])->name('users.update');
-    Route::put('/users/{userId}/role', [UserRolesController::class, 'updateUserRole'])->name('users.updateRole');
-    Route::delete('/users/{userId}', [UserRolesController::class, 'deleteUser'])->name('users.delete');
-    Route::post('/roles', [UserRolesController::class, 'storeRole'])->name('roles.store');
-    Route::put('/roles/{roleId}', [UserRolesController::class, 'updateRole'])->name('roles.update');
-    Route::delete('/roles/{roleId}', [UserRolesController::class, 'deleteRole'])->name('roles.delete');
+    // User Roles Management
+    Route::middleware('permission:user_roles')->group(function () {
+        Route::get('/user-roles', [UserRolesController::class, 'index'])->name('user-roles');
+        Route::get('/api/users', [UserRolesController::class, 'getUsers'])->name('api.users');
+        Route::get('/api/roles', [UserRolesController::class, 'getRoles'])->name('api.roles');
+        Route::post('/users', [UserRolesController::class, 'storeUser'])->name('users.store');
+        Route::put('/users/{userId}', [UserRolesController::class, 'updateUser'])->name('users.update');
+        Route::put('/users/{userId}/role', [UserRolesController::class, 'updateUserRole'])->name('users.updateRole');
+        Route::delete('/users/{userId}', [UserRolesController::class, 'deleteUser'])->name('users.delete');
+        Route::post('/roles', [UserRolesController::class, 'storeRole'])->name('roles.store');
+        Route::put('/roles/{roleId}', [UserRolesController::class, 'updateRole'])->name('roles.update');
+        Route::delete('/roles/{roleId}', [UserRolesController::class, 'deleteRole'])->name('roles.delete');
+    });
 
     // Event Management
-    Route::get('/create-event', [EventController::class, 'create'])->name('create-event');
-    Route::get('/event-list', [EventController::class, 'index'])->name('event-list');
-    Route::post('/events', [EventController::class, 'store'])->name('events.store');
-    Route::get('/api/events', [EventController::class, 'getEventsData'])->name('api.events.data');
-    Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
-    Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
-    Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
-    Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
-});
+    Route::middleware('permission:event_list')->group(function () {
+        Route::get('/create-event', [EventController::class, 'create'])->name('create-event')->middleware('permission:create_event');
+        Route::post('/events', [EventController::class, 'store'])->name('events.store')->middleware('permission:create_event');
+        Route::get('/event-list', [EventController::class, 'index'])->name('event-list');
+        Route::get('/api/events', [EventController::class, 'getEventsData'])->name('api.events.data');
+        Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
+        Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
+        Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
+        Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+    });
 
-// Backend Routes - Admin
-Route::prefix('admin')->name('admin.')->middleware("admin")->group(function () {
-    // Main Navigation
-    Route::get('/dashboard', function () {
-        return view('views_backend.dashboard');
-    })->name('dashboard');
+    // Schedule Management
+    Route::middleware('permission:create_schedule')->group(function () {
+        Route::get('/create-schedule', [ScheduleController::class, 'create'])->name('create-schedule');
+        Route::get('/schedule-list', [ScheduleController::class, 'index'])->name('schedule-list')->middleware('permission:schedule_list');
+        Route::post('/schedule', [ScheduleController::class, 'store'])->name('schedule.store');
+        Route::get('/api/schedule/list', [ScheduleController::class, 'list'])->name('api.schedule.list');
+        Route::get('/schedule/{schedule}/edit', [ScheduleController::class, 'edit'])->name('schedule.edit');
+        Route::put('/schedule/{schedule}', [ScheduleController::class, 'update'])->name('schedule.update');
+        Route::delete('/schedule/{schedule}', [ScheduleController::class, 'destroy'])->name('schedule.destroy');
+        Route::get('/api/schedule/teams-events', [ScheduleController::class, 'getTeamsAndEvents'])->name('schedule.getTeamsAndEvents');
+    });
 
-    // Event Management
-    Route::get('/create-event', [EventController::class, 'create'])->name('create-event');
-    Route::get('/event-list', [EventController::class, 'index'])->name('event-list');
-    Route::post('/events', [EventController::class, 'store'])->name('events.store');
-    Route::get('/api/events', [EventController::class, 'getEventsData'])->name('api.events.data');
-    Route::get('/events/{event}', [EventController::class, 'show'])->name('events.show');
-    Route::get('/events/{event}/edit', [EventController::class, 'edit'])->name('events.edit');
-    Route::put('/events/{event}', [EventController::class, 'update'])->name('events.update');
-    Route::delete('/events/{event}', [EventController::class, 'destroy'])->name('events.destroy');
+    // Team Management
+    Route::middleware('permission:team_members')->group(function () {
+        Route::get('/add_team_member', [TeamLeaderController::class, 'addMemberView'])->name('add_team_member')->middleware('permission:add_team_members');
+        Route::post('/addMembers', [TeamLeaderController::class, 'addMembersBulk'])->name('add_members_bulk')->middleware('permission:add_team_members');
+        Route::get('/team_members', [TeamLeaderController::class, 'viewTeamMembers'])->name('team_members');
+        Route::get('/getAthletes/{eventId}', [TeamLeaderController::class, 'getAthletesForRegistration'])->name('get_athlete');
+        Route::get('/getMembers', [TeamLeaderController::class, 'getMembers'])->name('get_members');
+        Route::get('/getMember/{id}', [TeamLeaderController::class, 'getMemberById'])->name('get_member_by_id');
+        Route::get('/editMember/{id}', [TeamLeaderController::class, 'editMemberView'])->name('edit_member');
+        Route::put('/updateMember/{id}', [TeamLeaderController::class, 'updateMember'])->name('update_member');
+        Route::delete('/deleteMember/{id}', [TeamLeaderController::class, 'deleteMember'])->name('delete_member');
+    });
+
+    // Score Management
+    Route::middleware('permission:score_list')->group(function () {
+        Route::get('/score-list', [ScoreController::class, 'index'])->name('score-list');
+        Route::get('/api/score/list', [ScoreController::class, 'list'])->name('api.score.list');
+        Route::get('/score/{score}/edit', [ScoreController::class, 'edit'])->name('score.edit');
+        Route::put('/score/{score}', [ScoreController::class, 'update'])->name('score.update');
+    });
 });
 
 // Auth Routes

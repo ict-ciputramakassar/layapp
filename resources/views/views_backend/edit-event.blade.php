@@ -1,8 +1,9 @@
 @extends('views_backend.layouts.app')
 
-@section('title', 'Edit Event - InApp Inventory Dashboard')
+@section('title', 'Edit Event - LayApp')
 
 @section('content')
+
 <!-- Header -->
 <div class="row">
   <div class="col-12">
@@ -12,7 +13,7 @@
         <p class="mb-0">Update event details</p>
       </div>
       <div>
-        <a class="btn btn-primary" href="{{ route('admin.event-list') }}">Go to Events List</a>
+        <a class="btn btn-primary" href="{{ route('event-list') }}">Go to Events List</a>
       </div>
     </div>
   </div>
@@ -35,7 +36,7 @@
           </div>
         @endif
 
-        <form action="{{ route('admin.events.update', $event->id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('events.update', $event->id) }}" method="POST" enctype="multipart/form-data">
           @csrf
           @method('PUT')
 
@@ -145,20 +146,21 @@
           <!-- EO Logo -->
           <div class="mb-3">
             <label for="eoLogo" class="form-label">Event Organizer Logo</label>
-            @if($event->eo_logo)
-              <div class="mb-2">
-                <img src="{{ asset('images/upload/' . $event->eo_logo) }}" alt="Current Logo" class="avatar avatar-lg rounded mb-2">
-              </div>
-            @endif
             <input type="file" class="form-control @error('eoLogo') is-invalid @enderror" id="eoLogo" name="eoLogo" accept="image/*">
             <small class="form-text text-muted">Max 10MB - Supported formats: jpeg, png, jpg, gif, svg (Leave empty to keep current logo)</small>
+            <img id="eoLogoPreview" src="#" alt="EO Logo Preview" class="img-fluid mt-2" style="max-height: 150px; display: none;">
+            @if($event->eo_logo)
+              <div class="mb-2">
+                <img id="currentLogo" src="{{ asset('images/upload/events/' . $event->eo_logo) }}" alt="Current Logo" class="img-fluid mt-2" style="max-height: 150px;">
+              </div>
+            @endif
             @error('eoLogo')<span class="invalid-feedback d-block">{{ $message }}</span>@enderror
           </div>
 
           <!-- Form Actions -->
           <div class="d-flex gap-2">
             <button type="submit" class="btn btn-primary">Update Event</button>
-            <a href="{{ route('admin.event-list') }}" class="btn btn-secondary">Cancel</a>
+            <a href="{{ route('event-list') }}" class="btn btn-secondary">Cancel</a>
           </div>
         </form>
       </div>
@@ -174,4 +176,20 @@
     </footer>
   </div>
 </div>
+
+<script>
+    // EO Logo Preview
+    document.getElementById('eoLogo').addEventListener('change', function(event) {
+        const currentLogo = document.getElementById('currentLogo');
+        if (currentLogo) {
+            currentLogo.style.display = 'none';
+        }
+        const [file] = event.target.files;
+        if (file) {
+        const preview = document.getElementById('eoLogoPreview');
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = 'block';
+        }
+    });
+</script>
 @endsection
