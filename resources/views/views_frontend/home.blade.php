@@ -7,11 +7,11 @@
         .sponsor-container {
             display: flex;
             flex-direction: row !important;
-            gap: 3rem; /* Jarak antar sponsor */
+            gap: 3rem;
             padding: 0;
             margin: 0;
             width: max-content;
-            align-items: center; /* Memastikan semua logo rata tengah secara vertikal */
+            align-items: center;
             animation: slide-left 15s linear infinite;
 			height: 200px;
         }
@@ -24,20 +24,20 @@
             width: 100%;
             padding: 0;
             margin: 0;
-            overflow: hidden; /* Mencegah scroll horizontal */
+            overflow: hidden;
         }
 
         #sponsor-slider {
             width: 100%;
         }
 
-        /* --- KUNCI PERBAIKAN DI SINI --- */
+        /* --- SPONSOR CARD --- */
         .sponsor-card {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px; /* Jarak antara gambar dan teks */
+            gap: 10px;
 			transition: transform 0.3s ease-in-out;
             cursor: pointer;
         }
@@ -47,16 +47,16 @@
         }
 
         .sponsor-image {
-            height: 150px !important; /* TINGGI SAMA RATA UNTUK SEMUA LOGO */
-            width: auto !important;  /* LEBAR MENYESUAIKAN GAMBAR ASLI */
-            object-fit: contain; /* Memastikan gambar utuh, tidak gepeng/terpotong */
+            height: 150px !important;
+            width: auto !important;
+            object-fit: contain;
             display: block;
         }
 
         .sponsor-name {
             font-size: 2rem;
             margin: 0;
-            white-space: nowrap; /* Mencegah teks turun ke baris baru */
+            white-space: nowrap;
         }
         /* ------------------------------- */
 
@@ -65,7 +65,7 @@
                 transform: translateX(0);
             }
             100% {
-                transform: translateX(calc(-49%)); /* 1.5rem adalah setengah dari gap (3rem) */
+                transform: translateX(calc(-49%));
             }
         }
 
@@ -92,6 +92,67 @@
             color: #fff !important;
             background: transparent !important;
             line-height: 50px !important;
+        }
+
+        /* --- MATCHS INFO --- */
+        .matchs-info {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .matchs-info > div[class*='col-'] {
+            display: flex;
+            padding: 0 !important;
+        }
+
+        .matchs-info > div > .row {
+            width: 100%;
+            display: flex;
+            margin: 0 !important;
+        }
+
+        .matchs-vs, .right-match-time {
+            height: 100%;
+            min-height: 321px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .matchs-vs {
+            width: 100%;
+        }
+
+        .right-match-time {
+            width: 100%;
+        }
+
+        /* --- MATCHS VS --- */
+        .matchs-vs .team-btw-match ul {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 50px;
+            padding: 0;
+            margin: 0;
+        }
+
+        .matchs-vs .team-btw-match ul li {
+            float: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .matchs-vs .team-btw-match ul li.vs {
+            margin: 0;
+        }
+
+        .matchs-vs .team-btw-match ul li span {
+            float: none;
+            text-align: center;
         }
         /* ------------------------------------------- */
     </style>
@@ -171,12 +232,12 @@
                                 <ul>
                                     @if($nextMatch)
                                         <li>
-                                            <img src="{{ asset($nextMatch->teamH->image ?? 'images/img-03.png') }}" alt="{{ $nextMatch->teamH->name }}">
+                                            <img src="{{ asset($nextMatch->teamH->image) }}" alt="{{ $nextMatch->teamH->name }}">
                                             <span>{{ $nextMatch->teamH->name }}</span>
                                         </li>
                                         <li class="vs"><span>vs</span></li>
                                         <li>
-                                            <img src="{{ asset($nextMatch->teamA->image ?? 'images/img-04.png') }}" alt="{{ $nextMatch->teamA->name }}">
+                                            <img src="{{ asset($nextMatch->teamA->image) }}" alt="{{ $nextMatch->teamA->name }}">
                                             <span>{{ $nextMatch->teamA->name }}</span>
                                         </li>
                                     @else
@@ -231,17 +292,20 @@
                                 @forelse($fixtures as $fixture)
                                     <ul style="display: flex; align-items: center;">
                                         <li>
-                                            <img style="width: 34px; height: 34px;" src="{{ asset($fixture->teamH->image ?? 'images/img-02.png') }}" alt="{{ $fixture->teamH->name }}">
-                                            <span>{{ $fixture->teamH->name }}</span>
+                                            <img style="width: 34px; height: 34px;" src="{{ asset($fixture->teamH->image) }}" alt="{{ $fixture->teamH->name }}">
+                                            <span class="text-muted">{{ $fixture->teamH->name }}</span>
                                         </li>
-                                        <li class="vs"><span>vs</span></li>
+                                        <li class="vs" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 15px;">
+                                            <span style="font-weight: bold; line-height: 1; margin-bottom: 2px;">Vs</span>
+                                            <span class="date text-muted" style="font-weight: bold; font-size: 12px; line-height: 1; margin-top: 0;">{{ $fixture->play_date->format('d/m/Y') }}</span>
+                                        </li>
                                         <li>
-                                            <img style="width: 34px; height: 34px;" src="{{ asset($fixture->teamA->image ?? 'images/img-06.png') }}" alt="{{ $fixture->teamA->name }}">
-                                            <span>{{ $fixture->teamA->name }}</span>
+                                            <img style="width: 34px; height: 34px;" src="{{ asset($fixture->teamA->image) }}" alt="{{ $fixture->teamA->name }}">
+                                            <span class="text-muted">{{ $fixture->teamA->name }}</span>
                                         </li>
                                     </ul>
                                 @empty
-                                    <p class="text-center" style="color: #fff">No upcoming fixtures.</p>
+                                    <p class="text-center" style="color: #333333; display: flex; align-items: center; justify-content: center;">No upcoming fixtures.</p>
                                 @endforelse
                             </div>
                         </div>

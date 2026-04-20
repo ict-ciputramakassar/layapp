@@ -85,7 +85,7 @@ $(document).ready(function() {
                 data: 'logo',
                 render: function(data, type, row) {
                     if (data) {
-                        return `<img src="{{ asset('images/upload/events') }}/${data}" alt="Logo" class="img-fluid" style="max-height: 50px;">`;
+                        return `<img src="/${data}" alt="Logo" class="img-fluid" style="max-height: 50px;">`;
                     }
                     return '<span class="text-muted">No logo</span>';
                 },

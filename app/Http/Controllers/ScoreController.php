@@ -11,8 +11,8 @@ use Illuminate\Support\Facades\Auth;
 class ScoreController extends Controller
 {
     /**
-    * Show the score list view
-    */
+     * Show the score list view
+     */
     public function index()
     {
         return view('views_backend.score-list');
@@ -39,13 +39,47 @@ class ScoreController extends Controller
 
         $total = $query->count();
 
+        // Sorting
+        if ($request->has('order') && count($request->order) > 0) {
+            $order = $request->order[0];
+            $columns = [
+                0 => 'event_name',
+                1 => 'team_home',
+                2 => 'team_away',
+                3 => 'score_h',
+                4 => 'score_a',
+                5 => 'play_date'
+            ];
+
+            if (isset($columns[$order['column']])) {
+                $orderColumn = $columns[$order['column']];
+                $orderDirection = $order['dir'] === 'desc' ? 'desc' : 'asc';
+
+                switch ($orderColumn) {
+                    case 'event_name':
+                        $query->orderBy('event_id', $orderDirection);
+                        break;
+                    case 'team_home':
+                        $query->orderBy('team_id_h', $orderDirection);
+                        break;
+                    case 'team_away':
+                        $query->orderBy('team_id_a', $orderDirection);
+                        break;
+                    default:
+                        $query->orderBy($orderColumn, $orderDirection);
+                        break;
+                }
+            }
+        } else {
+            $query->orderBy('play_date', 'desc');
+        }
+
         // Pagination
         $start = $request->input('start', 0);
         $length = $request->input('length', 10);
 
         $schedules = $query->offset($start)
             ->limit($length)
-            ->orderBy('play_date', 'desc')
             ->get();
 
         return response()->json([

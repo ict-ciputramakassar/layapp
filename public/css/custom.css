@@ -499,7 +499,7 @@
      float: left;
      width: 100%;
      font-size: 18px;
-     font-weight: 600;
+     /* font-weight: 600; */
 }
  .vs {
      display: flex;
@@ -512,7 +512,7 @@
      color: #fff;
      padding: 0 6px;
      border-radius: 100%;
-     font-weight: 500;
+     /* font-weight: 500; */
      font-size: 16px;
 }
  .matchs-vs {
@@ -744,7 +744,7 @@
  aside#sidebar .team-btw-match ul li span {
      color: #222;
      text-transform: capitalize;
-     font-weight: 600;
+     /* font-weight: 600; */
      display: block;
      font-size: 14px;
 }
@@ -763,7 +763,7 @@
 }
  aside#sidebar .team-btw-match ul {
      position: relative;
-     padding: 10px 0;
+     padding: 10px;
      display: flex;
 }
  .team-btw-match ul:nth-child(2n+2) {

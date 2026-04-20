@@ -72,7 +72,7 @@
           <div class="mb-3">
             <label for="categoryLevel" class="form-label">Category Level</label>
             <select class="form-select @error('categoryLevel') is-invalid @enderror" id="categoryLevel" name="categoryLevel" required>
-              <option value="">Select category level</option>
+              <option value="" disabled selected>Select category level</option>
               @foreach ($categoryLevels as $level)
                 <option value="{{ $level->id }}" {{ old('categoryLevel', $event->category_level_id) == $level->id ? 'selected' : '' }}>
                   {{ $level->name }}
@@ -151,7 +151,7 @@
             <img id="eoLogoPreview" src="#" alt="EO Logo Preview" class="img-fluid mt-2" style="max-height: 150px; display: none;">
             @if($event->eo_logo)
               <div class="mb-2">
-                <img id="currentLogo" src="{{ asset('images/upload/events/' . $event->eo_logo) }}" alt="Current Logo" class="img-fluid mt-2" style="max-height: 150px;">
+                <img id="currentLogo" src="{{ asset($event->eo_logo) }}" alt="Current Logo" class="img-fluid mt-2" style="max-height: 150px;">
               </div>
             @endif
             @error('eoLogo')<span class="invalid-feedback d-block">{{ $message }}</span>@enderror

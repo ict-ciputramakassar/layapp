@@ -1917,7 +1917,7 @@ aside#sidebar .team-btw-match ul li.vs span {
 	background: transparent !important;
 	display: flex;
 	height: 100%;
-	min-height: 50px;
+	min-height: 30px;
 	text-align: center;
 	justify-content: center;
 	align-items: center;

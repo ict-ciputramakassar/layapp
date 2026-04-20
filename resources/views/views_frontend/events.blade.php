@@ -3,6 +3,7 @@
 @section('title', 'Events - LayApp')
 
 @section('content')
+
 <style>
     /* Styling tambahan untuk tabel modal */
     .table-container { max-height: 300px; overflow-y: auto; border: 1px solid #ddd; margin-bottom: 15px; }
@@ -10,6 +11,90 @@
     .search-input { margin-bottom: 15px; }
     .filter-group { display: flex; gap: 10px; margin-bottom: 15px; }
     .filter-group > div { flex: 1; }
+
+    /* --- EVENTS GRID --- */
+    #events-container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    #events-container > div[class*='col-'] {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .event-card {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        background: #fff;
+    }
+
+    .card.event-card {
+        margin-bottom: 0;
+    }
+
+    .event-card-content {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+    }
+
+    /* --- PAGINATION --- */
+    .pg-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        margin-top: 30px;
+        font-family: inherit;
+    }
+    .pg-list {
+        display: inline-flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        background: #ebebeb;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    .pg-item {
+        margin: 0;
+    }
+    .pg-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 16px;
+        min-width: 40px;
+        color: #337ab7;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .pg-link:hover {
+        background-color: #dcdcdc;
+        text-decoration: none;
+    }
+    .pg-item.active .pg-link {
+        background-color: #337ab7;
+        color: #fff;
+        cursor: default;
+    }
+    .pg-item.active .pg-link:hover {
+        background-color: #337ab7;
+    }
+    .pg-item.disabled .pg-link {
+        color: #aaa;
+        cursor: not-allowed;
+        background-color: transparent;
+    }
+    .pg-item.disabled .pg-link:hover {
+        background-color: transparent;
+    }
+    /* --------------------------- */
 </style>
 
 <div class="inner-page-banner">
@@ -29,10 +114,18 @@
     <div class="row">
         <div class="container">
             <div id="events-container" class="row">
-                <div class="col-md-12 text-center">
-                    <p><i class="fa fa-spinner fa-spin fa-2x"></i><br>Loading events...</p>
+                <div style="width: 100%; min-height: 400px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <i class="fa fa-spinner fa-spin fa-2x" style="margin-bottom: 10px;"></i>
+                    <p style="text-align: center; margin: 0;">Loading events...</p>
                 </div>
             </div>
+
+            <!-- PAGINATION CONTAINER -->
+            <div class="row">
+                <div id="pagination-container" class="col-md-12 text-center mt-4">
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
@@ -103,43 +196,108 @@
     const MAX_PLAYERS = 20;
     const MIN_PLAYERS = 13;
 
+    // PAGINATION & DATA STATE
+    let allEvents = [];
+    let currentPage = 1;
+    const itemsPerPage = 16;
+
     document.addEventListener('DOMContentLoaded', function() {
         // Fetch List Events
         fetch('{{ route("api.events-frontend") }}')
             .then(res => res.json())
             .then(data => {
                 if (data.success && data.data.length > 0) {
-                    const container = document.getElementById('events-container');
-                    let html = '';
-
-                    data.data.forEach(event => {
-                        let registerBtn = isTeamLeader
-                            ? `<div class="center" style="margin-top:15px;"><button class="btn btn-danger btn-block" onclick="openRegisterModal('${event.id}', '${event.name.replace(/'/g, "\\'")}')">Daftar Event</button></div>`
-                            : '';
-
-                        html += `
-                            <div class="col-md-3 col-sm-6 mb-4" style="margin-bottom: 20px;">
-                                <div class="card" style="box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 15px; border-radius: 8px;">
-                                    <img class="img-responsive" src="{{ asset('images/upload/events') }}/${event.logo}" style="width:100%; height: 200px; object-fit: cover; border-radius: 6px;">
-                                    <div style="margin-top: 15px;">
-                                        <h4 style="font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${event.name}">${event.name}</h4>
-                                        <p style="margin-bottom: 5px; font-size: 13px; color: #555;"><i class="fa fa-calendar"></i> Mulai: ${event.start_date}</p>
-                                        <p style="margin-bottom: 5px; font-size: 13px; color: #555;"><i class="fa-solid fa-calendar-xmark"></i> Berakhir: ${event.end_date}</p>
-                                        ${registerBtn}
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    container.innerHTML = html;
+                    allEvents = data.data;
+                    renderEvents();
                 } else {
-                    document.getElementById('events-container').innerHTML = '<div class="col-md-12 text-center"><p>Belum ada event yang tersedia saat ini.</p></div>';
+                    document.getElementById('events-container').innerHTML = '<div style="width: 100%; min-height: 400px; display: flex; justify-content: center; align-items: center;"><p style="text-align: center; margin: 0;">Belum ada event yang tersedia saat ini.</p></div>';
+                    document.getElementById('pagination-container').innerHTML = '';
                 }
             })
             .catch(error => {
-                document.getElementById('events-container').innerHTML = '<div class="col-md-12 text-center text-danger"><p>Gagal memuat event.</p></div>';
+                document.getElementById('events-container').innerHTML = '<div class="text-danger" style="width: 100%; min-height: 400px; display: flex; justify-content: center; align-items: center;"><p style="text-align: center; margin: 0;">Gagal memuat event.</p></div>';
+                document.getElementById('pagination-container').innerHTML = '';
             });
     });
+
+    function renderEvents() {
+        const container = document.getElementById('events-container');
+
+        // Calculate slice
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const pageEvents = allEvents.slice(startIndex, endIndex);
+
+        let html = '';
+
+        pageEvents.forEach(event => {
+            let registerBtn = isTeamLeader
+                ? `<div class="center" style="margin-top:auto; padding-top: 15px;"><button class="btn btn-danger btn-block" onclick="openRegisterModal('${event.id}', '${event.name.replace(/'/g, "\\'")}')">Daftar Event</button></div>`
+                : '';
+
+            html += `
+                <div class="col-md-3 col-sm-6 col-xs-12" style="margin-bottom: 20px;">
+                    <div class="card event-card" style="box-shadow: 0 4px 8px rgba(0,0,0,0.1); padding: 15px; border-radius: 8px;">
+                        <img class="img-responsive" src="/${event.logo}" style="width:100%; height: 200px; object-fit: cover; border-radius: 6px;">
+                        <div class="event-card-content">
+                            <h4 style="margin-bottom: 10px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${event.name}">${event.name}</h4>
+                            <p style="margin-bottom: 5px; font-size: 13px; color: #555;"><i class="fa fa-calendar"></i> Mulai: ${event.start_date}</p>
+                            <p style="margin-bottom: 5px; font-size: 13px; color: #555;"><i class="fa-solid fa-calendar-xmark"></i> Berakhir: ${event.end_date}</p>
+                            ${registerBtn}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+        renderPagination();
+    }
+
+    function renderPagination() {
+        const totalItems = allEvents.length;
+        const paginationContainer = document.getElementById('pagination-container');
+
+        if (totalItems === 0) {
+            paginationContainer.innerHTML = '';
+            return;
+        }
+
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+        let html = '<div class="pg-wrapper">';
+        html += '<ul class="pg-list">';
+
+        // First button
+        html += `<li class="pg-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="pg-link" href="javascript:void(0)" onclick="if(currentPage > 1) { currentPage = 1; renderEvents(); }">&laquo;</a>
+                 </li>`;
+
+        // Prev button
+        html += `<li class="pg-item ${currentPage === 1 ? 'disabled' : ''}">
+                    <a class="pg-link" href="javascript:void(0)" onclick="if(currentPage > 1) { currentPage--; renderEvents(); }">&lsaquo;</a>
+                 </li>`;
+
+        // Numbers
+        for (let i = 1; i <= totalPages; i++) {
+            html += `<li class="pg-item ${currentPage === i ? 'active' : ''}">
+                        <a class="pg-link" href="javascript:void(0)" onclick="currentPage = ${i}; renderEvents();">${i}</a>
+                     </li>`;
+        }
+
+        // Next button
+        html += `<li class="pg-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="pg-link" href="javascript:void(0)" onclick="if(currentPage < ${totalPages}) { currentPage++; renderEvents(); }">&rsaquo;</a>
+                 </li>`;
+
+        // Last button
+        html += `<li class="pg-item ${currentPage === totalPages ? 'disabled' : ''}">
+                    <a class="pg-link" href="javascript:void(0)" onclick="if(currentPage < ${totalPages}) { currentPage = ${totalPages}; renderEvents(); }">&raquo;</a>
+                 </li>`;
+
+        html += '</ul></div>';
+        paginationContainer.innerHTML = html;
+    }
 
     // 1. FUNGSI BUKA MODAL & LOAD PEMAIN
     function openRegisterModal(eventId, eventName) {

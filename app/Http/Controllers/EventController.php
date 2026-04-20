@@ -13,6 +13,8 @@ use App\Models\EventCategoryAge;
 use App\Models\EventCategoryGame;
 use App\Models\EventCategoryType;
 use App\Models\Team;
+use App\Models\GroupSchedule;
+use App\Models\GroupEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
@@ -317,7 +319,7 @@ class EventController extends Controller
             if ($request->hasFile('eoLogo')) {
                 $file = $request->file('eoLogo');
                 $extension = $file->getClientOriginalExtension();
-                $logoFile = Str::uuid() . '.' . $extension;
+                $logoFile = 'images/upload/events/' . Str::uuid() . '.' . $extension;
                 $file->move(public_path('images/upload/events/'), $logoFile);
             }
 
@@ -472,12 +474,12 @@ class EventController extends Controller
             $logoFile = $event->eo_logo;
             if ($request->hasFile('eoLogo')) {
                 // Delete old logo file if it exists
-                if ($event->eo_logo && file_exists(public_path('images/upload/events/' . $event->eo_logo))) {
-                    unlink(public_path('images/upload/events/' . $event->eo_logo));
+                if ($event->eo_logo && file_exists(public_path($event->eo_logo))) {
+                    unlink(public_path($event->eo_logo));
                 }
 
                 // Upload new logo file
-                $logoFile = Str::uuid() . '.' . $request->eoLogo->getClientOriginalExtension();
+                $logoFile = 'images/upload/events/' . Str::uuid() . '.' . $request->eoLogo->getClientOriginalExtension();
                 $request->eoLogo->move(public_path('images/upload/events'), $logoFile);
             }
 
@@ -568,11 +570,23 @@ class EventController extends Controller
     {
         try {
             // Delete logo file
-            if ($event->eo_logo && file_exists(public_path('images/upload/events/' . $event->eo_logo))) {
-                unlink(public_path('images/upload/events/' . $event->eo_logo));
+            if ($event->eo_logo && file_exists(public_path($event->eo_logo))) {
+                unlink(public_path($event->eo_logo));
             }
 
-            // Delete relations
+            // Delete relations based on DB constraints
+            // Delete Event Registrations and their children
+            $registrations = EventRegistration::where('event_id', $event->id)->get();
+            foreach ($registrations as $registration) {
+                EventRegistrationList::where('event_registration_id', $registration->id)->delete();
+                GroupEvent::where('event_registration_id', $registration->id)->delete();
+                $registration->delete();
+            }
+
+            // Delete Group Schedules linked directly to Event
+            GroupSchedule::where('event_id', $event->id)->delete();
+
+            // Delete Event Categories
             EventCategoryAge::where('event_id', $event->id)->delete();
             EventCategoryGame::where('event_id', $event->id)->delete();
             EventCategoryType::where('event_id', $event->id)->delete();

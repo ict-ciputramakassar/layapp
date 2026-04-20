@@ -85,7 +85,7 @@
           <div class="mb-3">
             <label for="categoryLevel" class="form-label">Category Level</label>
             <select class="form-select @error('categoryLevel') is-invalid @enderror" id="categoryLevel" name="categoryLevel">
-              <option value="">Select category level</option>
+              <option value="" disabled selected>Select category level</option>
               @foreach ($categoryLevels as $level)
                 <option value="{{ $level->id }}" {{ old('categoryLevel') == $level->id ? 'selected' : '' }}>
                   {{ $level->name }}
