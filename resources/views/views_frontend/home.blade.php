@@ -232,12 +232,12 @@
                                 <ul>
                                     @if($nextMatch)
                                         <li>
-                                            <img src="{{ asset($nextMatch->teamH->image) }}" alt="{{ $nextMatch->teamH->name }}">
+                                            <img width="98px" height="98px" src="{{ asset($nextMatch->teamH->image) }}" alt="{{ $nextMatch->teamH->name }}">
                                             <span>{{ $nextMatch->teamH->name }}</span>
                                         </li>
                                         <li class="vs"><span>vs</span></li>
                                         <li>
-                                            <img src="{{ asset($nextMatch->teamA->image) }}" alt="{{ $nextMatch->teamA->name }}">
+                                            <img width="98px" height="98px" src="{{ asset($nextMatch->teamA->image) }}" alt="{{ $nextMatch->teamA->name }}">
                                             <span>{{ $nextMatch->teamA->name }}</span>
                                         </li>
                                     @else
