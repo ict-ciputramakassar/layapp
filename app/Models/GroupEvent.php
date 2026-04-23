@@ -2,19 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;;
+use Illuminate\Support\Str;
 
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
 
 class GroupEvent extends Model
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory;
 
     /**
      * The table associated with the model.
@@ -50,14 +46,15 @@ class GroupEvent extends Model
      *
      * @var list<string>
      */
-        protected static function boot()
+    protected $hidden = [];
+
+    protected static function boot()
     {
         parent::boot();
         static::creating(function ($model) {
             $model->id = (string) Str::uuid();
         });
     }
-protected $hidden = [];
 
     /**
      * Get the attributes that should be cast.

@@ -59,7 +59,7 @@ class UserRolesController extends Controller
         ]);
 
         try {
-            $currentUserId = Auth::check() ? Auth::user()->id : 'System';
+            $currentUserId = Auth::id();
 
             $user = User::create([
                 'full_name' => $request->full_name,
@@ -96,7 +96,7 @@ class UserRolesController extends Controller
         ]);
 
         try {
-            $currentUserId = Auth::check() ? Auth::user()->id : 'System';
+            $currentUserId = Auth::id();
 
             $user = User::findOrFail($userId);
             $user->update([
@@ -132,7 +132,7 @@ class UserRolesController extends Controller
         ]);
 
         try {
-            $currentUserId = Auth::check() ? Auth::user()->id : 'System';
+            $currentUserId = Auth::id();
 
             $user = User::findOrFail($userId);
             $user->update([
@@ -207,7 +207,7 @@ class UserRolesController extends Controller
         ]);
 
         try {
-            $currentUserId = Auth::check() ? Auth::user()->id : 'System';
+            $currentUserId = Auth::id();
 
             $role = UserType::create([
                 'name' => $request->name,
@@ -244,7 +244,7 @@ class UserRolesController extends Controller
         ]);
 
         try {
-            $currentUserId = Auth::check() ? Auth::user()->id : 'System';
+            $currentUserId = Auth::id();
 
             $role = UserType::findOrFail($roleId);
             $role->update([

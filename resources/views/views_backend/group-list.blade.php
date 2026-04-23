@@ -1,6 +1,6 @@
 @extends('views_backend.layouts.app')
 
-@section('title', 'Score List - LayApp')
+@section('title', 'Group List - LayApp')
 
 @push('styles')
 <!-- DataTables CSS with Bootstrap 5 Integration -->
@@ -28,16 +28,23 @@
     table.dataTable thead th.text-start .dt-column-title {
         text-align: left !important;
     }
+    .dt-type-numeric {
+        text-align: left !important;
+    }
 </style>
 @endpush
 
 @section('content')
+
 <div class="row">
   <div class="col-12">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div class="">
-        <h1 class="fs-3 mb-1">Score List</h1>
-        <p class="mb-0">Manage your scores</p>
+        <h1 class="fs-3 mb-1">Group List</h1>
+        <p class="mb-0">Manage your groups</p>
+      </div>
+      <div>
+        <a href="{{ route('create-group') }}" class="btn btn-primary">Add Group</a>
       </div>
     </div>
   </div>
@@ -46,15 +53,17 @@
 <div class="row">
   <div class="col-12">
     <div style="padding-bottom: 0.5rem;" class="card table-responsive py-1">
-      <table id="schedulesTable" class="table mb-0 text-nowrap table-hover">
+      <table id="groupsTable" class="table mb-0 text-nowrap table-hover">
         <thead class="table-light border-light">
           <tr>
+            <th>Group Game</th>
             <th>Event Name</th>
-            <th>Team Home</th>
-            <th>Team Away</th>
-            <th>Score Home</th>
-            <th>Score Away</th>
-            <th>Play Date</th>
+            <th>Team Name</th>
+            <th class="text-start">Play</th>
+            <th class="text-start">Win</th>
+            <th class="text-start">Lose</th>
+            <th class="text-start">Draw</th>
+            <th class="text-start">Point</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -86,9 +95,9 @@
 
 <script>
 $(document).ready(function() {
-    const apiRoute = '{{ route('api.score.list') }}';
+    const apiRoute = '{{ route('api.groups.data') }}';
 
-    let table = $('#schedulesTable').DataTable({
+    let table = $('#groupsTable').DataTable({
         processing: true,
         serverSide: true,
         responsive: true,
@@ -97,22 +106,16 @@ $(document).ready(function() {
             type: 'GET'
         },
         columns: [
-            { data: 'event_name' },
-            { data: 'team_home' },
-            { data: 'team_away' },
-            { data: 'score_h', className: 'text-start' },
-            { data: 'score_a', className: 'text-start' },
-            { data: 'play_date', className: 'text-start' },
+            { data: 'group_game_name', name: 'group_game_name' },
+            { data: 'event_name',      name: 'event_name' },
+            { data: 'team_name',       name: 'team_name' },
+            { data: 'play',            name: 'play' ,               classname: 'text-start'},
+            { data: 'win',             name: 'win' ,                classname: 'text-start'},
+            { data: 'lose',            name: 'lose' ,               classname: 'text-start'},
+            { data: 'draw',            name: 'draw' ,               classname: 'text-start'},
+            { data: 'point',           name: 'point' ,              classname: 'text-start'},
             {
-                data: 'id',
-                render: function(data, type, row) {
-                    const editRoute = `/score/${data}/edit`;
-                    return `
-                        <a href="${editRoute}" class="btn btn-sm btn-outline-primary">
-                            <i class="ti ti-edit"></i> Edit
-                        </a>
-                    `;
-                },
+                data: 'action',
                 orderable: false,
                 searchable: false
             }
@@ -121,7 +124,7 @@ $(document).ready(function() {
         pageLength: 10,
         lengthMenu: [5, 10, 25, 50],
         language: {
-            search: 'Search events:',
+            search: 'Search groups:',
             lengthMenu: '_MENU_ entries per page',
             info: 'Showing _START_ to _END_ of _TOTAL_ entries',
             infoEmpty: 'Showing 0 to 0 of 0 entries',
@@ -133,6 +136,29 @@ $(document).ready(function() {
             }
         }
     });
+
+    // Delete function
+    window.deleteGroup = function(groupId) {
+        if (confirm('Are you sure you want to delete this group?')) {
+            const deleteRoute = `{{ route('group.destroy', ':id') }}`.replace(':id', groupId);
+            $.ajax({
+                url: deleteRoute,
+                type: 'DELETE',
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(response) {
+                    alert('Group deleted successfully!');
+                    table.ajax.reload();
+                },
+                error: function(xhr) {
+                    alert('Error deleting group');
+                    console.error(xhr);
+                }
+            });
+        }
+    };
 });
 </script>
 @endsection

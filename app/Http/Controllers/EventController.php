@@ -149,44 +149,6 @@ class EventController extends Controller
         }
     }
 
-    public function getTeamPointsFrontend()
-    {
-        try {
-            $teams = Team::all();
-
-            $data = $teams->map(function ($team) {
-                $eventRegistrations = $team->eventRegistrations;
-
-                $play = $eventRegistrations->sum(fn($registration) => $registration->groupEvents->sum('play'));
-                $win  = $eventRegistrations->sum(fn($registration) => $registration->groupEvents->sum('win'));
-                $lose = $eventRegistrations->sum(fn($registration) => $registration->groupEvents->sum('lose'));
-
-                return [
-                    'id'    => $team->id,
-                    'name'  => $team->name,
-                    'image' => $team->image,
-                    'points' => [
-                        'play' => $play,
-                        'win'  => $win,
-                        'lose' => $lose,
-                    ],
-                ];
-            });
-
-            return response()->json([
-                'success' => true,
-                'teams' => $data,
-            ]);
-        } catch (\Exception $e) {
-            Log::error('Error in getTeamPointsFrontend:', ['message' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
-            return response()->json([
-                'success' => false,
-                'message' => 'Error fetching points',
-                'error' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
     /**
      * Get events for DataTables server-side processing
      */

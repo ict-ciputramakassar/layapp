@@ -25,7 +25,7 @@
     @endif
 
     @if(in_array('dashboard', $userPermissions))
-    <li><a class="nav-link @if(request()->routeIs('dashboard') || request()->routeIs('dashboard') || request()->routeIs('dashboard')) active @endif" href="{{ route('dashboard') }}"><i class="ti ti-home"></i><span class="nav-text">Dashboard</span></a></li>
+    <li><a class="nav-link @if(request()->routeIs('dashboard')) active @endif" href="{{ route('dashboard') }}"><i class="ti ti-home"></i><span class="nav-text">Dashboard</span></a></li>
     @endif
 
 
@@ -75,6 +75,18 @@
 
     @if(in_array('score_list', $userPermissions))
     <li><a class="nav-link @if(request()->routeIs('score-list')) active @endif" href="{{ route('score-list') }}"><i class="ti ti-chart-bar"></i><span class="nav-text">Score List</span></a></li>
+    @endif
+
+    @if(in_array('group_list', $userPermissions) || in_array('create_group', $userPermissions))
+    <li class="nav-text-space"><small class="nav-text text-muted">Group</small></li>
+    @endif
+
+    @if(in_array('group_list', $userPermissions))
+    <li><a class="nav-link @if(request()->routeIs('group-list')) active @endif" href="{{ route('group-list') }}"><i class="ti ti-users-group"></i><span class="nav-text">Group List</span></a></li>
+    @endif
+
+    @if(in_array('create_group', $userPermissions))
+    <li><a class="nav-link @if(request()->routeIs('create-group')) active @endif" href="{{ route('create-group') }}"><i class="ti ti-user-plus"></i><span class="nav-text">Create Group</span></a></li>
     @endif
 
     @if(in_array('user_roles', $userPermissions))

@@ -310,7 +310,7 @@
                             </div>
                         </div>
                     </aside>
-                    <h4>Points Table</h4>
+                    {{-- <h4>Points Table</h4>
                     <aside id="sidebar" class="left-bar">
                         <div class="feature-matchs">
                             <table class="table table-bordered table-hover" id="points-table">
@@ -327,7 +327,7 @@
                                 </tbody>
                             </table>
                         </div>
-                    </aside>
+                    </aside> --}}
                     {{-- <div class="content-widget top-story" style="background: url({{ asset('images/top-story-bg.jpg') }});">
                         <div class="top-stroy-header">
                             <h2>Top Soccer Headlines Story <a href="#" class="fa fa-fa fa-angle-right"></a></h2>
@@ -344,47 +344,72 @@
                             <li><a href="#">Arsenal target Mkhitaryan</a></li>
                             <li><a href="#">Messi wins libel case.</a></li>
                         </ul>
-                    </div>
-                </div> --}}
-                {{-- <div class="col-lg-8 col-sm-8 col-xs-12">
-                    <div class="news-post-holder">
-                        <div class="news-post-widget">
-                            <img class="img-responsive" src="{{ asset('images/img-01_002.jpg') }}" alt="">
-                            <div class="news-post-detail">
-                                <span class="date">20 march 2016</span>
-                                <h2><a href=" {{ route('blog') }}">At vero eos et accusamus et iusto odio dignissimos
-                                        ducimus</a></h2>
-                                <p>Just hours after that his grandma had died, Angel Di Maria imagined how she might
-                                    react
-                                    if he didn't play</p>
+                    </div> --}}
+                </div>
+                <div class="col-lg-8 col-sm-8 col-xs-12">
+                    <h4>Group Standings</h4>
+                    <aside id="sidebar" class="left-bar">
+                        <div class="feature-matchs" style="position: relative;">
+                            <div id="standings-carousel" class="carousel slide" data-ride="carousel" data-pause="hover">
+                                <!-- Wrapper for slides -->
+                                <div style="padding: 10px;" class="carousel-inner" role="listbox">
+                                    @forelse($groups as $index => $group)
+                                    <div class="item {{ $index === 0 ? 'active' : '' }}">
+                                        <h5 style="text-align: center; font-size: 16px; font-weight: bold; margin-top: 5px; margin-bottom: 10px;">{{ $group['name'] }}</h5>
+                                        <table class="table table-hover" style="margin-bottom: 0;">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-center">#</th>
+                                                    <th>Team</th>
+                                                    <th class="text-center">Play</th>
+                                                    <th class="text-center">Win</th>
+                                                    <th class="text-center">Draw</th>
+                                                    <th class="text-center">Loss</th>
+                                                    <th class="text-center">Points</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($group['teams'] as $teamIndex => $team)
+                                                <tr>
+                                                    <td class="text-center">{{ $teamIndex + 1 }}</td>
+                                                    <td>
+                                                        @if($team['image'])
+                                                            <img src="{{ asset($team['image']) }}" alt="{{ $team['name'] }}" style="width: 24px; height: 24px; object-fit: contain; margin-right: 5px;">
+                                                        @endif
+                                                        {{ $team['name'] }}
+                                                    </td>
+                                                    <td class="text-center">{{ $team['points']['play'] }}</td>
+                                                    <td class="text-center">{{ $team['points']['win'] }}</td>
+                                                    <td class="text-center">{{ $team['points']['draw'] }}</td>
+                                                    <td class="text-center">{{ $team['points']['lose'] }}</td>
+                                                    <td class="text-center"><strong>{{ $team['points']['point'] }}</strong></td>
+                                                </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    @empty
+                                    <div class="item active">
+                                        <h5 style="text-align: center; font-weight: bold; margin-top: 0; margin-bottom: 0; padding: 20px;">No Groups Available</h5>
+                                    </div>
+                                    @endforelse
+                                </div>
+
+                                <!-- Controls -->
+                                @if(count($groups) > 1)
+                                <a class="left carousel-control" href="#standings-carousel" role="button" data-slide="prev" style="background: none; width: 30px; display: flex; align-items: center; justify-content: flex-start; text-shadow: none;">
+                                    <i class="fa fa-chevron-left" aria-hidden="true" style="color: #666;"></i>
+                                    <span class="sr-only">Previous</span>
+                                </a>
+                                <a class="right carousel-control" href="#standings-carousel" role="button" data-slide="next" style="background: none; width: 30px; display: flex; align-items: center; justify-content: flex-end; text-shadow: none;">
+                                    <i class="fa fa-chevron-right" aria-hidden="true" style="color: #666;"></i>
+                                    <span class="sr-only">Next</span>
+                                </a>
+                                @endif
                             </div>
                         </div>
-                        <div class="news-post-widget">
-                            <img class="img-responsive" src="{{ asset('images/img-02_003.jpg') }}" alt="">
-                            <div class="news-post-detail">
-                                <span class="date">20 march 2016</span>
-                                <h2><a href=" {{ route('blog') }}">At vero eos et accusamus et iusto odio dignissimos
-                                        ducimus</a></h2>
-                                <p>Just hours after that his grandma had died, Angel Di Maria imagined how she might
-                                    react
-                                    if he didn't play</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="news-post-holder">
-                        <div class="news-post-widget">
-                            <img class="img-responsive" src="{{ asset('images/img-03_003.jpg') }}" alt="">
-                            <div class="news-post-detail">
-                                <span class="date">20 march 2016</span>
-                                <h2><a href=" {{ route('blog') }}">At vero eos et accusamus et iusto odio dignissimos
-                                        ducimus</a></h2>
-                                <p>Just hours after that his grandma had died, Angel Di Maria imagined how she might
-                                    react
-                                    if he didn't play</p>
-                            </div>
-                        </div>
-                    </div>
-                </div> --}}
+                    </aside>
+                </div>
             </div>
         </div>
     </section>
@@ -446,52 +471,6 @@
                 clone.setAttribute('aria-hidden', 'true');
                 container.appendChild(clone);
             });
-            fetchPoints();
         });
-
-        // 2. Buat fungsi async untuk melakukan fetch
-        async function fetchPoints() {
-            try {
-                // Ganti URL ini dengan URL endpoint/route Laravel Anda
-                const url = '{{ route("api.points-frontend") }}';
-
-                // Memulai proses fetch
-                const response = await fetch(url, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                    }
-                });
-
-                // Cek apakah HTTP status nya sukses (200-299)
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                // Ubah response dari server menjadi format JSON (Object JavaScript)
-                const data = await response.json();
-
-                const pointsTable = document.getElementById("points-table");
-                var i = 1;
-                data.teams.forEach((team) => {
-                    const newRow = `
-                                                    <tr>
-                                                        <td>${i}</td>
-                                                        <td><img  class="align-baseline mx-1" style="width: 2em; height: 2em; object-fit: contain;" src="{{ asset('${team.image}') }}" alt="">${team.name}</td>
-                                                        <td>${team.points.play}</td>
-                                                        <td>${team.points.win}</td>
-                                                        <td>${team.points.lose}</td>
-                                                    </tr>
-                                                    `;
-
-                    pointsTable.insertAdjacentHTML('beforeend', newRow);
-                    i++;
-                });
-
-            } catch (error) {
-                // Tangkap dan tampilkan error jika fetch gagal (misal: jaringan putus, server mati)
-                console.error("An error occured when fetching team points:", error);
-            }
-        }
     </script>
 @endsection

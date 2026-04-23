@@ -28594,7 +28594,7 @@ class jf {
 * @version 4.0.1
 * https://github.com/svgdotjs/svg.select.js
 *
-* @copyright Ulrich-Matthias Sch+ñfer
+* @copyright Ulrich-Matthias Sch+ï¿½fer
 * @license MIT
 *
 * BUILT: Mon Jul 01 2024 15:04:42 GMT+0200 (Central European Summer Time)
@@ -28762,7 +28762,7 @@ const bn = r => function(e=!0, t={}) {
 * @version 4.0.1
 * https://github.com/svgdotjs/svg.select.js
 *
-* @copyright Ulrich-Matthias Sch+ñfer
+* @copyright Ulrich-Matthias Sch+ï¿½fer
 * @license MIT
 *
 * BUILT: Mon Jul 01 2024 15:04:42 GMT+0200 (Central European Summer Time)
@@ -30727,7 +30727,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     if (document.getElementById("salesChart")) {
         let l = function(c) {
-            return c == null ? "-" : "Gé¦" + Number(c).toLocaleString("en-IN", {
+            return c == null ? "-" : "Gï¿½" + Number(c).toLocaleString("en-IN", {
                 maximumFractionDigits: 0
             })
         };
@@ -32413,13 +32413,13 @@ let ti = [{
 }]
   , is = null
   , us = null;
-document.addEventListener("DOMContentLoaded", () => {
-    hr(),
-    cr();
-    const r = document.getElementById("roleModal");
-    r == null || r.addEventListener("hidden.bs.modal", Ll)
-}
-);
+// document.addEventListener("DOMContentLoaded", () => {
+//     hr(),
+//     cr();
+//     const r = document.getElementById("roleModal");
+//     r == null || r.addEventListener("hidden.bs.modal", Ll)
+// }
+// );
 function hr() {
     const r = document.getElementById("userTable");
     r && (r.innerHTML = "",
