@@ -10,7 +10,7 @@ use App\Http\Controllers\ScoreController;
 use App\Http\Controllers\GroupController;
 
 // Frontend Routes
-Route::get('/', [App\Http\Controllers\ScheduleController::class, 'frontendHome'])->name('home');
+Route::get('/', [ScheduleController::class, 'frontendHome'])->name('home');
 
 Route::get('/about', function () {
     return view('views_frontend.about');
@@ -47,6 +47,7 @@ Route::get('/single-blog', function () {
 
 // Backend Routes
 Route::middleware('auth')->group(function () {
+    // Main
     Route::get('/dashboard', function () {
         return view('views_backend.dashboard');
     })->name('dashboard');
@@ -54,72 +55,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/reports', function () {
         return view('views_backend.reports');
     })->name('reports');
-
-    Route::get('/edit-product', function () {
-        return view('views_backend.edit-product');
-    })->name('edit-product');
-
-    Route::get('/product-details', function () {
-        return view('views_backend.product-details');
-    })->name('product-details');
-
-    Route::get('/product-categories', function () {
-        return view('views_backend.product-categories');
-    })->name('product-categories');
-
-    Route::get('/product-brands', function () {
-        return view('views_backend.product-brands');
-    })->name('product-brands');
-
-    Route::get('/product-variants', function () {
-        return view('views_backend.product-variants');
-    })->name('product-variants');
-
-    // Inventory & Stock Management
-    Route::get('/stock-overview', function () {
-        return view('views_backend.stock-overview');
-    })->name('stock-overview');
-
-    Route::get('/stock-out', function () {
-        return view('views_backend.stock-out');
-    })->name('stock-out');
-
-    Route::get('/low-stock-products', function () {
-        return view('views_backend.low-stock-products');
-    })->name('low-stock-products');
-
-    Route::get('/stock-expired', function () {
-        return view('views_backend.stock-expired');
-    })->name('stock-expired');
-
-    Route::get('/warehouse-location-management', function () {
-        return view('views_backend.warehouse-location-management');
-    })->name('warehouse-location-management');
-
-    // Orders & Sales
-    Route::get('/order-list', function () {
-        return view('views_backend.order-list');
-    })->name('order-list');
-
-    Route::get('/order-details', function () {
-        return view('views_backend.order-details');
-    })->name('order-details');
-
-    Route::get('/create-order', function () {
-        return view('views_backend.create-order');
-    })->name('create-order');
-
-    Route::get('/invoice', function () {
-        return view('views_backend.invoice');
-    })->name('invoice');
-
-    Route::get('/returns-refunds', function () {
-        return view('views_backend.returns-refunds');
-    })->name('returns-refunds');
-
-    Route::get('/pos', function () {
-        return view('views_backend.pos');
-    })->name('pos');
 
     // Utilities
     Route::get('/404', function () {

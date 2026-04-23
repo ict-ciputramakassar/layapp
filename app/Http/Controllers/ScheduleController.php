@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\GroupSchedule;
 use App\Models\Team;
 use App\Models\Event;
+use App\Models\GroupGame;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -32,7 +33,7 @@ class ScheduleController extends Controller
             ->get();
 
         // Get Group Data for the Carousel
-        $groupGames = \App\Models\GroupGame::with(['groupEvents.eventRegistration.team'])->get();
+        $groupGames = GroupGame::with(['groupEvents.eventRegistration.team'])->get();
 
         $groups = $groupGames->map(function ($group) {
             $teams = $group->groupEvents->map(function ($ge) {

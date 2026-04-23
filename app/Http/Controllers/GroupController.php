@@ -184,7 +184,7 @@ class GroupController extends Controller
     public function getTeamPointsFrontend()
     {
         try {
-            $groupGames = \App\Models\GroupGame::with(["groupEvents.eventRegistration.team"])->get();
+            $groupGames = GroupGame::with(["groupEvents.eventRegistration.team"])->get();
 
             $data = $groupGames->map(function ($group) {
                 $teams = $group->groupEvents->map(function ($ge) {

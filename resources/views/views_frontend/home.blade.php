@@ -155,6 +155,16 @@
             text-align: center;
         }
         /* ------------------------------------------- */
+
+        /* Keep carousel geometry stable; apply spacing inside slides instead of carousel-inner. */
+        #standings-carousel .carousel-inner {
+            padding: 0;
+        }
+
+        #standings-carousel .carousel-inner > .item {
+            padding: 10px;
+            box-sizing: border-box;
+        }
     </style>
 @endsection
 
@@ -350,9 +360,9 @@
                     <h4>Group Standings</h4>
                     <aside id="sidebar" class="left-bar">
                         <div class="feature-matchs" style="position: relative;">
-                            <div id="standings-carousel" class="carousel slide" data-ride="carousel" data-pause="hover">
+                            <div id="standings-carousel" class="carousel slide" data-ride="carousel" data-pause="hover" data-interval="10000">
                                 <!-- Wrapper for slides -->
-                                <div style="padding: 10px;" class="carousel-inner" role="listbox">
+                                <div class="carousel-inner" role="listbox">
                                     @forelse($groups as $index => $group)
                                     <div class="item {{ $index === 0 ? 'active' : '' }}">
                                         <h5 style="text-align: center; font-size: 16px; font-weight: bold; margin-top: 5px; margin-bottom: 10px;">{{ $group['name'] }}</h5>
