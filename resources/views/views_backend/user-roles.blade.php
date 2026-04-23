@@ -4,7 +4,8 @@
 
 @push('styles')
 <!-- DataTables CSS for Bootstrap 5 -->
-<link href="https://cdn.datatables.net/2.0.3/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.datatables.net/2.3.7/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.2/css/responsive.bootstrap5.min.css">
 @endpush
 
 @section('content')
@@ -182,6 +183,14 @@
                 <label class="form-check-label" for="perm_score_list">Score List</label>
               </div>
               <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="perm_group_list" />
+                <label class="form-check-label" for="perm_group_list">Group List</label>
+              </div>
+              <div class="form-check mb-2">
+                <input class="form-check-input" type="checkbox" id="perm_create_group" />
+                <label class="form-check-label" for="perm_create_group">Create Group</label>
+              </div>
+              <div class="form-check mb-2">
                 <input class="form-check-input" type="checkbox" id="perm_user_roles" />
                 <label class="form-check-label" for="perm_user_roles">User Roles</label>
               </div>
@@ -213,7 +222,6 @@
   const API_ROLES = '{{ route("api.roles") }}';
   const API_USERS_STORE = '{{ route("users.store") }}';
   const API_USERS_UPDATE = '{{ route("users.update", ":userId") }}';
-  const API_USERS_UPDATE_ROLE = '{{ route("users.updateRole", ":userId") }}';
   const API_USERS_DELETE = '{{ route("users.delete", ":userId") }}';
   const API_ROLES_STORE = '{{ route("roles.store") }}';
   const API_ROLES_UPDATE = '{{ route("roles.update", ":roleId") }}';
@@ -235,7 +243,9 @@
 </script>
 <!-- jQuery, DataTables & Bootstrap 5 UI Script -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/2.0.3/js/dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/2.0.3/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.7/js/dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/2.3.7/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/3.0.2/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/3.0.2/js/responsive.bootstrap5.min.js"></script>
 <script src="{{ asset('js/backend/user-roles.js') }}"></script>
 @endsection

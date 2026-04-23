@@ -1,6 +1,3 @@
-// API endpoints are now defined in user-roles.blade.php with blade syntax
-// const API_USERS, API_ROLES, API_USERS_STORE, API_USERS_UPDATE_ROLE, API_USERS_DELETE
-
 // Define permissions as constants (sidebar menu items)
 const PERMISSIONS = {
     dashboard: "Dashboard",
@@ -10,6 +7,8 @@ const PERMISSIONS = {
     schedule_list: "Schedule List",
     create_schedule: "Create Schedule",
     score_list: "Score List",
+    group_list: "Group List",
+    create_group: "Create Group",
     user_roles: "User Roles",
     docs: "Docs",
     changelog: "Changelog",
@@ -24,15 +23,26 @@ let usersDataTable = null;
 document.addEventListener("DOMContentLoaded", function () {
     loadUsers();
     loadRoles();
+
+    // Reset forms when modals are hidden
+    document.getElementById('userModal').addEventListener('hidden.bs.modal', function () {
+        resetUserForm();
+    });
+    document.getElementById('roleModal').addEventListener('hidden.bs.modal', function () {
+        resetRoleForm();
+    });
 });
+
+function clearValidationErrors() {
+    document.querySelectorAll(".is-invalid").forEach((el) => el.classList.remove("is-invalid"));
+    document.querySelectorAll(".invalid-feedback").forEach((el) => el.remove());
+}
 
 // Load all users from database
 function loadUsers() {
     fetch(API_USERS, {
         headers: {
-            "X-CSRF-TOKEN": document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content"),
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
             Accept: "application/json",
         },
     })
@@ -50,9 +60,7 @@ function loadUsers() {
 function loadRoles() {
     fetch(API_ROLES, {
         headers: {
-            "X-CSRF-TOKEN": document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content"),
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
             Accept: "application/json",
         },
     })
@@ -78,10 +86,7 @@ function renderUsersTable() {
 
     allUsers.forEach((user) => {
         const row = document.createElement("tr");
-        const roleName =
-            user.user_type && user.user_type.name
-                ? user.user_type.name
-                : "Unknown";
+        const roleName = user.user_type && user.user_type.name ? user.user_type.name : "Unknown";
 
         row.innerHTML = `
             <td>${user.full_name}</td>
@@ -165,8 +170,7 @@ function renderRolesList() {
 function updateRoleSelect() {
     const roleSelect = document.getElementById("role");
     // Reset and add the default option back
-    roleSelect.innerHTML =
-        '<option value="" disabled selected>Select a role...</option>';
+    roleSelect.innerHTML = '<option value="" disabled selected>Select a role...</option>';
 
     allRoles.forEach((role) => {
         const option = document.createElement("option");
@@ -178,11 +182,7 @@ function updateRoleSelect() {
 
 // Edit user
 function editUser(userId) {
-    // Clear all previous error states
-    document
-        .querySelectorAll(".is-invalid")
-        .forEach((el) => el.classList.remove("is-invalid"));
-    document.querySelectorAll(".invalid-feedback").forEach((el) => el.remove());
+    clearValidationErrors();
 
     const user = allUsers.find((u) => u.id === userId);
     if (!user) return;
@@ -216,8 +216,7 @@ function editUser(userId) {
         if (input) {
             input.required = false;
             if (input.id === "password") {
-                input.placeholder =
-                    "New Password (leave blank to keep current)";
+                input.placeholder = "New Password (leave blank to keep current)";
             } else if (input.id === "confirm_password") {
                 input.placeholder = "Repeat New Password";
             }
@@ -232,135 +231,83 @@ function editUser(userId) {
     document.getElementById("name").parentElement.appendChild(editingInput);
 }
 
+function showInputError(elementId, errorMessage) {
+    let inputEl = document.getElementById(elementId);
+    inputEl.classList.add("is-invalid");
+    // For password fields that have an eye icon wrapper, insert after the wrapper or input
+    if (elementId === 'password' || elementId === 'confirm_password') {
+         inputEl.parentElement.insertAdjacentHTML("afterend", '<div class="invalid-feedback d-block">' + errorMessage + '</div>');
+    } else {
+        inputEl.insertAdjacentHTML("afterend", '<div class="invalid-feedback">' + errorMessage + '</div>');
+    }
+}
+
 // Save user (create or update)
 function saveUser() {
     const editingUserInput = document.getElementById("editingUserId");
     const isEditing = editingUserInput && editingUserInput.value;
+
+    // get values
     const name = document.getElementById("name").value;
     const email = document.getElementById("email").value;
     const phone = document.getElementById("phone").value;
-    const role = document.getElementById("role").value;
-    const password = document.getElementById("password");
-    const confirmPassword = document.getElementById("confirm_password");
+    const roleId = document.getElementById("role").value;
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirm_password").value;
 
-    // Clear all previous error states for all fields
-    document
-        .querySelectorAll(".is-invalid")
-        .forEach((el) => el.classList.remove("is-invalid"));
-    document.querySelectorAll(".invalid-feedback").forEach((el) => el.remove());
+    clearValidationErrors();
+
+    let hasError = false;
 
     if (!name) {
-        let inputEl = document.getElementById("name");
-        inputEl.classList.add("is-invalid");
-        inputEl.insertAdjacentHTML(
-            "afterend",
-            '<div id="name-error" class="invalid-feedback">Name is required</div>',
-        );
-        return;
+        showInputError("name", "Name is required");
+        hasError = true;
     }
 
     if (!email) {
-        let inputEl = document.getElementById("email");
-        inputEl.classList.add("is-invalid");
-        inputEl.insertAdjacentHTML(
-            "afterend",
-            '<div id="email-error" class="invalid-feedback">Email is required</div>',
-        );
-        return;
-    }
-
-    if (email && !/^\S+@\S+\.\S+$/.test(email)) {
-        let inputEl = document.getElementById("email");
-        inputEl.classList.add("is-invalid");
-        inputEl.insertAdjacentHTML(
-            "afterend",
-            '<div id="email-error" class="invalid-feedback">Please enter a valid email address</div>',
-        );
-        return;
+        showInputError("email", "Email is required");
+        hasError = true;
+    } else if (!/^\\S+@\\S+\\.\\S+$/.test(email)) {
+        showInputError("email", "Please enter a valid email address");
+        hasError = true;
     }
 
     if (!phone) {
-        let inputEl = document.getElementById("phone");
-        inputEl.classList.add("is-invalid");
-        inputEl.insertAdjacentHTML(
-            "afterend",
-            '<div id="phone-error" class="invalid-feedback">Phone is required</div>',
-        );
-        return;
+        showInputError("phone", "Phone is required");
+        hasError = true;
+    } else if (!/^\+?[0-9\s\-\(\)]+$/.test(phone)) {
+        showInputError("phone", "Please enter a valid phone number");
+        hasError = true;
     }
 
-    if (phone && !/^\+?[0-9\s\-()]+$/.test(phone)) {
-        let inputEl = document.getElementById("phone");
-        inputEl.classList.add("is-invalid");
-        inputEl.insertAdjacentHTML(
-            "afterend",
-            '<div id="phone-error" class="invalid-feedback">Please enter a valid phone number</div>',
-        );
-        return;
-    }
-
-    if (!isEditing || password.value) {
-        if (!password || !password.value) {
-            let inputEl = document.getElementById("password");
-            inputEl.classList.add("is-invalid");
-            inputEl.parentElement.insertAdjacentHTML(
-                "afterend",
-                '<div id="password-error" class="invalid-feedback d-block">Password is required</div>',
-            );
-            return;
+    if (!isEditing || password) {
+        if (!password) {
+            showInputError("password", "Password is required");
+            hasError = true;
+        } else if (password.length < 6) {
+            showInputError("password", "Password must be at least 6 characters");
+            hasError = true;
         }
 
-        if (password && password.value.length < 6) {
-            let inputEl = document.getElementById("password");
-            inputEl.classList.add("is-invalid");
-            inputEl.parentElement.insertAdjacentHTML(
-                "afterend",
-                '<div id="password-error" class="invalid-feedback d-block">Password must be at least 6 characters</div>',
-            );
-            return;
-        }
-
-        if (!confirmPassword || !confirmPassword.value) {
-            let inputEl = document.getElementById("confirm_password");
-            inputEl.classList.add("is-invalid");
-            inputEl.parentElement.insertAdjacentHTML(
-                "afterend",
-                '<div id="confirm-password-error" class="invalid-feedback d-block">Please confirm the password</div>',
-            );
-            return;
-        }
-
-        if (password.value !== confirmPassword.value) {
-            let inputEl = document.getElementById("confirm_password");
-            inputEl.classList.add("is-invalid");
-            inputEl.parentElement.insertAdjacentHTML(
-                "afterend",
-                '<div id="confirm-password-match-error" class="invalid-feedback d-block">Passwords do not match</div>',
-            );
-            return;
+        if (!confirmPassword) {
+            showInputError("confirm_password", "Please confirm the password");
+            hasError = true;
+        } else if (password !== confirmPassword) {
+            showInputError("confirm_password", "Passwords do not match");
+            hasError = true;
         }
     }
 
-    if (!role) {
-        let inputEl = document.getElementById("role");
-        inputEl.classList.add("is-invalid");
-        inputEl.insertAdjacentHTML(
-            "afterend",
-            '<div id="role-error" class="invalid-feedback">Role is required</div>',
-        );
-        return;
+    if (!roleId) {
+        showInputError("role", "Role is required");
+        hasError = true;
     }
+
+    if (hasError) return;
 
     // For editing
     if (isEditing) {
-        updateUser(
-            editingUserInput.value,
-            name,
-            email,
-            phone,
-            password.value,
-            role,
-        );
+        updateUser(editingUserInput.value, name, email, phone, password, roleId);
         document.querySelector("#userModal .btn-close").click();
         return;
     }
@@ -369,16 +316,14 @@ function saveUser() {
         full_name: name,
         email: email,
         phone_number: phone,
-        user_type_id: role,
-        password: password.value,
+        user_type_id: roleId,
+        password: password,
     };
 
     fetch(API_USERS_STORE, {
         method: "POST",
         headers: {
-            "X-CSRF-TOKEN": document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content"),
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
             "Content-Type": "application/json",
             Accept: "application/json",
         },
@@ -390,7 +335,6 @@ function saveUser() {
                 alert(data.message);
                 loadUsers();
                 document.querySelector("#userModal .btn-close").click();
-                resetUserForm();
             } else {
                 alert("Error: " + data.message);
             }
@@ -401,7 +345,7 @@ function saveUser() {
         });
 }
 
-// Update user role
+// Update user
 function updateUser(userId, fullName, email, phone, password, roleId) {
     const data = {
         full_name: fullName,
@@ -414,9 +358,7 @@ function updateUser(userId, fullName, email, phone, password, roleId) {
     fetch(API_USERS_UPDATE.replace(":userId", userId), {
         method: "PUT",
         headers: {
-            "X-CSRF-TOKEN": document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content"),
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
             "Content-Type": "application/json",
             Accept: "application/json",
         },
@@ -437,35 +379,6 @@ function updateUser(userId, fullName, email, phone, password, roleId) {
         });
 }
 
-function updateUserRole(userId, roleId) {
-    const data = { user_type_id: roleId };
-
-    fetch(API_USERS_UPDATE_ROLE.replace(":userId", userId), {
-        method: "PUT",
-        headers: {
-            "X-CSRF-TOKEN": document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content"),
-            "Content-Type": "application/json",
-            Accept: "application/json",
-        },
-        body: JSON.stringify(data),
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            if (data.success) {
-                alert(data.message);
-                loadUsers();
-            } else {
-                alert("Error: " + data.message);
-            }
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-            alert("Failed to update user role");
-        });
-}
-
 // Delete user
 function deleteUser(userId) {
     if (!confirm("Are you sure you want to delete this user?")) {
@@ -475,9 +388,7 @@ function deleteUser(userId) {
     fetch(API_USERS_DELETE.replace(":userId", userId), {
         method: "DELETE",
         headers: {
-            "X-CSRF-TOKEN": document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content"),
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
             Accept: "application/json",
         },
     })
@@ -498,11 +409,7 @@ function deleteUser(userId) {
 
 // Reset user form
 function resetUserForm() {
-    // Clear all previous error states
-    document
-        .querySelectorAll(".is-invalid")
-        .forEach((el) => el.classList.remove("is-invalid"));
-    document.querySelectorAll(".invalid-feedback").forEach((el) => el.remove());
+    clearValidationErrors();
 
     document.getElementById("userModalTitle").textContent = "Add User";
     document.getElementById("name").value = "";
@@ -521,7 +428,6 @@ function resetUserForm() {
         phoneField.style.display = "block";
     }
 
-    // Clear password values when resetting form
     const password = document.getElementById("password");
     const confirmPassword = document.getElementById("confirm_password");
     if (password) password.value = "";
@@ -531,11 +437,9 @@ function resetUserForm() {
     document.querySelectorAll(".password-field").forEach((field) => {
         field.style.display = "block";
 
-        // Show the red asterisk again
         const asterisk = field.querySelector("label span.text-danger");
         if (asterisk) asterisk.style.display = "inline";
 
-        // Revert input placeholders and add required attribute back
         const input = field.querySelector("input");
         if (input) {
             input.required = true;
@@ -580,9 +484,7 @@ function saveRole() {
         fetch(API_ROLES_UPDATE.replace(":roleId", roleId), {
             method: "PUT",
             headers: {
-                "X-CSRF-TOKEN": document
-                    .querySelector('meta[name="csrf-token"]')
-                    .getAttribute("content"),
+                "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
                 "Content-Type": "application/json",
                 Accept: "application/json",
             },
@@ -594,7 +496,6 @@ function saveRole() {
                     alert(data.message);
                     loadRoles();
                     document.querySelector("#roleModal .btn-close").click();
-                    resetRoleForm();
                 } else {
                     alert("Error: " + data.message);
                 }
@@ -610,9 +511,7 @@ function saveRole() {
     fetch(API_ROLES_STORE, {
         method: "POST",
         headers: {
-            "X-CSRF-TOKEN": document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content"),
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
             "Content-Type": "application/json",
             Accept: "application/json",
         },
@@ -624,7 +523,6 @@ function saveRole() {
                 alert(data.message);
                 loadRoles();
                 document.querySelector("#roleModal .btn-close").click();
-                resetRoleForm();
             } else {
                 alert("Error: " + data.message);
             }
@@ -699,9 +597,7 @@ function deleteRole(roleId) {
     fetch(API_ROLES_DELETE.replace(":roleId", roleId), {
         method: "DELETE",
         headers: {
-            "X-CSRF-TOKEN": document
-                .querySelector('meta[name="csrf-token"]')
-                .getAttribute("content"),
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
             Accept: "application/json",
         },
     })

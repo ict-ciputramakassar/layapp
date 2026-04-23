@@ -31,9 +31,43 @@ class ScheduleController extends Controller
             ->limit(5)
             ->get();
 
+        // Get Group Data for the Carousel
+        $groupGames = \App\Models\GroupGame::with(['groupEvents.eventRegistration.team'])->get();
+
+        $groups = $groupGames->map(function ($group) {
+            $teams = $group->groupEvents->map(function ($ge) {
+                $team = $ge->eventRegistration->team ?? null;
+                return [
+                    'id'    => $team ? $team->id : null,
+                    'name'  => $team ? $team->name : 'Unknown',
+                    'image' => $team ? $team->image : '',
+                    'points' => [
+                        'play' => $ge->play,
+                        'win'  => $ge->win,
+                        'lose' => $ge->lose,
+                        'draw' => $ge->draw,
+                        'point' => $ge->point,
+                    ],
+                ];
+            });
+
+            // Sort by points descending
+            $teams = $teams->sortByDesc('points.point')->values();
+
+            return [
+                'id'   => $group->id,
+                'name' => $group->name,
+                'teams' => $teams,
+            ];
+        })->filter(function ($group) {
+            // Only include groups that have actual teams playing
+            return $group['teams']->count() > 0;
+        });
+
         return view('views_frontend.home', [
             'nextMatch' => $nextMatch,
-            'fixtures' => $fixtures
+            'fixtures' => $fixtures,
+            'groups' => $groups
         ]);
     }
 

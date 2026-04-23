@@ -499,7 +499,6 @@
      float: left;
      width: 100%;
      font-size: 18px;
-     /* font-weight: 600; */
 }
  .vs {
      display: flex;
@@ -744,7 +743,6 @@
  aside#sidebar .team-btw-match ul li span {
      color: #222;
      text-transform: capitalize;
-     /* font-weight: 600; */
      display: block;
      font-size: 14px;
 }

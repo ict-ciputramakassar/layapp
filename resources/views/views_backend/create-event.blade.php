@@ -100,7 +100,7 @@
             <label class="form-label">Category Age</label>
             <div class="row @error('categoryAge') is-invalid @enderror">
               @foreach ($categoryAges as $age)
-                <div class="col-md-6 mb-2">
+                <div class="col-md-4 mb-2">
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" name="categoryAge[]" value="{{ $age->id }}" id="categoryAge_{{ $age->id }}" {{ in_array($age->id, old('categoryAge', [])) ? 'checked' : '' }}>
                     <label class="form-check-label" for="categoryAge_{{ $age->id }}">

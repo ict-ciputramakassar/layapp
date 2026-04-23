@@ -7,6 +7,7 @@ use App\Http\Controllers\UserRolesController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ScoreController;
+use App\Http\Controllers\GroupController;
 
 // Frontend Routes
 Route::get('/', [App\Http\Controllers\ScheduleController::class, 'frontendHome'])->name('home');
@@ -23,7 +24,7 @@ Route::get('/events', [EventController::class, 'viewEventList'])->name('events')
 Route::post('/event/register', [EventController::class, 'registerTeam'])->name('api.event.register');
 
 Route::get('/api/events-frontend', [EventController::class, 'getEventsFrontend'])->name('api.events-frontend');
-Route::get('/api/points-frontend', [EventController::class, 'getTeamPointsFrontend'])->name('api.points-frontend');
+Route::get('/api/points-frontend', [GroupController::class, 'getTeamPointsFrontend'])->name('api.points-frontend');
 
 Route::get('/team_datas', [TeamLeaderController::class, 'getTeams'])->name('team_datas');
 Route::get('/team/{id}', [TeamLeaderController::class, 'viewTeamDetails'])->name('team_details');
@@ -194,6 +195,18 @@ Route::middleware('auth')->group(function () {
         Route::get('/api/score/list', [ScoreController::class, 'list'])->name('api.score.list');
         Route::get('/score/{score}/edit', [ScoreController::class, 'edit'])->name('score.edit');
         Route::put('/score/{score}', [ScoreController::class, 'update'])->name('score.update');
+    });
+
+    // Group Management
+    Route::middleware('permission:group_list')->group(function () {
+        Route::get('/group-list', [GroupController::class, 'index'])->name('group-list');
+        Route::get('/create-group', [GroupController::class, 'create'])->name('create-group');
+        Route::get('/group/{group}/edit', [GroupController::class, 'edit'])->name('group.edit');
+        Route::put('/group/{group}', [GroupController::class, 'update'])->name('group.update');
+        Route::delete('/group/{group}', [GroupController::class, 'destroy'])->name('group.destroy');
+        Route::post('/group', [GroupController::class, 'store'])->name('group.store');
+        Route::get('/api/groups/data', [GroupController::class, 'getGroupsData'])->name('api.groups.data');
+        Route::get('/api/group/points-frontend', [GroupController::class, 'getTeamPointsFrontend'])->name('api.group.points-frontend');
     });
 });
 
