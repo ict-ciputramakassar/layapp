@@ -38,11 +38,10 @@
     IMPORT FILES
 -------------------------------------------------------------------*/
 
-@import url(css/animate.css);
-@import url(css/flaticon.css);
-@import url(css/prettyPhoto.css);
-@import url(css/owl.carousel.css);
-@import url(css/font-awesome.min.css);
+@import url(animate.css);
+@import url(flaticon.css);
+@import url(prettyPhoto.css);
+@import url(owl.carousel.css);
 
 /*------------------------------------------------------------------
     SKELETON
@@ -1837,7 +1836,7 @@ select.mobile-device {
 	font-weight: 400;
 	font-size: 20px;
 	text-transform: capitalize;
-	line-height: !important;
+	line-height: 1 !important;
 }
 
 .footer {
@@ -2082,7 +2081,7 @@ aside#sidebar .team-btw-match ul li.vs span {
 	color: #999 !important;
 	margin: 0 !important;
 	padding: 0 !important;
-	line-height: 1 !important:
+	line-height: 1 !important;
 }
 
 .stat-wrap p {
@@ -2091,7 +2090,7 @@ aside#sidebar .team-btw-match ul li.vs span {
 	margin: 0;
 	font-weight: 300;
 	padding: 4px 0 0;
-	line-height: 1 !important:
+	line-height: 1 !important;
 }
 
 #preloader {

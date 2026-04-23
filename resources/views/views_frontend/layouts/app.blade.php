@@ -22,10 +22,6 @@
 	<link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
 	<!-- Site CSS -->
 	<link rel="stylesheet" href="{{ asset('css/style.css') }}">
-	<!-- Colors CSS -->
-	<link rel="stylesheet" href="{{ asset('css/colors.css') }}">
-	<!-- ALL VERSION CSS -->
-	<link rel="stylesheet" href="{{ asset('css/versions.css') }}">
 	<!-- Responsive CSS -->
 	<link rel="stylesheet" href="{{ asset('css/responsive.css') }}">
 	<!-- Custom CSS -->
@@ -263,6 +259,7 @@
 
 	<!-- ALL JS FILES -->
 	<script src="{{ asset('js/all.js') }}"></script>
+	<script src="{{ asset('js/custom.js') }}"></script>
 	@yield('extra-js')
 </body>
 </html>
