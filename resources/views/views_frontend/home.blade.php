@@ -13,7 +13,7 @@
             width: max-content;
             align-items: center;
             animation: slide-left 15s linear infinite;
-			height: 200px;
+            height: 200px;
         }
 
         .sponsor-container:hover {
@@ -38,16 +38,16 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-			transition: transform 0.3s ease-in-out;
+            transition: transform 0.3s ease-in-out;
             cursor: pointer;
         }
 
-		.sponsor-card:hover {
+        .sponsor-card:hover {
             transform: scale(1.1);
         }
 
         .sponsor-image {
-            height: 150px !important;
+            height: 50px !important;
             width: auto !important;
             object-fit: contain;
             display: block;
@@ -58,14 +58,16 @@
             margin: 0;
             white-space: nowrap;
         }
+
         /* ------------------------------- */
 
         @keyframes slide-left {
             0% {
                 transform: translateX(0);
             }
+
             100% {
-                transform: translateX(calc(-49%));
+                transform: translateX(calc(-33%));
             }
         }
 
@@ -77,16 +79,19 @@
             height: 50px !important;
             transform: translateY(-50%);
             opacity: 0.8;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
         }
+
         #carousel-example-generic .left.carousel-control {
             left: 20px !important;
             right: auto !important;
         }
+
         #carousel-example-generic .right.carousel-control {
             right: 20px !important;
             left: auto !important;
         }
+
         #carousel-example-generic .carousel-control i {
             font-size: 40px !important;
             color: #fff !important;
@@ -100,18 +105,19 @@
             flex-wrap: wrap;
         }
 
-        .matchs-info > div[class*='col-'] {
+        .matchs-info>div[class*='col-'] {
             display: flex;
             padding: 0 !important;
         }
 
-        .matchs-info > div > .row {
+        .matchs-info>div>.row {
             width: 100%;
             display: flex;
             margin: 0 !important;
         }
 
-        .matchs-vs, .right-match-time {
+        .matchs-vs,
+        .right-match-time {
             height: 100%;
             min-height: 321px;
             display: flex;
@@ -154,6 +160,7 @@
             float: none;
             text-align: center;
         }
+
         /* ------------------------------------------- */
 
         /* Keep carousel geometry stable; apply spacing inside slides instead of carousel-inner. */
@@ -161,7 +168,7 @@
             padding: 0;
         }
 
-        #standings-carousel .carousel-inner > .item {
+        #standings-carousel .carousel-inner>.item {
             padding: 10px;
             box-sizing: border-box;
         }
@@ -232,6 +239,51 @@
         </div>
     </div>
 
+    <div class="team-holder theme-padding">
+        <div class="sponsor-holder container">
+            <div class="main-heading-holder">
+                <div class="main-heading sytle-2">
+                    <h2>Our Sponsors</h2>
+                    {{-- <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium<br>doloremque
+                        laudantium,
+                        totam rem aperiam</p> --}}
+                </div>
+            </div>
+            <div id="sponsor-slider">
+                <div class="sponsor-container container">
+                    <div class="sponsor-card">
+                        <img class="sponsor-image" src="{{ asset("images/sponsors/GreenSM.png") }}" alt="">
+                        <p class="sponsor-name">Green SM</p>
+                    </div>
+                    <div class="sponsor-card">
+                        <img class="sponsor-image" src="{{ asset("images/sponsors/Yamaha.png") }}" alt="">
+                        <p class="sponsor-name">Yamaha</p>
+                    </div>
+                    <div class="sponsor-card">
+                        <img class="sponsor-image" src="{{ asset("images/sponsors/BankSampoerna.png") }}" alt="">
+                        <p class="sponsor-name">Bank Sampoerna</p>
+                    </div>
+                    <div class="sponsor-card">
+                        <img class="sponsor-image" src="{{ asset("images/sponsors/CocaCola.png") }}" alt="">
+                        <p class="sponsor-name">Coca Cola</p>
+                    </div>
+                    <div class="sponsor-card">
+                        <img class="sponsor-image" src="{{ asset("images/sponsors/FreshCare.jpeg") }}" alt="">
+                        <p class="sponsor-name">Fresh Care</p>
+                    </div>
+                    <div class="sponsor-card">
+                        <img class="sponsor-image" src="{{ asset("images/sponsors/CitraLand.png") }}" alt="">
+                        <p class="sponsor-name">Citra Land</p>
+                    </div>
+                    <div class="sponsor-card">
+                        <img class="sponsor-image" src="{{ asset("images/sponsors/Mixxi.png") }}" alt="">
+                        <p class="sponsor-name">Mixxi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="matchs-info">
         <div class="col-md-6 col-sm-6 col-xs-12">
             <div class="row">
@@ -242,12 +294,14 @@
                                 <ul>
                                     @if($nextMatch)
                                         <li>
-                                            <img width="98px" height="98px" src="{{ asset($nextMatch->teamH->image) }}" alt="{{ $nextMatch->teamH->name }}">
+                                            <img width="98px" height="98px" src="{{ asset($nextMatch->teamH->image) }}"
+                                                alt="{{ $nextMatch->teamH->name }}">
                                             <span>{{ $nextMatch->teamH->name }}</span>
                                         </li>
                                         <li class="vs"><span>vs</span></li>
                                         <li>
-                                            <img width="98px" height="98px" src="{{ asset($nextMatch->teamA->image) }}" alt="{{ $nextMatch->teamA->name }}">
+                                            <img width="98px" height="98px" src="{{ asset($nextMatch->teamA->image) }}"
+                                                alt="{{ $nextMatch->teamA->name }}">
                                             <span>{{ $nextMatch->teamA->name }}</span>
                                         </li>
                                     @else
@@ -302,20 +356,26 @@
                                 @forelse($fixtures as $fixture)
                                     <ul style="display: flex; align-items: center;">
                                         <li>
-                                            <img style="width: 34px; height: 34px;" src="{{ asset($fixture->teamH->image) }}" alt="{{ $fixture->teamH->name }}">
+                                            <img style="width: 34px; height: 34px;" src="{{ asset($fixture->teamH->image) }}"
+                                                alt="{{ $fixture->teamH->name }}">
                                             <span class="text-muted">{{ $fixture->teamH->name }}</span>
                                         </li>
-                                        <li class="vs" style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 15px;">
+                                        <li class="vs"
+                                            style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 15px;">
                                             <span style="font-weight: bold; line-height: 1; margin-bottom: 2px;">Vs</span>
-                                            <span class="date text-muted" style="font-weight: bold; font-size: 12px; line-height: 1; margin-top: 0;">{{ $fixture->play_date->format('d/m/Y') }}</span>
+                                            <span class="date text-muted"
+                                                style="font-weight: bold; font-size: 12px; line-height: 1; margin-top: 0;">{{ $fixture->play_date->format('d/m/Y') }}</span>
                                         </li>
                                         <li>
-                                            <img style="width: 34px; height: 34px;" src="{{ asset($fixture->teamA->image) }}" alt="{{ $fixture->teamA->name }}">
+                                            <img style="width: 34px; height: 34px;" src="{{ asset($fixture->teamA->image) }}"
+                                                alt="{{ $fixture->teamA->name }}">
                                             <span class="text-muted">{{ $fixture->teamA->name }}</span>
                                         </li>
                                     </ul>
                                 @empty
-                                    <p class="text-center" style="color: #333333; display: flex; align-items: center; justify-content: center;">No upcoming fixtures.</p>
+                                    <p class="text-center"
+                                        style="color: #333333; display: flex; align-items: center; justify-content: center;">No
+                                        upcoming fixtures.</p>
                                 @endforelse
                             </div>
                         </div>
@@ -338,7 +398,8 @@
                             </table>
                         </div>
                     </aside> --}}
-                    {{-- <div class="content-widget top-story" style="background: url({{ asset('images/top-story-bg.jpg') }});">
+                    {{-- <div class="content-widget top-story"
+                        style="background: url({{ asset('images/top-story-bg.jpg') }});">
                         <div class="top-stroy-header">
                             <h2>Top Soccer Headlines Story <a href="#" class="fa fa-fa fa-angle-right"></a></h2>
                             <span class="date">July 05, 2017</span>
@@ -360,61 +421,71 @@
                     <h4>Group Standings</h4>
                     <aside id="sidebar" class="left-bar">
                         <div class="feature-matchs" style="position: relative;">
-                            <div id="standings-carousel" class="carousel slide" data-ride="carousel" data-pause="hover" data-interval="10000">
+                            <div id="standings-carousel" class="carousel slide" data-ride="carousel" data-pause="hover"
+                                data-interval="10000">
                                 <!-- Wrapper for slides -->
                                 <div class="carousel-inner" role="listbox">
                                     @forelse($groups as $index => $group)
-                                    <div class="item {{ $index === 0 ? 'active' : '' }}">
-                                        <h5 style="text-align: center; font-size: 16px; font-weight: bold; margin-top: 5px; margin-bottom: 10px;">{{ $group['name'] }}</h5>
-                                        <table class="table table-hover" style="margin-bottom: 0;">
-                                            <thead>
-                                                <tr>
-                                                    <th class="text-center">#</th>
-                                                    <th>Team</th>
-                                                    <th class="text-center">Play</th>
-                                                    <th class="text-center">Win</th>
-                                                    <th class="text-center">Draw</th>
-                                                    <th class="text-center">Loss</th>
-                                                    <th class="text-center">Points</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($group['teams'] as $teamIndex => $team)
-                                                <tr>
-                                                    <td class="text-center">{{ $teamIndex + 1 }}</td>
-                                                    <td>
-                                                        @if($team['image'])
-                                                            <img src="{{ asset($team['image']) }}" alt="{{ $team['name'] }}" style="width: 24px; height: 24px; object-fit: contain; margin-right: 5px;">
-                                                        @endif
-                                                        {{ $team['name'] }}
-                                                    </td>
-                                                    <td class="text-center">{{ $team['points']['play'] }}</td>
-                                                    <td class="text-center">{{ $team['points']['win'] }}</td>
-                                                    <td class="text-center">{{ $team['points']['draw'] }}</td>
-                                                    <td class="text-center">{{ $team['points']['lose'] }}</td>
-                                                    <td class="text-center"><strong>{{ $team['points']['point'] }}</strong></td>
-                                                </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
+                                        <div class="item {{ $index === 0 ? 'active' : '' }}">
+                                            <h5
+                                                style="text-align: center; font-size: 16px; font-weight: bold; margin-top: 5px; margin-bottom: 10px;">
+                                                {{ $group['name'] }}
+                                            </h5>
+                                            <table class="table table-hover" style="margin-bottom: 0;">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-center">#</th>
+                                                        <th>Team</th>
+                                                        <th class="text-center">Play</th>
+                                                        <th class="text-center">Win</th>
+                                                        <th class="text-center">Draw</th>
+                                                        <th class="text-center">Loss</th>
+                                                        <th class="text-center">Points</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($group['teams'] as $teamIndex => $team)
+                                                        <tr>
+                                                            <td class="text-center">{{ $teamIndex + 1 }}</td>
+                                                            <td>
+                                                                @if($team['image'])
+                                                                    <img src="{{ asset($team['image']) }}" alt="{{ $team['name'] }}"
+                                                                        style="width: 24px; height: 24px; object-fit: contain; margin-right: 5px;">
+                                                                @endif
+                                                                {{ $team['name'] }}
+                                                            </td>
+                                                            <td class="text-center">{{ $team['points']['play'] }}</td>
+                                                            <td class="text-center">{{ $team['points']['win'] }}</td>
+                                                            <td class="text-center">{{ $team['points']['draw'] }}</td>
+                                                            <td class="text-center">{{ $team['points']['lose'] }}</td>
+                                                            <td class="text-center"><strong>{{ $team['points']['point'] }}</strong>
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     @empty
-                                    <div class="item active">
-                                        <h5 style="text-align: center; font-weight: bold; margin-top: 0; margin-bottom: 0; padding: 20px;">No Groups Available</h5>
-                                    </div>
+                                        <div class="item active">
+                                            <h5
+                                                style="text-align: center; font-weight: bold; margin-top: 0; margin-bottom: 0; padding: 20px;">
+                                                No Groups Available</h5>
+                                        </div>
                                     @endforelse
                                 </div>
 
                                 <!-- Controls -->
                                 @if(count($groups) > 1)
-                                <a class="left carousel-control" href="#standings-carousel" role="button" data-slide="prev" style="background: none; width: 30px; display: flex; align-items: center; justify-content: flex-start; text-shadow: none;">
-                                    <i class="fa fa-chevron-left" aria-hidden="true" style="color: #666;"></i>
-                                    <span class="sr-only">Previous</span>
-                                </a>
-                                <a class="right carousel-control" href="#standings-carousel" role="button" data-slide="next" style="background: none; width: 30px; display: flex; align-items: center; justify-content: flex-end; text-shadow: none;">
-                                    <i class="fa fa-chevron-right" aria-hidden="true" style="color: #666;"></i>
-                                    <span class="sr-only">Next</span>
-                                </a>
+                                    <a class="left carousel-control" href="#standings-carousel" role="button" data-slide="prev"
+                                        style="background: none; width: 30px; display: flex; align-items: center; justify-content: flex-start; text-shadow: none;">
+                                        <i class="fa fa-chevron-left" aria-hidden="true" style="color: #666;"></i>
+                                        <span class="sr-only">Previous</span>
+                                    </a>
+                                    <a class="right carousel-control" href="#standings-carousel" role="button" data-slide="next"
+                                        style="background: none; width: 30px; display: flex; align-items: center; justify-content: flex-end; text-shadow: none;">
+                                        <i class="fa fa-chevron-right" aria-hidden="true" style="color: #666;"></i>
+                                        <span class="sr-only">Next</span>
+                                    </a>
                                 @endif
                             </div>
                         </div>
@@ -424,63 +495,30 @@
         </div>
     </section>
 
-    <div class="team-holder theme-padding">
-        <div class="sponsor-holder container">
-            <div class="main-heading-holder">
-                <div class="main-heading sytle-2">
-                    <h2>Our Sponsors</h2>
-                    {{-- <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium<br>doloremque laudantium,
-                        totam rem aperiam</p> --}}
-                </div>
-            </div>
-            <div id="sponsor-slider">
-                <div class="sponsor-container container">
-                    <div class="sponsor-card">
-                        <img class="sponsor-image" src="{{ asset("images/sponsors/GreenSM.png") }}" alt="">
-                        <p class="sponsor-name">Green SM</p>
-                    </div>
-                    <div class="sponsor-card">
-                        <img class="sponsor-image" src="{{ asset("images/sponsors/Yamaha.png") }}" alt="">
-                        <p class="sponsor-name">Yamaha</p>
-                    </div>
-                    <div class="sponsor-card">
-                        <img class="sponsor-image" src="{{ asset("images/sponsors/BankSampoerna.png") }}" alt="">
-                        <p class="sponsor-name">Bank Sampoerna</p>
-                    </div>
-                    <div class="sponsor-card">
-                        <img class="sponsor-image" src="{{ asset("images/sponsors/CocaCola.png") }}" alt="">
-                        <p class="sponsor-name">Coca Cola</p>
-                    </div>
-                    <div class="sponsor-card">
-                        <img class="sponsor-image" src="{{ asset("images/sponsors/FreshCare.jpeg") }}" alt="">
-                        <p class="sponsor-name">Fresh Care</p>
-                    </div>
-                    <div class="sponsor-card">
-                        <img class="sponsor-image" src="{{ asset("images/sponsors/CitraLand.png") }}" alt="">
-                        <p class="sponsor-name">Citra Land</p>
-                    </div>
-                    <div class="sponsor-card">
-                        <img class="sponsor-image" src="{{ asset("images/sponsors/Mixxi.png") }}" alt="">
-                        <p class="sponsor-name">Mixxi</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         // 1. Tunggu sampai struktur HTML selesai dimuat
         document.addEventListener('DOMContentLoaded', () => {
-            const container = document.querySelector('.sponsor-container');
-            const cards = Array.from(container.children);
+            const sponsor_container = document.querySelector('.sponsor-container');
+            const sponsor_cards = Array.from(sponsor_container.children);
 
-            // Gandakan setiap kartu dan masukkan kembali ke dalam container
-            cards.forEach(card => {
-                const clone = card.cloneNode(true);
-                // Aksesibilitas: Sembunyikan elemen duplikat dari Screen Reader
-                clone.setAttribute('aria-hidden', 'true');
-                container.appendChild(clone);
-            });
+            const sponsor_card_duplicate_count = 2;
+
+            const sponsor_fragment = document.createDocumentFragment();
+
+            // 3. Lakukan perulangan sebanyak jumlah yang ditentukan
+            for (let i = 0; i < sponsor_card_duplicate_count; i++) {
+                sponsor_cards.forEach(card => {
+                    const sponsor_card_clone = card.cloneNode(true);
+                    // Aksesibilitas: Sembunyikan elemen duplikat dari Screen Reader
+                    sponsor_card_clone.setAttribute('aria-hidden', 'true');
+
+                    // Masukkan sponsor_card_clone ke dalam sponsor_fragment, BUKAN langsung ke container
+                    sponsor_fragment.appendChild(sponsor_card_clone);
+                });
+            }
+
+            // 4. Masukkan semua elemen yang ada di sponsor_fragment ke dalam DOM sekaligus
+            sponsor_container.appendChild(sponsor_fragment);
         });
     </script>
 @endsection

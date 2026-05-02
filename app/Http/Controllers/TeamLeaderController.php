@@ -104,6 +104,58 @@ class TeamLeaderController extends Controller
             'members' => $mappedMembers
         ]);
     }
+    
+    public function getTeamMembersByTeamId($teamId)
+    {
+        $team = Team::find($teamId);
+        if(!$team) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Team not found.'
+            ], 404);
+        }
+        $members = $team->teamMembers;
+        $mappedMembers = $members->map(function ($member) {
+            // if($member->is_active == 1)
+            return [
+                'id' => $member->id,
+                'full_name' => $member->full_name,
+                'start_date' => $member->start_date,
+                'end_date' => $member->end_date,
+                'is_active' => $member->is_active,
+                'image' => $member->image,
+                'member_type' => [
+                    'name' => $member->memberType->name,
+                    'code' => $member->memberType->code,
+                    'id' => $member->memberType->id,
+                ],
+                'age_category' => [
+                    'name' => $member->categoryAge?->name,
+                    'code' => $member->categoryAge?->code,
+                    'id' => $member->categoryAge?->id,
+                ],
+                'dob' => $member->dob,
+                'phone_number' => $member->phone_number,
+                'email' => $member->email,
+                'height' => $member->height,
+                'weight' => $member->weight,
+                'position' => [
+                    "name" => $member->position?->name,
+                    "code" => $member->position?->code,
+                    "id" => $member->position?->id,
+                ],
+                'license' => [
+                    "name" => $member->license ?? "",
+                    "valid_date" => $member->valid_date ?? "",
+                ],
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'members' => $mappedMembers
+        ]);
+    }
 
     public function getAthleteForRegistration(Request $request, $eventId)
     {

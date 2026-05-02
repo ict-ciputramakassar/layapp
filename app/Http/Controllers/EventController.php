@@ -80,7 +80,7 @@ class EventController extends Controller
             DB::commit();
             return response()->json([
                 'success' => true,
-                'message' => 'Pendaftaran event berhasil!',
+                'message' => 'Registration Successful!',
             ], 200);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -88,6 +88,104 @@ class EventController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Internal Server Error: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function adminRegisterTeam(Request $request)
+    {
+        // 1. Pengecekan Kredensial Superadmin (SA)
+        // Asumsi: Kita mengecek dari properti user yang sedang login
+        if (!Auth::check() || Auth::user()->userType?->code !== 'SA') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Access Denied. Only Superadmins can perform manual registration.'
+            ], 403);
+        }
+
+        // 2. Validasi data yang masuk
+        $request->validate([
+            'event_id'   => 'required',
+            'team_id'    => 'required',
+            'player_ids' => 'required|array|min:13|max:20',
+        ]);
+
+        $user      = Auth::user();
+        $eventId   = $request->event_id;
+        $teamId    = $request->team_id;
+        $playerIds = $request->player_ids;
+
+        // 3. Validasi Tim & Anggota (Sisi Server)
+        // Cari tim berdasarkan ID yang diinput admin
+        $targetTeam = Team::find($teamId);
+        if (!$targetTeam) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Team not found.'
+            ], 404);
+        }
+
+        // 3. Filter: hanya player_ids yang benar-benar ada di dalam tim
+        $validMemberIds = $targetTeam->teamMembers->pluck('id')->toArray();
+
+        // 4. Filter: Pastikan player_ids yang dikirim memang bagian dari tim tersebut
+        $validPlayerIds = array_values(
+            array_filter($playerIds, fn($pid) => in_array($pid, $validMemberIds))
+        );
+
+        // Periksa apakah jumlah setelah difilter masih memenuhi syarat
+        if (count($validPlayerIds) < 13 || count($validPlayerIds) > 20) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Must Select Minimum of 13 Players and Maximum of 20 Players. '
+                    . 'Found: ' . count($validPlayerIds) . ' Valid Players From Your Team.',
+            ], 422);
+        }
+
+        // 5. Cek apakah tim sudah terdaftar di event ini sebelumnya (Mencegah Duplikasi)
+        $exists = EventRegistration::where('event_id', $eventId)
+            ->where('team_id', $teamId)
+            ->exists();
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This team has been registered to this event.',
+            ], 422);
+        }
+
+        // 6. Eksekusi Database Transaction
+        DB::beginTransaction();
+        try {
+            // Buat data pendaftaran utama
+            $registration = EventRegistration::create([
+                'event_id'    => $eventId,
+                'team_id'     => $teamId,
+                'created_by'  => $user->id,
+                'modified_by' => $user->id,
+                'status'      => 'approved', // Admin daftar biasanya langsung approve atau sesuai workflow
+            ]);
+
+            // Insert pemain ke tabel detail (EventRegistrationList)
+            foreach ($validPlayerIds as $pid) {
+                EventRegistrationList::create([
+                    'event_registration_id' => $registration->id,
+                    'team_member_id'        => $pid,
+                    'created_by'            => $user->id,
+                    'modified_by'           => $user->id,
+                ]);
+            }
+
+            DB::commit();
+            return response()->json([
+                'success' => true,
+                'message' => 'Registration Successful!',
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Superadmin Event Registration Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage(),
             ], 500);
         }
     }
@@ -238,7 +336,8 @@ class EventController extends Controller
      */
     public function index()
     {
-        return view('views_backend.event-list');
+        $teams = Team::where('is_active', 1)->get();
+        return view('views_backend.event-list', compact('teams'));
     }
 
     /**

@@ -28,6 +28,7 @@ Route::get('/api/points-frontend', [GroupController::class, 'getTeamPointsFronte
 
 Route::get('/team_datas', [TeamLeaderController::class, 'getTeams'])->name('team_datas');
 Route::get('/team/{id}', [TeamLeaderController::class, 'viewTeamDetails'])->name('team_details');
+Route::get('/api/team/{id}/members', [TeamLeaderController::class, 'getTeamMembersByTeamId'])->name('team_members_by_team_id');
 
 Route::get('/news', function () {
     return view('views_frontend.news');
@@ -115,6 +116,7 @@ Route::middleware('auth')->group(function () {
     Route::middleware('permission:team_members')->group(function () {
         Route::get('/add_team_member', [TeamLeaderController::class, 'addMemberView'])->name('add_team_member')->middleware('permission:add_team_members');
         Route::post('/addMembers', [TeamLeaderController::class, 'addMembersBulk'])->name('add_members_bulk')->middleware('permission:add_team_members');
+        Route::post('/api/admin/event/register', [EventController::class, 'adminRegisterTeam'])->name('api.admin.event.register');
         Route::get('/team_members', [TeamLeaderController::class, 'viewTeamMembers'])->name('team_members');
         Route::get('/getAthletes/{eventId}', [TeamLeaderController::class, 'getAthletesForRegistration'])->name('get_athlete');
         Route::get('/getMembers', [TeamLeaderController::class, 'getMembers'])->name('get_members');
